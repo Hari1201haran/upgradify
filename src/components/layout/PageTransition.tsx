@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { pageTransition } from '@/utils/animation';
 
 interface PageTransitionProps {
@@ -8,15 +9,14 @@ interface PageTransitionProps {
 
 const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
   return (
-    <div 
+    <motion.div 
       className="page-transition w-full"
-      style={{
-        opacity: 0,
-        animation: 'fade-in 0.5s forwards'
-      }}
+      initial={pageTransition.initial}
+      animate={pageTransition.animate}
+      exit={pageTransition.exit}
     >
       {children}
-    </div>
+    </motion.div>
   );
 };
 
