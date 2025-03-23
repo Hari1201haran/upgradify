@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 
 // Define types
@@ -31,20 +30,32 @@ export interface College {
   image?: string;
 }
 
+export interface GovernmentExam {
+  id: string;
+  title: string;
+  description: string;
+  eligibility: string[];
+  streams: string[];
+  preparationTime: string;
+}
+
 interface DataContextType {
   careers: Career[];
   courses: Course[];
   colleges: College[];
+  governmentExams: GovernmentExam[];
   getCareersByStream: (stream: string) => Career[];
   getCareersByInterest: (interests: string[]) => Career[];
   getCoursesByStream: (stream: string) => Course[];
   getCoursesByInterest: (interests: string[]) => Course[];
+  getExamsByStream: (stream: string) => GovernmentExam[];
   getTopColleges: (limit?: number) => College[];
   getCollegesByCourse: (courseId: string) => College[];
   getRecommendations: (stream: string, interests: string[]) => {
     careers: Career[];
     courses: Course[];
     colleges: College[];
+    exams: GovernmentExam[];
   };
 }
 
@@ -132,25 +143,172 @@ const mockCareers: Career[] = [
   },
 ];
 
+// Extended course data with stream categorization
 const mockCourses: Course[] = [
   {
-    id: "course-1",
+    id: "course-cs-1",
     title: "B.Tech Computer Science",
     description: "Bachelor of Technology in Computer Science and Engineering is an undergraduate program focusing on computing, programming, and application development.",
     duration: "4 years",
-    streams: ["Science"],
+    streams: ["Science", "Computer Science"],
     interests: ["Technology", "Coding", "Mathematics", "Problem Solving"]
   },
   {
-    id: "course-2",
-    title: "B.Sc Mathematics",
-    description: "Bachelor of Science in Mathematics covers pure and applied mathematics, statistics, and computational methods.",
-    duration: "3 years",
-    streams: ["Science"],
-    interests: ["Mathematics", "Analysis", "Problem Solving", "Research"]
+    id: "course-cs-2",
+    title: "B.Tech Information Technology",
+    description: "Focuses on software development, database management, and IT infrastructure with emphasis on real-world applications.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Technology", "Software", "Databases", "Problem Solving"]
   },
   {
-    id: "course-3",
+    id: "course-cs-3",
+    title: "B.Tech Artificial Intelligence & Data Science",
+    description: "Combines AI technologies with data analysis techniques to develop intelligent systems and extract insights from complex data.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Artificial Intelligence", "Data Analysis", "Mathematics", "Research"]
+  },
+  {
+    id: "course-cs-4",
+    title: "B.Tech Cyber Security",
+    description: "Focuses on protecting computer systems, networks, and data from security breaches and cyber threats.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Security", "Networks", "Ethical Hacking", "Cryptography"]
+  },
+  {
+    id: "course-cs-5",
+    title: "B.Sc Computer Science",
+    description: "Three-year undergraduate program covering programming, algorithms, and computing fundamentals.",
+    duration: "3 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Coding", "Technology", "Software Development"]
+  },
+  {
+    id: "course-cs-6",
+    title: "BCA",
+    description: "Bachelor of Computer Applications focuses on computer applications and software development.",
+    duration: "3 years",
+    streams: ["Science", "Computer Science", "Commerce"],
+    interests: ["Software Development", "Web Development", "Applications"]
+  },
+  {
+    id: "course-cs-7",
+    title: "B.Tech Software Engineering",
+    description: "Concentrates on systematic approaches to software development, testing, and maintenance.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Software Development", "Quality Assurance", "Project Management"]
+  },
+  {
+    id: "course-cs-8",
+    title: "B.Tech IoT Engineering",
+    description: "Focuses on connected devices, sensors, and networks for intelligent systems.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Internet of Things", "Embedded Systems", "Networking"]
+  },
+  {
+    id: "course-cs-9",
+    title: "B.Tech Blockchain Technology",
+    description: "Studies decentralized systems, cryptography, and secure distributed ledger technologies.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Blockchain", "Cryptography", "Distributed Systems"]
+  },
+  {
+    id: "course-cs-10",
+    title: "B.Tech Cloud Computing",
+    description: "Focuses on cloud infrastructure, virtualization, and cloud-based service models.",
+    duration: "4 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Cloud Services", "Virtualization", "Distributed Computing"]
+  },
+  
+  {
+    id: "course-bio-1",
+    title: "MBBS",
+    description: "Bachelor of Medicine and Bachelor of Surgery prepares students to become medical doctors.",
+    duration: "5.5 years (including internship)",
+    streams: ["Science", "Biology"],
+    interests: ["Medicine", "Healthcare", "Biology", "Helping Others"]
+  },
+  {
+    id: "course-bio-2",
+    title: "BDS",
+    description: "Bachelor of Dental Surgery for careers in dental medicine and oral healthcare.",
+    duration: "5 years",
+    streams: ["Science", "Biology"],
+    interests: ["Dentistry", "Healthcare", "Biology"]
+  },
+  {
+    id: "course-bio-3",
+    title: "B.Pharm",
+    description: "Bachelor of Pharmacy for careers in pharmaceutical sciences and drug development.",
+    duration: "4 years",
+    streams: ["Science", "Biology"],
+    interests: ["Pharmacy", "Chemistry", "Healthcare"]
+  },
+  {
+    id: "course-bio-4",
+    title: "B.Sc Nursing",
+    description: "Undergraduate degree in nursing science for professional nursing practice.",
+    duration: "4 years",
+    streams: ["Science", "Biology"],
+    interests: ["Nursing", "Healthcare", "Patient Care"]
+  },
+  {
+    id: "course-bio-5",
+    title: "B.Sc Biotechnology",
+    description: "Bachelor of Science in Biotechnology combines biology, chemistry, and technology to develop biological products and processes.",
+    duration: "3 years",
+    streams: ["Science", "Biology"],
+    interests: ["Biology", "Research", "Laboratory Work", "Innovation"]
+  },
+  {
+    id: "course-bio-6",
+    title: "B.Tech Biomedical Engineering",
+    description: "Combines engineering principles with medical and biological sciences for healthcare innovations.",
+    duration: "4 years",
+    streams: ["Science", "Biology"],
+    interests: ["Biomedical Devices", "Healthcare Technology", "Engineering"]
+  },
+  {
+    id: "course-bio-7",
+    title: "B.Sc Microbiology",
+    description: "Studies microorganisms, their interactions, and applications in medicine and industry.",
+    duration: "3 years",
+    streams: ["Science", "Biology"],
+    interests: ["Microbiology", "Laboratory Work", "Research"]
+  },
+  {
+    id: "course-bio-8",
+    title: "B.Sc Food Technology",
+    description: "Focuses on food processing, preservation, and quality control methods.",
+    duration: "3 years",
+    streams: ["Science", "Biology"],
+    interests: ["Food Science", "Quality Control", "Nutrition"]
+  },
+  {
+    id: "course-bio-9",
+    title: "B.Sc Nutrition and Dietetics",
+    description: "Studies human nutrition, diet planning, and nutritional counseling.",
+    duration: "3 years",
+    streams: ["Science", "Biology"],
+    interests: ["Nutrition", "Healthcare", "Counseling"]
+  },
+  {
+    id: "course-bio-10",
+    title: "BPT",
+    description: "Bachelor of Physiotherapy for careers in physical rehabilitation and therapy.",
+    duration: "4.5 years",
+    streams: ["Science", "Biology"],
+    interests: ["Physiotherapy", "Rehabilitation", "Healthcare"]
+  },
+  
+  {
+    id: "course-com-1",
     title: "B.Com",
     description: "Bachelor of Commerce provides knowledge in accounting, economics, business law, taxation, and finance.",
     duration: "3 years",
@@ -158,7 +316,7 @@ const mockCourses: Course[] = [
     interests: ["Finance", "Economics", "Business", "Mathematics"]
   },
   {
-    id: "course-4",
+    id: "course-com-2",
     title: "BBA",
     description: "Bachelor of Business Administration focuses on management principles, business strategy, and organizational behavior.",
     duration: "3 years",
@@ -166,39 +324,23 @@ const mockCourses: Course[] = [
     interests: ["Business", "Management", "Leadership", "Marketing"]
   },
   {
-    id: "course-5",
-    title: "B.A Psychology",
-    description: "Bachelor of Arts in Psychology explores human behavior, mental processes, and psychological theories.",
+    id: "course-com-3",
+    title: "B.Com Accounting and Finance",
+    description: "Specializes in financial accounting, corporate finance, and taxation practices.",
     duration: "3 years",
-    streams: ["Arts", "Science"],
-    interests: ["Psychology", "Helping Others", "Research", "Social Sciences"]
+    streams: ["Commerce"],
+    interests: ["Accounting", "Finance", "Taxation"]
   },
   {
-    id: "course-6",
-    title: "B.A Mass Communication",
-    description: "Bachelor of Arts in Mass Communication covers journalism, public relations, advertising, and digital media.",
+    id: "course-com-4",
+    title: "B.Com Banking and Insurance",
+    description: "Focuses on banking operations, insurance principles, and financial services.",
     duration: "3 years",
-    streams: ["Arts"],
-    interests: ["Media", "Communication", "Writing", "Current Affairs"]
+    streams: ["Commerce"],
+    interests: ["Banking", "Insurance", "Finance"]
   },
   {
-    id: "course-7",
-    title: "B.Sc Biotechnology",
-    description: "Bachelor of Science in Biotechnology combines biology, chemistry, and technology to develop biological products and processes.",
-    duration: "3 years",
-    streams: ["Science"],
-    interests: ["Biology", "Research", "Laboratory Work", "Innovation"]
-  },
-  {
-    id: "course-8",
-    title: "MBBS",
-    description: "Bachelor of Medicine and Bachelor of Surgery prepares students to become medical doctors.",
-    duration: "5.5 years (including internship)",
-    streams: ["Science"],
-    interests: ["Biology", "Helping Others", "Healthcare", "Research"]
-  },
-  {
-    id: "course-9",
+    id: "course-com-5",
     title: "BBA Marketing",
     description: "Bachelor of Business Administration with a specialization in Marketing focuses on marketing principles, consumer behavior, and brand management.",
     duration: "3 years",
@@ -206,13 +348,245 @@ const mockCourses: Course[] = [
     interests: ["Marketing", "Business", "Creativity", "Communication"]
   },
   {
+    id: "course-com-6",
+    title: "BBA Finance",
+    description: "Specializes in financial management, investment analysis, and corporate finance.",
+    duration: "3 years",
+    streams: ["Commerce"],
+    interests: ["Finance", "Investment", "Business"]
+  },
+  {
+    id: "course-com-7",
+    title: "B.Com Computer Applications",
+    description: "Combines commerce education with computer applications and software skills.",
+    duration: "3 years",
+    streams: ["Commerce"],
+    interests: ["Commerce", "Computer Applications", "Business"]
+  },
+  {
+    id: "course-com-8",
+    title: "Chartered Accountancy (CA)",
+    description: "Professional course for becoming a certified chartered accountant specializing in auditing and taxation.",
+    duration: "3-5 years",
+    streams: ["Commerce"],
+    interests: ["Accounting", "Auditing", "Taxation"]
+  },
+  {
+    id: "course-com-9",
+    title: "Company Secretary (CS)",
+    description: "Professional course for corporate governance and compliance management.",
+    duration: "3-4 years",
+    streams: ["Commerce"],
+    interests: ["Corporate Law", "Governance", "Compliance"]
+  },
+  {
+    id: "course-com-10",
+    title: "Cost and Management Accountancy (CMA)",
+    description: "Professional course focusing on cost accounting and management reporting.",
+    duration: "3-4 years",
+    streams: ["Commerce"],
+    interests: ["Cost Accounting", "Management", "Finance"]
+  },
+  
+  {
+    id: "course-2",
+    title: "B.Sc Mathematics",
+    description: "Bachelor of Science in Mathematics covers pure and applied mathematics, statistics, and computational methods.",
+    duration: "3 years",
+    streams: ["Science", "Computer Science"],
+    interests: ["Mathematics", "Analysis", "Problem Solving", "Research"]
+  },
+  {
+    id: "course-5",
+    title: "B.A Psychology",
+    description: "Bachelor of Arts in Psychology explores human behavior, mental processes, and psychological theories.",
+    duration: "3 years",
+    streams: ["Arts", "Science", "Biology"],
+    interests: ["Psychology", "Helping Others", "Research", "Social Sciences"]
+  },
+  {
+    id: "course-6",
+    title: "B.A Mass Communication",
+    description: "Bachelor of Arts in Mass Communication covers journalism, public relations, advertising, and digital media.",
+    duration: "3 years",
+    streams: ["Arts", "Commerce"],
+    interests: ["Media", "Communication", "Writing", "Current Affairs"]
+  },
+  {
     id: "course-10",
     title: "B.Arch",
     description: "Bachelor of Architecture trains students in architectural design, building technology, and urban planning.",
     duration: "5 years",
-    streams: ["Science"],
+    streams: ["Science", "Arts"],
     interests: ["Design", "Art", "Mathematics", "Innovation"]
+  }
+];
+
+// Government exams data
+const mockGovernmentExams: GovernmentExam[] = [
+  {
+    id: "exam-1",
+    title: "UPSC Civil Services Exam",
+    description: "For recruitment to Indian Administrative Service (IAS), Indian Police Service (IPS), and other prestigious civil services.",
+    eligibility: ["Graduate in any discipline", "Age 21-32 years (with relaxations for reserved categories)"],
+    streams: ["Science", "Commerce", "Arts", "Computer Science", "Biology"],
+    preparationTime: "1-2 years"
   },
+  {
+    id: "exam-2",
+    title: "SSC CGL",
+    description: "Combined Graduate Level exam for various posts in government ministries and departments.",
+    eligibility: ["Graduate in any discipline", "Age 18-32 years (varies by post)"],
+    streams: ["Science", "Commerce", "Arts", "Computer Science", "Biology"],
+    preparationTime: "6-12 months"
+  },
+  {
+    id: "exam-3",
+    title: "IBPS PO",
+    description: "For recruitment of Probationary Officers in participating public sector banks.",
+    eligibility: ["Graduate in any discipline", "Age 20-30 years"],
+    streams: ["Science", "Commerce", "Arts", "Computer Science", "Biology"],
+    preparationTime: "6-9 months"
+  },
+  {
+    id: "exam-4",
+    title: "RRB NTPC",
+    description: "For non-technical popular categories of jobs in Indian Railways.",
+    eligibility: ["Graduate/12th Pass (depending on post)", "Age 18-33 years (varies by post)"],
+    streams: ["Science", "Commerce", "Arts", "Computer Science", "Biology"],
+    preparationTime: "6-9 months"
+  },
+  {
+    id: "exam-5",
+    title: "TNPSC",
+    description: "Tamil Nadu Public Service Commission exams for various state government posts.",
+    eligibility: ["Varies by post (typically graduate level)", "Age varies by post"],
+    streams: ["Science", "Commerce", "Arts", "Computer Science", "Biology"],
+    preparationTime: "6-12 months"
+  },
+  
+  {
+    id: "exam-cs-1",
+    title: "ISRO Scientist/Engineer",
+    description: "For technical and research positions in the Indian Space Research Organization.",
+    eligibility: ["B.Tech/BE in relevant engineering discipline", "Age limit varies by post"],
+    streams: ["Science", "Computer Science"],
+    preparationTime: "6-12 months"
+  },
+  {
+    id: "exam-cs-2",
+    title: "DRDO Scientist",
+    description: "For research positions in Defense Research and Development Organization.",
+    eligibility: ["B.Tech/BE/M.Sc in relevant discipline", "Age limit typically up to 28 years"],
+    streams: ["Science", "Computer Science"],
+    preparationTime: "6-12 months"
+  },
+  {
+    id: "exam-cs-3",
+    title: "SSC JE",
+    description: "For Junior Engineer positions in various government departments.",
+    eligibility: ["Diploma/Degree in Engineering", "Age 18-32 years"],
+    streams: ["Science", "Computer Science"],
+    preparationTime: "6-9 months"
+  },
+  {
+    id: "exam-cs-4",
+    title: "GATE (Computer Science)",
+    description: "Graduate Aptitude Test in Engineering for higher education and PSU recruitment.",
+    eligibility: ["B.Tech/BE or in final year", "No age limit"],
+    streams: ["Science", "Computer Science"],
+    preparationTime: "8-12 months"
+  },
+  {
+    id: "exam-cs-5",
+    title: "NIELIT Scientific Assistant",
+    description: "For technical positions in National Institute of Electronics & Information Technology.",
+    eligibility: ["B.Tech/BCA/B.Sc in relevant discipline", "Age typically up to 30 years"],
+    streams: ["Science", "Computer Science"],
+    preparationTime: "4-6 months"
+  },
+  
+  {
+    id: "exam-bio-1",
+    title: "NEET",
+    description: "National Eligibility cum Entrance Test for medical and dental college admissions.",
+    eligibility: ["12th with Biology, Physics, Chemistry", "Age 17-25 years"],
+    streams: ["Science", "Biology"],
+    preparationTime: "1-2 years"
+  },
+  {
+    id: "exam-bio-2",
+    title: "AIIMS Entrance",
+    description: "For admission to undergraduate medical programs at AIIMS institutions.",
+    eligibility: ["12th with Biology, Physics, Chemistry", "Age 17-25 years"],
+    streams: ["Science", "Biology"],
+    preparationTime: "1-2 years"
+  },
+  {
+    id: "exam-bio-3",
+    title: "JIPMER",
+    description: "Entrance exam for Jawaharlal Institute of Postgraduate Medical Education & Research.",
+    eligibility: ["12th with Biology, Physics, Chemistry", "Age 17-25 years"],
+    streams: ["Science", "Biology"],
+    preparationTime: "1-2 years"
+  },
+  {
+    id: "exam-bio-4",
+    title: "ICAR AIEEA",
+    description: "All India Entrance Examination for Admission to agricultural universities.",
+    eligibility: ["12th with relevant subjects", "Age typically no specific limit"],
+    streams: ["Science", "Biology"],
+    preparationTime: "8-12 months"
+  },
+  {
+    id: "exam-bio-5",
+    title: "NIPER JEE",
+    description: "Joint Entrance Examination for National Institute of Pharmaceutical Education and Research.",
+    eligibility: ["B.Pharm or equivalent", "No specific age limit"],
+    streams: ["Science", "Biology"],
+    preparationTime: "6-9 months"
+  },
+  
+  {
+    id: "exam-com-1",
+    title: "CA Foundation",
+    description: "First level of Chartered Accountancy course by ICAI.",
+    eligibility: ["12th pass", "No specific age limit"],
+    streams: ["Commerce"],
+    preparationTime: "4-6 months"
+  },
+  {
+    id: "exam-com-2",
+    title: "CS Foundation",
+    description: "Entry-level exam for Company Secretary course by ICSI.",
+    eligibility: ["12th pass", "No specific age limit"],
+    streams: ["Commerce"],
+    preparationTime: "3-4 months"
+  },
+  {
+    id: "exam-com-3",
+    title: "CMA Foundation",
+    description: "First level of Cost and Management Accountancy course.",
+    eligibility: ["12th pass", "No specific age limit"],
+    streams: ["Commerce"],
+    preparationTime: "3-4 months"
+  },
+  {
+    id: "exam-com-4",
+    title: "CMAT",
+    description: "Common Management Admission Test for MBA admissions.",
+    eligibility: ["Graduate in any discipline", "No specific age limit"],
+    streams: ["Commerce", "Science", "Arts"],
+    preparationTime: "4-6 months"
+  },
+  {
+    id: "exam-com-5",
+    title: "ICAI Commerce Wizard",
+    description: "Quiz contest for commerce students by Institute of Chartered Accountants of India.",
+    eligibility: ["Commerce students in 11th/12th", "No specific age limit"],
+    streams: ["Commerce"],
+    preparationTime: "1-2 months"
+  }
 ];
 
 const mockColleges: College[] = [
@@ -323,6 +697,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [careers] = useState<Career[]>(mockCareers);
   const [courses] = useState<Course[]>(mockCourses);
   const [colleges] = useState<College[]>(mockColleges);
+  const [governmentExams] = useState<GovernmentExam[]>(mockGovernmentExams);
 
   const getCareersByStream = (stream: string) => {
     return careers.filter(career => 
@@ -356,6 +731,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
 
+  const getExamsByStream = (stream: string) => {
+    return governmentExams.filter(exam => 
+      exam.streams.includes(stream)
+    );
+  };
+
   const getTopColleges = (limit = 10) => {
     return [...colleges]
       .sort((a, b) => a.ranking - b.ranking)
@@ -383,11 +764,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const recommendedCourses = [...new Set([...streamCourses, ...interestCourses])].slice(0, 5);
     
     const recommendedColleges = getTopColleges(5);
+
+    const recommendedExams = getExamsByStream(stream).slice(0, 5);
     
     return {
       careers: recommendedCareers,
       courses: recommendedCourses,
       colleges: recommendedColleges,
+      exams: recommendedExams
     };
   };
 
@@ -397,10 +781,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         careers,
         courses,
         colleges,
+        governmentExams,
         getCareersByStream,
         getCareersByInterest,
         getCoursesByStream,
         getCoursesByInterest,
+        getExamsByStream,
         getTopColleges,
         getCollegesByCourse,
         getRecommendations

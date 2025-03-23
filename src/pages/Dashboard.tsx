@@ -6,7 +6,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Bell } from 'lucide-react';
+import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Bell, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -17,7 +17,7 @@ const Dashboard = () => {
   const stream = user?.stream || 'Science';
   const interests = user?.interests || [];
   
-  const { careers, courses, colleges } = getRecommendations(stream, interests);
+  const { careers, courses, colleges, exams } = getRecommendations(stream, interests);
   
   return (
     <MainLayout>
@@ -62,7 +62,7 @@ const Dashboard = () => {
           </section>
           
           {/* Stats Overview */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <GlassCard className="p-4 slide-up-animation" style={{animationDelay: '0.1s'}}>
               <div className="flex items-start justify-between">
                 <div>
@@ -82,7 +82,7 @@ const Dashboard = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Courses Available</p>
-                  <h3 className="text-2xl font-bold mt-1">15+</h3>
+                  <h3 className="text-2xl font-bold mt-1">50+</h3>
                 </div>
                 <div className="p-2 bg-indigo-100 rounded-lg">
                   <BookOpen className="h-5 w-5 text-indigo-600" />
@@ -94,6 +94,21 @@ const Dashboard = () => {
             </GlassCard>
             
             <GlassCard className="p-4 slide-up-animation" style={{animationDelay: '0.3s'}}>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Govt Exams</p>
+                  <h3 className="text-2xl font-bold mt-1">25+</h3>
+                </div>
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Award className="h-5 w-5 text-purple-600" />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Opportunities for 12th students
+              </p>
+            </GlassCard>
+            
+            <GlassCard className="p-4 slide-up-animation" style={{animationDelay: '0.4s'}}>
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Application Deadlines</p>
@@ -187,6 +202,43 @@ const Dashboard = () => {
               </div>
             </div>
             
+            {/* Government Exam Recommendations */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Government Exams</h3>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => navigate('/government-exams')}
+                  className="text-primary"
+                >
+                  View All
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {exams.slice(0, 3).map((exam) => (
+                  <GlassCard 
+                    key={exam.id} 
+                    className="p-4 hover:shadow-md transition-all cursor-pointer"
+                    onClick={() => navigate(`/government-exams/${exam.id}`)}
+                    variant="elevated"
+                  >
+                    <div className="space-y-2">
+                      <div className="p-2 w-fit rounded-lg bg-purple-100">
+                        <Award className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold">{exam.title}</h4>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {exam.description}
+                      </p>
+                    </div>
+                  </GlassCard>
+                ))}
+              </div>
+            </div>
+            
             {/* College Recommendations */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -260,6 +312,21 @@ const Dashboard = () => {
                     Loyola College has announced a new B.Sc Data Science program
                   </p>
                   <p className="text-xs text-muted-foreground">1 week ago</p>
+                </div>
+              </div>
+            </GlassCard>
+            
+            <GlassCard className="p-4 hover:shadow-md transition-all">
+              <div className="flex gap-4">
+                <div className="p-2 h-fit rounded-full bg-purple-100">
+                  <Bell className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-semibold">UPSC Notification Released</h4>
+                  <p className="text-sm text-muted-foreground">
+                    The UPSC Civil Services Exam notification for 2023 has been released
+                  </p>
+                  <p className="text-xs text-muted-foreground">3 days ago</p>
                 </div>
               </div>
             </GlassCard>

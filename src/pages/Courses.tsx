@@ -57,7 +57,7 @@ const Courses = () => {
                 />
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button 
                   variant={selectedStream === null ? "default" : "outline"}
                   onClick={() => setSelectedStream(null)}
@@ -65,10 +65,22 @@ const Courses = () => {
                   All
                 </Button>
                 <Button 
+                  variant={selectedStream === 'Computer Science' ? "default" : "outline"}
+                  onClick={() => setSelectedStream('Computer Science')}
+                >
+                  Computer Science
+                </Button>
+                <Button 
                   variant={selectedStream === 'Science' ? "default" : "outline"}
                   onClick={() => setSelectedStream('Science')}
                 >
                   Science
+                </Button>
+                <Button 
+                  variant={selectedStream === 'Biology' ? "default" : "outline"}
+                  onClick={() => setSelectedStream('Biology')}
+                >
+                  Biology
                 </Button>
                 <Button 
                   variant={selectedStream === 'Commerce' ? "default" : "outline"}
