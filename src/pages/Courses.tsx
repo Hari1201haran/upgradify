@@ -32,6 +32,9 @@ const Courses = () => {
     return college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       college.description.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  // Group courses by stream for the stream tabs
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science'];
   
   return (
     <MainLayout>
@@ -64,36 +67,15 @@ const Courses = () => {
                 >
                   All
                 </Button>
-                <Button 
-                  variant={selectedStream === 'Computer Science' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Computer Science')}
-                >
-                  Computer Science
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Science' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Science')}
-                >
-                  Science
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Biology' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Biology')}
-                >
-                  Biology
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Commerce' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Commerce')}
-                >
-                  Commerce
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Arts' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Arts')}
-                >
-                  Arts
-                </Button>
+                {streamOptions.map(stream => (
+                  <Button 
+                    key={stream}
+                    variant={selectedStream === stream ? "default" : "outline"}
+                    onClick={() => setSelectedStream(stream)}
+                  >
+                    {stream}
+                  </Button>
+                ))}
               </div>
             </div>
           </section>
@@ -120,7 +102,6 @@ const Courses = () => {
                     <CourseCard 
                       key={course.id} 
                       course={course} 
-                      onClick={() => navigate(`/courses/${course.id}`)}
                     />
                   ))}
                 </div>
@@ -142,7 +123,6 @@ const Courses = () => {
                     <CollegeCard 
                       key={college.id} 
                       college={college} 
-                      onClick={() => navigate(`/colleges/${college.id}`)}
                     />
                   ))}
                 </div>
@@ -157,14 +137,12 @@ const Courses = () => {
 
 interface CourseCardProps {
   course: Course;
-  onClick: () => void;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onClick }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   return (
     <GlassCard 
       className="p-5 hover:shadow-lg transition-all cursor-pointer scale-in-animation"
-      onClick={onClick}
       variant="elevated"
     >
       <div className="space-y-4">
@@ -207,14 +185,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onClick }) => {
 
 interface CollegeCardProps {
   college: College;
-  onClick: () => void;
 }
 
-const CollegeCard: React.FC<CollegeCardProps> = ({ college, onClick }) => {
+const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
   return (
     <GlassCard 
       className="p-5 hover:shadow-lg transition-all cursor-pointer scale-in-animation"
-      onClick={onClick}
       variant="elevated"
     >
       <div className="flex gap-4">
