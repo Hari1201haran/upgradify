@@ -1,815 +1,682 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-// Types
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  stream?: string;
-  interests?: string[];
-  avatar?: string;
-};
-
-export type Course = {
+export interface Course {
   id: string;
   title: string;
   description: string;
   duration: string;
   streams: string[];
-  requirements?: string[];
-  eligibility?: string[];
-};
+}
 
-export type College = {
+export interface College {
   id: string;
   name: string;
-  location: string;
   description: string;
+  location: string;
   ranking: number;
   courses: string[];
-  fees?: string;
-  admissionProcess?: string;
-  facilities?: string[];
-};
+}
 
-export type Career = {
+export interface Career {
   id: string;
   title: string;
   description: string;
-  streams: string[];
-  qualifications: string[];
   skills: string[];
-  salaryRange: string;
-  growthProspects: string;
-};
-
-export type GovernmentExam = {
-  id: string;
-  title: string;
-  description: string;
+  education: string[];
+  jobOutlook: string;
+  salary: string;
   streams: string[];
-  eligibility: string[];
-  preparationTime: string;
-  examPattern?: string;
-  syllabus?: string[];
-};
+  interests: string[]; // Added interests field
+}
 
-export type Notification = {
+export interface GovernmentExam {
   id: string;
   title: string;
   description: string;
-  date: string;
-  isRead: boolean;
-  type: 'deadline' | 'update' | 'reminder';
-};
+  eligibility: string;
+  streams: string[];
+  preparationTime: string;
+}
 
-// Context Type
-type DataContextType = {
+export interface NIRFRanking {
+  id: string;
+  name: string;
+  rank: number;
+  location: string;
+  category: string;
+  score: number;
+  description: string;
+}
+
+interface DataContextType {
   courses: Course[];
   colleges: College[];
   careers: Career[];
   governmentExams: GovernmentExam[];
-  notifications: Notification[];
-};
+  nirfRankings: NIRFRanking[];
+  getRecommendations: (stream: string | null) => {
+    recommendedCourses: Course[];
+    recommendedCareers: Career[];
+    recommendedExams: GovernmentExam[];
+  };
+}
 
-// Create Context
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// Context Provider
-export const DataProvider = ({ children }: { children: ReactNode }) => {
-  // Sample Courses Data
-  const courses: Course[] = [
-    // Computer Science Courses
+export const useData = (): DataContextType => {
+  const context = useContext(DataContext);
+  if (!context) {
+    throw new Error('useData must be used within a DataProvider');
+  }
+  return context;
+};
+
+export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Mock courses data
+  const [courses] = useState<Course[]>([
     {
-      id: 'cs-01',
-      title: 'Computer Science and Engineering (CSE)',
-      description: 'Covers algorithms, programming, and system design, preparing students for software development roles.',
+      id: '1',
+      title: 'B.Tech Computer Science and Engineering',
+      description: 'A comprehensive course covering algorithms, programming, and system design.',
       duration: '4 years',
       streams: ['Computer Science'],
     },
     {
-      id: 'cs-02',
-      title: 'Information Technology (IT)',
-      description: 'Focuses on software development, data management, and IT infrastructure.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-03',
-      title: 'Artificial Intelligence and Data Science',
-      description: 'Deals with AI technologies, machine learning, and data analysis for modern tech solutions.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-04',
-      title: 'B.Sc. Computer Science',
-      description: 'Covers programming, data structures, and computer fundamentals for IT careers.',
+      id: '2',
+      title: 'B.Sc Artificial Intelligence & Data Science',
+      description: 'Focuses on AI models, machine learning and data analytics.',
       duration: '3 years',
       streams: ['Computer Science'],
     },
     {
-      id: 'cs-05',
+      id: '3',
+      title: 'B.Tech Artificial Intelligence & Machine Learning',
+      description: 'Explores AI technologies, machine learning algorithms and neural networks.',
+      duration: '4 years',
+      streams: ['Computer Science'],
+    },
+    {
+      id: '4',
+      title: 'B.Tech Information Technology',
+      description: 'Focuses on software development, databases and network management.',
+      duration: '4 years',
+      streams: ['Computer Science'],
+    },
+    {
+      id: '5',
       title: 'BCA (Bachelor of Computer Applications)',
-      description: 'Covers software development and computer applications with practical focus.',
+      description: 'Covers software development, database management and IT solutions.',
       duration: '3 years',
       streams: ['Computer Science'],
     },
     {
-      id: 'cs-06',
-      title: 'Cyber Security',
-      description: 'Studies information security and protection against cyber threats.',
+      id: '6',
+      title: 'B.Tech Cyber Security',
+      description: 'Studies information security, ethical hacking and protection against cyber threats.',
       duration: '4 years',
       streams: ['Computer Science'],
     },
     {
-      id: 'cs-07',
-      title: 'Software Engineering',
-      description: 'Focuses on software development methodologies and project management.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-08',
-      title: 'Data Analytics Engineering',
-      description: 'Deals with big data, analytics, and data visualization techniques.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-09',
-      title: 'Cloud Computing',
-      description: 'Deals with cloud infrastructure, services, and data storage solutions.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-10',
-      title: 'Internet of Things (IoT) Engineering',
-      description: 'Focuses on connecting devices and smart systems development.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-11',
-      title: 'Blockchain Technology',
-      description: 'Studies secure distributed ledgers and cryptocurrency technologies.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    {
-      id: 'cs-12',
-      title: 'B.Tech in Quantum Computing',
-      description: 'Covers quantum mechanics and computational models for next-gen computing.',
-      duration: '4 years',
-      streams: ['Computer Science'],
-    },
-    
-    // Biology Courses
-    {
-      id: 'bio-01',
+      id: '7',
       title: 'MBBS (Bachelor of Medicine and Surgery)',
-      description: 'Professional degree for aspiring doctors and medical professionals.',
+      description: 'Comprehensive medical education to become a qualified doctor.',
       duration: '5.5 years',
       streams: ['Biology'],
     },
     {
-      id: 'bio-02',
+      id: '8',
       title: 'BDS (Bachelor of Dental Surgery)',
-      description: 'Professional degree for those interested in becoming dental surgeons.',
+      description: 'Training to become a qualified dental surgeon.',
       duration: '5 years',
       streams: ['Biology'],
     },
     {
-      id: 'bio-03',
+      id: '9',
       title: 'B.Pharm (Bachelor of Pharmacy)',
-      description: 'Prepares students for careers in pharmaceutical industries and research.',
+      description: 'Studies pharmaceutical sciences and drug development.',
       duration: '4 years',
       streams: ['Biology'],
     },
     {
-      id: 'bio-04',
-      title: 'B.Sc. Nursing',
-      description: 'Professional degree for nursing and healthcare professionals.',
+      id: '10',
+      title: 'B.Sc Nursing',
+      description: 'Training for nursing profession and healthcare services.',
       duration: '4 years',
       streams: ['Biology'],
     },
     {
-      id: 'bio-05',
-      title: 'BPT (Bachelor of Physiotherapy)',
-      description: 'Professional degree for careers in physical therapy and rehabilitation.',
-      duration: '4.5 years',
-      streams: ['Biology'],
-    },
-    {
-      id: 'bio-06',
-      title: 'B.Sc. Biotechnology',
-      description: 'Focuses on biotechnology research, genetic engineering, and applications.',
-      duration: '3 years',
-      streams: ['Biology'],
-    },
-    {
-      id: 'bio-07',
-      title: 'B.Sc. Microbiology',
-      description: 'Studies microorganisms and their applications in medicine and industry.',
-      duration: '3 years',
-      streams: ['Biology'],
-    },
-    {
-      id: 'bio-08',
-      title: 'B.Sc. Biochemistry',
-      description: 'Covers molecular biology and biochemical processes for research careers.',
-      duration: '3 years',
-      streams: ['Biology'],
-    },
-    {
-      id: 'bio-09',
-      title: 'B.Tech Biomedical Engineering',
-      description: 'Combines engineering with medical science for designing healthcare technologies.',
+      id: '11',
+      title: 'B.Tech Biotechnology',
+      description: 'Combines biology with engineering principles for biological applications.',
       duration: '4 years',
       streams: ['Biology'],
     },
     {
-      id: 'bio-10',
-      title: 'B.Sc. Nutrition and Dietetics',
-      description: 'For careers in dietetics, nutrition consultancy, and healthcare.',
+      id: '12',
+      title: 'B.Sc Microbiology',
+      description: 'Studies microorganisms and their applications in various fields.',
       duration: '3 years',
       streams: ['Biology'],
     },
     {
-      id: 'bio-11',
-      title: 'B.Sc. Forensic Science',
-      description: 'For careers in forensic investigation, criminology, and legal medicine.',
-      duration: '3 years',
-      streams: ['Biology'],
-    },
-    {
-      id: 'bio-12',
-      title: 'B.Sc. Public Health',
-      description: 'For careers in public health management, epidemiology, and healthcare policy.',
-      duration: '3 years',
-      streams: ['Biology'],
-    },
-    
-    // Commerce Courses
-    {
-      id: 'com-01',
+      id: '13',
       title: 'B.Com (Bachelor of Commerce)',
-      description: 'For careers in accounting, finance, and general business management.',
+      description: 'Studies accounting, finance, business management and economics.',
       duration: '3 years',
       streams: ['Commerce'],
     },
     {
-      id: 'com-02',
-      title: 'B.Com Accounting and Finance',
-      description: 'Specializes in financial accounting, taxation, and corporate finance.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-03',
-      title: 'B.Com Banking and Insurance',
-      description: 'For careers in banking, finance, and insurance sectors.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-04',
+      id: '14',
       title: 'BBA (Bachelor of Business Administration)',
-      description: 'For business management, administration, and entrepreneurship roles.',
+      description: 'Focuses on business management, leadership and entrepreneurship.',
       duration: '3 years',
       streams: ['Commerce'],
     },
     {
-      id: 'com-05',
+      id: '15',
+      title: 'B.Com Accounting and Finance',
+      description: 'Specializes in financial accounting, taxation and corporate finance.',
+      duration: '3 years',
+      streams: ['Commerce'],
+    },
+    {
+      id: '16',
+      title: 'B.Com Banking and Insurance',
+      description: 'Studies banking operations, financial markets and insurance principles.',
+      duration: '3 years',
+      streams: ['Commerce'],
+    },
+    {
+      id: '17',
       title: 'BBA Finance',
-      description: 'Specializes in finance, investment management, and financial analysis.',
+      description: 'Specializes in financial management, investment analysis and banking.',
       duration: '3 years',
       streams: ['Commerce'],
     },
     {
-      id: 'com-06',
-      title: 'BBA Marketing',
-      description: 'For marketing, sales, brand management, and advertising roles.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-07',
-      title: 'CA (Chartered Accountancy)',
+      id: '18',
+      title: 'Chartered Accountancy (CA)',
       description: 'Professional course for becoming a certified chartered accountant.',
       duration: '3-5 years',
       streams: ['Commerce'],
     },
     {
-      id: 'com-08',
-      title: 'CMA (Cost and Management Accountancy)',
-      description: 'For careers in cost management, financial analysis, and auditing.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-09',
-      title: 'B.Com E-Commerce',
-      description: 'For careers in online business, e-commerce platforms, and digital trade.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-10',
-      title: 'B.Com Business Analytics',
-      description: 'For data-driven decision-making, business intelligence, and analysis.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-11',
-      title: 'B.Com International Business',
-      description: 'For careers in international trade, global business, and export-import.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    {
-      id: 'com-12',
-      title: 'B.Com Investment Analysis',
-      description: 'For careers in stock market, investment banking, and portfolio management.',
-      duration: '3 years',
-      streams: ['Commerce'],
-    },
-    
-    // Arts Courses
-    {
-      id: 'art-01',
+      id: '19',
       title: 'BA English Literature',
-      description: 'Explores classic and contemporary literary works and critical analysis.',
+      description: 'Studies classic and contemporary literary works and critical analysis.',
       duration: '3 years',
       streams: ['Arts'],
     },
     {
-      id: 'art-02',
-      title: 'BA Journalism & Mass Communication',
-      description: 'Deals with media practices, journalism, and communication techniques.',
+      id: '20',
+      title: 'BA History',
+      description: 'Explores historical events, cultural evolution and archaeological studies.',
       duration: '3 years',
       streams: ['Arts'],
     },
     {
-      id: 'art-03',
+      id: '21',
       title: 'BA Economics',
-      description: 'Covers economic theories, policy analysis, and financial systems.',
+      description: 'Studies economic theories, policy analysis and financial systems.',
       duration: '3 years',
-      streams: ['Arts'],
+      streams: ['Arts', 'Commerce'],
     },
     {
-      id: 'art-04',
+      id: '22',
       title: 'BA Psychology',
-      description: 'Studies human behavior, mental processes, and psychological theories.',
+      description: 'Explores human behavior, mental processes and psychological theories.',
       duration: '3 years',
-      streams: ['Arts'],
+      streams: ['Arts', 'Science'],
     },
     {
-      id: 'art-05',
-      title: 'BA Sociology',
-      description: 'Focuses on human societies, social structures, and community dynamics.',
-      duration: '3 years',
-      streams: ['Arts'],
-    },
-    {
-      id: 'art-06',
-      title: 'BA Political Science',
-      description: 'Studies government systems, political ideologies, and public policy.',
-      duration: '3 years',
-      streams: ['Arts'],
-    },
-    
-    // Science Stream (General)
-    {
-      id: 'sci-01',
-      title: 'B.Sc. Mathematics',
-      description: 'Covers algebra, calculus, statistics for analytical and research roles.',
+      id: '23',
+      title: 'B.Sc Mathematics',
+      description: 'Studies pure and applied mathematics, algebra and calculus.',
       duration: '3 years',
       streams: ['Science'],
     },
     {
-      id: 'sci-02',
-      title: 'B.Sc. Physics',
-      description: 'Focuses on classical and modern physics principles and applications.',
+      id: '24',
+      title: 'B.Sc Physics',
+      description: 'Explores classical and modern physics principles and their applications.',
       duration: '3 years',
       streams: ['Science'],
     },
     {
-      id: 'sci-03',
-      title: 'B.Sc. Chemistry',
-      description: 'Studies chemical processes, reactions, and laboratory techniques.',
+      id: '25',
+      title: 'B.Sc Chemistry',
+      description: 'Studies chemical processes, reactions and material properties.',
       duration: '3 years',
       streams: ['Science'],
     },
     {
-      id: 'sci-04',
-      title: 'B.Sc. Electronics',
-      description: 'Covers electronic devices, circuits, and communication systems.',
+      id: '26',
+      title: 'B.Sc Electronics',
+      description: 'Focuses on electronic devices, circuits and communication systems.',
       duration: '3 years',
       streams: ['Science'],
+    },
+    // Additional courses for each stream
+    // Computer Science
+    {
+      id: '27',
+      title: 'B.Tech Electronics and Communication',
+      description: 'Studies electronic devices, signals and communication networks.',
+      duration: '4 years',
+      streams: ['Computer Science', 'Science'],
     },
     {
-      id: 'sci-05',
-      title: 'B.Sc. Statistics',
-      description: 'Deals with data analysis, statistical modeling, and probability theory.',
-      duration: '3 years',
-      streams: ['Science'],
+      id: '28',
+      title: 'B.Tech Software Engineering',
+      description: 'Focuses on software development methodologies and project management.',
+      duration: '4 years',
+      streams: ['Computer Science'],
     },
-  ];
+    {
+      id: '29',
+      title: 'B.Sc Computer Science',
+      description: 'Studies programming, data structures and operating systems.',
+      duration: '3 years',
+      streams: ['Computer Science'],
+    },
+    {
+      id: '30',
+      title: 'B.Tech IoT (Internet of Things)',
+      description: 'Focuses on connected devices, sensors and data management.',
+      duration: '4 years',
+      streams: ['Computer Science'],
+    },
+    // Biology
+    {
+      id: '31',
+      title: 'BPT (Bachelor of Physiotherapy)',
+      description: 'Training for physical therapy and rehabilitation services.',
+      duration: '4.5 years',
+      streams: ['Biology'],
+    },
+    {
+      id: '32',
+      title: 'B.Sc Genetics',
+      description: 'Studies inheritance, genetic disorders and DNA research.',
+      duration: '3 years',
+      streams: ['Biology'],
+    },
+    {
+      id: '33',
+      title: 'B.Sc Biochemistry',
+      description: 'Explores biochemical processes and molecular biology.',
+      duration: '3 years',
+      streams: ['Biology'],
+    },
+    {
+      id: '34',
+      title: 'B.Sc Food Technology',
+      description: 'Studies food processing, preservation and quality control.',
+      duration: '3 years',
+      streams: ['Biology'],
+    },
+    // Commerce
+    {
+      id: '35',
+      title: 'Company Secretary (CS)',
+      description: 'Professional course for corporate governance and compliance.',
+      duration: '3-4 years',
+      streams: ['Commerce'],
+    },
+    {
+      id: '36',
+      title: 'Cost and Management Accountancy (CMA)',
+      description: 'Professional course for cost management and financial analysis.',
+      duration: '3-4 years',
+      streams: ['Commerce'],
+    },
+    {
+      id: '37',
+      title: 'B.Com Computer Applications',
+      description: 'Combines commerce with computer technology and applications.',
+      duration: '3 years',
+      streams: ['Commerce', 'Computer Science'],
+    },
+    {
+      id: '38',
+      title: 'BBA Marketing',
+      description: 'Specializes in marketing strategies, brand management and consumer behavior.',
+      duration: '3 years',
+      streams: ['Commerce'],
+    },
+  ]);
 
-  // Sample Colleges Data
-  const colleges: College[] = [
+  // Mock colleges data
+  const [colleges] = useState<College[]>([
     {
-      id: '1',
+      id: 'college-1',
       name: 'Anna University',
-      location: 'Chennai, Tamil Nadu',
-      description: 'One of the premier technical universities in India known for engineering and technology education.',
+      description: 'A premier technical university in Tamil Nadu, offering various engineering courses.',
+      location: 'Chennai',
       ranking: 1,
-      courses: ['Computer Science Engineering', 'Electronics Engineering', 'Mechanical Engineering'],
-      facilities: ['Modern Labs', 'Large Library', 'Sports Complex']
+      courses: ['B.Tech Computer Science', 'B.Tech Information Technology', 'B.Tech Electronics'],
     },
     {
-      id: '2',
+      id: 'college-2',
       name: 'Loyola College',
-      location: 'Chennai, Tamil Nadu',
-      description: 'A prestigious autonomous college known for arts, science, and commerce programs.',
+      description: 'A renowned arts and science college known for its academic excellence.',
+      location: 'Chennai',
       ranking: 2,
-      courses: ['B.Sc. Computer Science', 'B.Com', 'B.A. English'],
-      facilities: ['Research Centers', 'Auditorium', 'Placement Cell']
+      courses: ['B.Sc Computer Science', 'B.Com', 'B.A Economics'],
     },
     {
-      id: '3',
-      name: 'Madras Christian College',
-      location: 'Chennai, Tamil Nadu',
-      description: 'Historic institution offering quality education in arts, science, and commerce.',
-      ranking: 3,
-      courses: ['B.Sc. Physics', 'B.A. History', 'B.Com Corporate Secretaryship'],
-      facilities: ['130-acre campus', 'Heritage Buildings', 'Research Facilities']
-    },
-    {
-      id: '4',
-      name: 'SRM Institute of Science and Technology',
-      location: 'Chennai, Tamil Nadu',
-      description: 'Prominent private university known for technical and medical education.',
-      ranking: 4,
-      courses: ['Computer Science Engineering', 'Biotechnology', 'MBBS'],
-      facilities: ['Modern Infrastructure', 'International Collaborations', 'Incubation Center']
-    },
-    {
-      id: '5',
+      id: 'college-3',
       name: 'Madras Medical College',
-      location: 'Chennai, Tamil Nadu',
-      description: 'One of the oldest medical colleges in India with excellent clinical training.',
-      ranking: 5,
+      description: 'One of the oldest medical institutions in India with state-of-the-art facilities.',
+      location: 'Chennai',
+      ranking: 3,
       courses: ['MBBS', 'BDS', 'B.Pharm'],
-      facilities: ['Advanced Labs', 'Hospital Attached', 'Research Programs']
     },
-    {
-      id: '6',
-      name: 'Presidency College',
-      location: 'Chennai, Tamil Nadu',
-      description: 'Historic institution offering programs in arts, science, and commerce.',
-      ranking: 6,
-      courses: ['B.Sc. Mathematics', 'B.A. Economics', 'B.Sc. Chemistry'],
-      facilities: ['Historical Campus', 'Research Labs', 'Library']
-    },
-    {
-      id: '7',
-      name: 'Stella Maris College',
-      location: 'Chennai, Tamil Nadu',
-      description: 'Premier women\'s college offering various undergraduate and postgraduate programs.',
-      ranking: 7,
-      courses: ['B.Com', 'B.A. Sociology', 'B.Sc. Zoology'],
-      facilities: ['Modern Classrooms', 'Auditorium', 'Sports Facilities']
-    },
-    {
-      id: '8',
-      name: 'Vellore Institute of Technology (VIT) Chennai',
-      location: 'Chennai, Tamil Nadu',
-      description: 'Campus of the renowned VIT, known for technical and management education.',
-      ranking: 8,
-      courses: ['Computer Science Engineering', 'Electronics Engineering', 'Business Administration'],
-      facilities: ['Modern Labs', 'International Collaborations', 'Industry Connections']
-    },
-  ];
+  ]);
 
-  // Sample Careers Data
-  const careers: Career[] = [
+  // Mock careers data
+  const [careers] = useState<Career[]>([
     {
       id: '1',
       title: 'Software Developer',
-      description: 'Develop and maintain software applications using various programming languages and frameworks.',
+      description: 'Designs, builds, and maintains software applications and systems.',
+      skills: ['Programming', 'Problem Solving', 'Software Design'],
+      education: ['B.Tech CSE', 'B.Sc Computer Science', 'BCA'],
+      jobOutlook: 'Excellent',
+      salary: '₹5-25 LPA',
       streams: ['Computer Science'],
-      qualifications: ['B.Tech/B.E in CSE/IT', 'BCA', 'B.Sc. Computer Science'],
-      skills: ['Coding', 'Problem Solving', 'Algorithms'],
-      salaryRange: '₹4-40 LPA',
-      growthProspects: 'Excellent growth with opportunities for technical and managerial roles'
+      interests: ['Coding', 'Logic', 'Technology']
     },
     {
       id: '2',
       title: 'Data Scientist',
-      description: 'Analyze and interpret complex data to help companies make better decisions.',
-      streams: ['Computer Science', 'Science', 'Commerce'],
-      qualifications: ['B.Tech in CSE/AI', 'B.Sc. Statistics/Mathematics'],
-      skills: ['Statistics', 'Programming', 'Machine Learning'],
-      salaryRange: '₹5-25 LPA',
-      growthProspects: 'High demand with opportunities in various industries'
+      description: 'Analyzes and interprets complex data to help organizations make better decisions.',
+      skills: ['Statistics', 'Machine Learning', 'Programming', 'Data Visualization'],
+      education: ['B.Tech CSE with AI/ML', 'B.Sc Statistics', 'B.Sc Mathematics'],
+      jobOutlook: 'Excellent',
+      salary: '₹8-30 LPA',
+      streams: ['Computer Science', 'Science'],
+      interests: ['Data Analysis', 'Mathematics', 'Research']
     },
     {
       id: '3',
-      title: 'Doctor/Physician',
-      description: 'Diagnose and treat illnesses and injuries in various medical settings.',
+      title: 'Physician',
+      description: 'Diagnoses and treats injuries and illnesses in patients.',
+      skills: ['Clinical Assessment', 'Decision Making', 'Communication'],
+      education: ['MBBS', 'MD'],
+      jobOutlook: 'Good',
+      salary: '₹10-40 LPA',
       streams: ['Biology'],
-      qualifications: ['MBBS', 'MD/MS'],
-      skills: ['Clinical Knowledge', 'Empathy', 'Communication'],
-      salaryRange: '₹6-60 LPA',
-      growthProspects: 'Specialization opportunities with high social impact'
+      interests: ['Healthcare', 'Science', 'Helping Others']
     },
     {
       id: '4',
       title: 'Chartered Accountant',
-      description: 'Provide financial advice, auditing, and accounting services to businesses and individuals.',
+      description: 'Provides financial advice, auditing services, and tax planning for clients.',
+      skills: ['Financial Analysis', 'Accounting', 'Taxation Knowledge'],
+      education: ['B.Com', 'CA'],
+      jobOutlook: 'Good',
+      salary: '₹7-30 LPA',
       streams: ['Commerce'],
-      qualifications: ['B.Com', 'CA'],
-      skills: ['Financial Analysis', 'Taxation', 'Auditing'],
-      salaryRange: '₹7-30 LPA',
-      growthProspects: 'Established career path with opportunities in corporate and private practice'
+      interests: ['Finance', 'Mathematics', 'Analysis']
     },
     {
       id: '5',
-      title: 'AI Engineer',
-      description: 'Develop and implement AI models and solutions for various applications.',
-      streams: ['Computer Science'],
-      qualifications: ['B.Tech/B.E in CSE/AI', 'B.Sc. Computer Science'],
-      skills: ['Machine Learning', 'Programming', 'Algorithm Design'],
-      salaryRange: '₹6-40 LPA',
-      growthProspects: 'Rapidly growing field with excellent future prospects'
+      title: 'Digital Marketing Specialist',
+      description: 'Develops and implements marketing strategies across digital platforms.',
+      skills: ['Content Creation', 'SEO', 'Social Media Management', 'Analytics'],
+      education: ['BBA Marketing', 'B.Com', 'BA Mass Communication'],
+      jobOutlook: 'Good',
+      salary: '₹4-15 LPA',
+      streams: ['Commerce', 'Arts'],
+      interests: ['Marketing', 'Creativity', 'Social Media']
     },
     {
       id: '6',
-      title: 'Pharmacist',
-      description: 'Dispense medications and provide advice on their safe use.',
+      title: 'Biotechnologist',
+      description: 'Researches and develops new products using biological systems and organisms.',
+      skills: ['Lab Techniques', 'Research', 'Analytical Thinking'],
+      education: ['B.Tech Biotechnology', 'B.Sc Microbiology', 'B.Sc Biochemistry'],
+      jobOutlook: 'Moderate',
+      salary: '₹4-15 LPA',
       streams: ['Biology'],
-      qualifications: ['B.Pharm', 'Pharm.D'],
-      skills: ['Pharmaceutical Knowledge', 'Patient Counseling', 'Attention to Detail'],
-      salaryRange: '₹3-10 LPA',
-      growthProspects: 'Opportunities in hospitals, retail, and pharmaceutical industry'
+      interests: ['Laboratory Work', 'Research', 'Biology']
     },
-    {
-      id: '7',
-      title: 'Financial Analyst',
-      description: 'Analyze financial data and provide investment advice and recommendations.',
-      streams: ['Commerce'],
-      qualifications: ['B.Com', 'BBA Finance', 'MBA Finance'],
-      skills: ['Financial Modeling', 'Analysis', 'Market Knowledge'],
-      salaryRange: '₹4-20 LPA',
-      growthProspects: 'Growth opportunities in banking, investment firms, and corporations'
-    },
-    {
-      id: '8',
-      title: 'Clinical Psychologist',
-      description: 'Assess and treat mental, emotional, and behavioral disorders.',
-      streams: ['Arts', 'Biology'],
-      qualifications: ['BA Psychology', 'M.Phil/Ph.D. Clinical Psychology'],
-      skills: ['Empathy', 'Assessment', 'Therapy Techniques'],
-      salaryRange: '₹3-15 LPA',
-      growthProspects: 'Growing field with increasing awareness of mental health'
-    },
-    {
-      id: '9',
-      title: 'Civil Services Officer',
-      description: 'Work in various administrative positions in government departments.',
-      streams: ['Arts', 'Science', 'Commerce', 'Computer Science', 'Biology'],
-      qualifications: ['Any Bachelor\'s Degree', 'UPSC Civil Services Examination'],
-      skills: ['Administration', 'Decision Making', 'Public Service'],
-      salaryRange: '₹6-15 LPA',
-      growthProspects: 'Prestigious career with significant social impact'
-    },
-    {
-      id: '10',
-      title: 'Teacher/Professor',
-      description: 'Educate students at various levels from school to university.',
-      streams: ['Arts', 'Science', 'Commerce', 'Computer Science', 'Biology'],
-      qualifications: ['Bachelor\'s Degree in relevant subject', 'B.Ed/M.Ed/Ph.D.'],
-      skills: ['Communication', 'Subject Knowledge', 'Patience'],
-      salaryRange: '₹3-15 LPA',
-      growthProspects: 'Stable career with opportunities in various educational institutions'
-    },
-  ];
+  ]);
 
-  // Sample Government Exams Data
-  const governmentExams: GovernmentExam[] = [
+  // Mock government exams data
+  const [governmentExams] = useState<GovernmentExam[]>([
     {
-      id: 'exam-01',
+      id: 'exam-1',
       title: 'UPSC Civil Services Exam',
-      description: 'For IAS, IPS, IFS, and other prestigious civil services positions in the government.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree in any discipline',
-        'Age between 21-32 years (with relaxations)'
-      ],
-      preparationTime: '1-2 years',
-      examPattern: 'Preliminary, Mains, and Interview stages'
+      description: 'Prestigious exam for IAS, IPS, IFS and other administrative services.',
+      eligibility: 'Bachelor\'s degree in any discipline',
+      streams: ['Arts', 'Science', 'Commerce', 'Computer Science', 'Biology'],
+      preparationTime: '1-2 years'
     },
     {
-      id: 'exam-02',
+      id: 'exam-2',
+      title: 'IBPS PO (Probationary Officer)',
+      description: 'For officer positions in public sector banks.',
+      eligibility: 'Bachelor\'s degree in any discipline',
+      streams: ['Arts', 'Science', 'Commerce', 'Computer Science', 'Biology'],
+      preparationTime: '6-8 months'
+    },
+    {
+      id: 'exam-3',
       title: 'SSC CGL (Combined Graduate Level)',
       description: 'For various government positions in central ministries and departments.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree in any discipline',
-        'Age between 18-32 years (with relaxations)'
-      ],
-      preparationTime: '6-12 months',
-      examPattern: 'Tier I, II, III, and Document Verification'
+      eligibility: 'Bachelor\'s degree in any discipline',
+      streams: ['Arts', 'Science', 'Commerce', 'Computer Science', 'Biology'],
+      preparationTime: '6-8 months'
     },
     {
-      id: 'exam-03',
-      title: 'IBPS PO (Probationary Officer)',
-      description: 'For officer positions in various public sector banks in India.',
-      streams: ['Commerce', 'Computer Science', 'Science', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree in any discipline',
-        'Age between 20-30 years (with relaxations)'
-      ],
-      preparationTime: '4-8 months',
-      examPattern: 'Preliminary, Mains, and Interview stages'
-    },
-    {
-      id: 'exam-04',
-      title: 'SBI PO (State Bank of India PO)',
-      description: 'For probationary officer positions in State Bank of India.',
-      streams: ['Commerce', 'Computer Science', 'Science', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree in any discipline',
-        'Age between 21-30 years (with relaxations)'
-      ],
-      preparationTime: '6-10 months',
-      examPattern: 'Preliminary, Mains, Group Exercise, and Interview'
-    },
-    {
-      id: 'exam-05',
-      title: 'RRB NTPC (Railway Recruitment Board)',
-      description: 'For non-technical positions in Indian Railways.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree in any discipline',
-        'Age between 18-30 years (with relaxations)'
-      ],
-      preparationTime: '3-6 months',
-      examPattern: 'Computer-Based Test (CBT), Skill Test, and Document Verification'
-    },
-    {
-      id: 'exam-06',
+      id: 'exam-4',
       title: 'NEET (National Eligibility cum Entrance Test)',
-      description: 'For admission into medical and dental colleges in India.',
+      description: 'For admission to medical colleges across India.',
+      eligibility: '12th with Physics, Chemistry, Biology',
       streams: ['Biology'],
-      eligibility: [
-        '12th with Physics, Chemistry, and Biology',
-        'Minimum 50% aggregate in PCB'
-      ],
-      preparationTime: '1-2 years',
-      examPattern: 'Single stage national-level examination'
+      preparationTime: '1-2 years'
     },
     {
-      id: 'exam-07',
+      id: 'exam-5',
       title: 'JEE Main & Advanced',
-      description: 'For admission into IITs, NITs, and other engineering colleges in India.',
+      description: 'For admission to IITs, NITs and other engineering colleges.',
+      eligibility: '12th with Physics, Chemistry, Mathematics',
       streams: ['Computer Science', 'Science'],
-      eligibility: [
-        '12th with Physics, Chemistry, and Mathematics',
-        'Age restrictions apply'
-      ],
-      preparationTime: '1-2 years',
-      examPattern: 'JEE Main followed by JEE Advanced for IITs'
+      preparationTime: '1-2 years'
     },
     {
-      id: 'exam-08',
-      title: 'NDA (National Defence Academy)',
-      description: 'For joining the Indian Army, Navy, and Air Force after 12th.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        '12th pass (Science stream for technical branches)',
-        'Age between 16.5-19.5 years'
-      ],
-      preparationTime: '6-12 months',
-      examPattern: 'Written exam followed by SSB Interview'
+      id: 'exam-6',
+      title: 'TNPSC Group 1',
+      description: 'For administrative roles in Tamil Nadu government.',
+      eligibility: 'Bachelor\'s degree in any discipline',
+      streams: ['Arts', 'Science', 'Commerce', 'Computer Science', 'Biology'],
+      preparationTime: '8-12 months'
     },
     {
-      id: 'exam-09',
-      title: 'CLAT (Common Law Admission Test)',
-      description: 'For admission into National Law Universities for law programs.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        '12th with minimum 45-50% marks',
-        'Age restrictions may apply'
-      ],
-      preparationTime: '6-12 months',
-      examPattern: 'Single stage national-level examination'
+      id: 'exam-7',
+      title: 'RBI Grade B Officer',
+      description: 'For officer-level roles in the Reserve Bank of India.',
+      eligibility: 'Bachelor\'s degree in any discipline',
+      streams: ['Commerce', 'Economics'],
+      preparationTime: '6-10 months'
+    },
+    {
+      id: 'exam-8',
+      title: 'GATE (Graduate Aptitude Test in Engineering)',
+      description: 'For admission to M.Tech programs and PSU recruitment.',
+      eligibility: 'Engineering degree or final year',
+      streams: ['Computer Science', 'Science'],
+      preparationTime: '6-12 months'
+    },
+    {
+      id: 'exam-9',
+      title: 'CA Foundation',
+      description: 'First level exam for Chartered Accountancy course.',
+      eligibility: '12th pass',
+      streams: ['Commerce'],
+      preparationTime: '4-6 months'
     },
     {
       id: 'exam-10',
-      title: 'CAT (Common Admission Test)',
-      description: 'For admission into IIMs and other top MBA colleges in India.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree with minimum 50% marks',
-        'Final year students can also apply'
-      ],
-      preparationTime: '6-12 months',
-      examPattern: 'Computer-Based Test with multiple sections'
+      title: 'CLAT (Common Law Admission Test)',
+      description: 'For admission to National Law Universities.',
+      eligibility: '12th pass with minimum 45% marks',
+      streams: ['Arts', 'Commerce', 'Science'],
+      preparationTime: '6-8 months'
     },
-    {
-      id: 'exam-11',
-      title: 'TNPSC Group 1, 2, 4',
-      description: 'For various administrative roles in Tamil Nadu government.',
-      streams: ['Computer Science', 'Science', 'Commerce', 'Arts', 'Biology'],
-      eligibility: [
-        'Bachelor\'s degree for higher groups',
-        '10th/12th for Group 4',
-        'Age restrictions apply'
-      ],
-      preparationTime: '6-12 months',
-      examPattern: 'Preliminary and Main examination'
-    },
-    {
-      id: 'exam-12',
-      title: 'UPSC Engineering Services Exam',
-      description: 'For engineering posts in various government departments.',
-      streams: ['Computer Science', 'Science'],
-      eligibility: [
-        'Engineering degree in relevant discipline',
-        'Age between 21-30 years (with relaxations)'
-      ],
-      preparationTime: '8-12 months',
-      examPattern: 'Preliminary, Mains, and Interview stages'
-    }
-  ];
+  ]);
 
-  // Sample Notifications Data
-  const notifications: Notification[] = [
+  // Mock NIRF rankings data
+  const [nirfRankings] = useState<NIRFRanking[]>([
     {
-      id: '1',
-      title: 'NEET Registration Open',
-      description: 'The registration for NEET 2023 is now open. Last date is March 30, 2023.',
-      date: '2023-03-01',
-      isRead: false,
-      type: 'deadline'
+      id: 'nirf-1',
+      name: 'Indian Institute of Technology Madras',
+      rank: 1,
+      location: 'Chennai',
+      category: 'Engineering',
+      score: 89.93,
+      description: 'Premier institute for engineering education and research, known for excellence in technical education.'
     },
     {
-      id: '2',
-      title: 'New Course Added',
-      description: 'B.Tech in Artificial Intelligence and Robotics now available at Anna University.',
-      date: '2023-02-25',
-      isRead: true,
-      type: 'update'
+      id: 'nirf-2',
+      name: 'Anna University',
+      rank: 8,
+      location: 'Chennai',
+      category: 'Engineering',
+      score: 77.8,
+      description: 'Leading technical university in Tamil Nadu offering various engineering and technical programs.'
     },
     {
-      id: '3',
-      title: 'Career Seminar',
-      description: 'Join our career guidance seminar on "Future of Technology" this weekend.',
-      date: '2023-03-10',
-      isRead: false,
-      type: 'reminder'
+      id: 'nirf-3',
+      name: 'Madras Medical College',
+      rank: 5,
+      location: 'Chennai',
+      category: 'Medical',
+      score: 82.1,
+      description: 'One of the oldest medical institutions in India with excellent clinical training.'
     },
     {
-      id: '4',
-      title: 'JEE Main Registration',
-      description: 'Registration for JEE Main April session closes next week.',
-      date: '2023-03-05',
-      isRead: false,
-      type: 'deadline'
+      id: 'nirf-4',
+      name: 'Loyola College',
+      rank: 3,
+      location: 'Chennai',
+      category: 'Arts & Science',
+      score: 85.2,
+      description: 'Renowned for academic excellence in arts, science, and commerce streams.'
     },
     {
-      id: '5',
-      title: 'Updated College Rankings',
-      description: 'The new NIRF rankings for colleges in Tamil Nadu are now available.',
-      date: '2023-02-28',
-      isRead: true,
-      type: 'update'
-    }
-  ];
+      id: 'nirf-5',
+      name: 'Presidency College',
+      rank: 9,
+      location: 'Chennai',
+      category: 'Arts & Science',
+      score: 74.5,
+      description: 'Historic institution known for quality education in arts and science disciplines.'
+    },
+    {
+      id: 'nirf-6',
+      name: 'SRM Institute of Science and Technology',
+      rank: 12,
+      location: 'Chennai',
+      category: 'Engineering',
+      score: 68.7,
+      description: 'Private university offering diverse programs in engineering and technology.'
+    },
+    {
+      id: 'nirf-7',
+      name: 'Vellore Institute of Technology Chennai',
+      rank: 15,
+      location: 'Chennai',
+      category: 'Engineering',
+      score: 65.8,
+      description: 'Modern campus with strong focus on engineering education and industry connections.'
+    },
+    {
+      id: 'nirf-8',
+      name: 'Madras School of Economics',
+      rank: 6,
+      location: 'Chennai',
+      category: 'Management',
+      score: 78.9,
+      description: 'Specialized institution focusing on economics, finance, and management studies.'
+    },
+    {
+      id: 'nirf-9',
+      name: 'Stanley Medical College',
+      rank: 18,
+      location: 'Chennai',
+      category: 'Medical',
+      score: 62.4,
+      description: 'Well-established medical college offering comprehensive clinical education.'
+    },
+    {
+      id: 'nirf-10',
+      name: 'Women\'s Christian College',
+      rank: 24,
+      location: 'Chennai',
+      category: 'Arts & Science',
+      score: 58.6,
+      description: 'Women\'s college known for quality education in various disciplines.'
+    },
+    {
+      id: 'nirf-11',
+      name: 'Chennai Mathematical Institute',
+      rank: 2,
+      location: 'Chennai',
+      category: 'Mathematics',
+      score: 87.5,
+      description: 'Research and educational institution focusing on mathematical sciences.'
+    },
+    {
+      id: 'nirf-12',
+      name: 'New College',
+      rank: 29,
+      location: 'Chennai',
+      category: 'Arts & Science',
+      score: 55.3,
+      description: 'Historic institution offering diverse programs in arts and sciences.'
+    },
+  ]);
 
-  const value = {
-    courses,
-    colleges,
-    careers,
-    governmentExams,
-    notifications
+  // Function to get recommendations based on user's stream
+  const getRecommendations = (stream: string | null) => {
+    // Filter courses based on user's stream
+    const recommendedCourses = courses.filter(course => 
+      stream ? course.streams.includes(stream) : true
+    ).slice(0, 4);
+    
+    // Filter careers based on user's stream
+    const recommendedCareers = careers.filter(career => 
+      stream ? career.streams.includes(stream) : true
+    ).slice(0, 3);
+    
+    // Filter exams based on user's stream
+    const recommendedExams = governmentExams.filter(exam => 
+      stream ? exam.streams.includes(stream) : true
+    ).slice(0, 3);
+    
+    return {
+      recommendedCourses,
+      recommendedCareers,
+      recommendedExams
+    };
   };
 
-  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
-};
-
-// Custom Hook
-export const useData = () => {
-  const context = useContext(DataContext);
-  if (context === undefined) {
-    throw new Error('useData must be used within a DataProvider');
-  }
-  return context;
+  return (
+    <DataContext.Provider 
+      value={{ 
+        courses, 
+        colleges, 
+        careers, 
+        governmentExams, 
+        nirfRankings,
+        getRecommendations
+      }}
+    >
+      {children}
+    </DataContext.Provider>
+  );
 };
