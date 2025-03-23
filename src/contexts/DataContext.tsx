@@ -34,7 +34,7 @@ export interface GovernmentExam {
   id: string;
   title: string;
   description: string;
-  eligibility: string;
+  eligibility: string[] | string;
   streams: string[];
   preparationTime: string;
 }
@@ -55,7 +55,7 @@ interface DataContextType {
   careers: Career[];
   governmentExams: GovernmentExam[];
   nirfRankings: NIRFRanking[];
-  getRecommendations: (stream: string | null) => {
+  getRecommendations: (stream: string) => {
     recommendedCourses: Course[];
     recommendedCareers: Career[];
     recommendedExams: GovernmentExam[];
@@ -642,7 +642,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   ]);
 
   // Function to get recommendations based on user's stream
-  const getRecommendations = (stream: string | null) => {
+  const getRecommendations = (stream: string) => {
     // Filter courses based on user's stream
     const recommendedCourses = courses.filter(course => 
       stream ? course.streams.includes(stream) : true

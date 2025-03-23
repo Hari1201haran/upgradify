@@ -184,7 +184,7 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
             <Award className="h-5 w-5 text-purple-600" />
           </div>
           <div className="flex flex-wrap gap-1">
-            {exam.streams.map((stream) => (
+            {exam.streams && exam.streams.length > 0 && exam.streams.map((stream) => (
               <span 
                 key={stream} 
                 className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full"
@@ -208,9 +208,13 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
             <span className="text-sm font-medium">Eligibility:</span>
           </div>
           <ul className="text-sm text-muted-foreground pl-6 space-y-1 list-disc">
-            {exam.eligibility.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
+            {typeof exam.eligibility === 'string' ? (
+              <li>{exam.eligibility}</li>
+            ) : (
+              exam.eligibility.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))
+            )}
           </ul>
         </div>
         

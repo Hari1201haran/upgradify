@@ -11,13 +11,13 @@ import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { getRecommendations } = useData();
+  const { getRecommendations, colleges } = useData();
   const navigate = useNavigate();
   
   const stream = user?.stream || 'Science';
   const interests = user?.interests || [];
   
-  const { careers, courses, colleges, exams } = getRecommendations(stream, interests);
+  const { recommendedCareers, recommendedCourses, recommendedExams } = getRecommendations(stream);
   
   return (
     <MainLayout>
@@ -144,7 +144,7 @@ const Dashboard = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {careers.slice(0, 3).map((career, index) => (
+                {recommendedCareers.slice(0, 3).map((career, index) => (
                   <GlassCard 
                     key={career.id}
                     className="p-4 hover:shadow-md transition-all cursor-pointer"
@@ -181,7 +181,7 @@ const Dashboard = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {courses.slice(0, 3).map((course) => (
+                {recommendedCourses.slice(0, 3).map((course) => (
                   <GlassCard 
                     key={course.id} 
                     className="p-4 hover:shadow-md transition-all cursor-pointer"
@@ -218,7 +218,7 @@ const Dashboard = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {exams.slice(0, 3).map((exam) => (
+                {recommendedExams.slice(0, 3).map((exam) => (
                   <GlassCard 
                     key={exam.id} 
                     className="p-4 hover:shadow-md transition-all cursor-pointer"
@@ -239,14 +239,14 @@ const Dashboard = () => {
               </div>
             </div>
             
-            {/* College Recommendations */}
+            {/* NIRF Rankings */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Top Colleges in Chennai</h3>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => navigate('/colleges')}
+                  onClick={() => navigate('/nirf-rankings')}
                   className="text-primary"
                 >
                   View All
@@ -259,7 +259,7 @@ const Dashboard = () => {
                   <GlassCard 
                     key={college.id} 
                     className="p-4 hover:shadow-md transition-all cursor-pointer"
-                    onClick={() => navigate(`/colleges/${college.id}`)}
+                    onClick={() => navigate(`/nirf-rankings/${college.id}`)}
                     variant="elevated"
                   >
                     <div className="flex gap-4">
