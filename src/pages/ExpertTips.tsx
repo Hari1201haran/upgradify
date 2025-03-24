@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import PageTransition from '@/components/layout/PageTransition';
@@ -106,6 +105,20 @@ const tips: Tip[] = [
   }
 ];
 
+// Helper function to get category icon
+const getCategoryIcon = (category: string) => {
+  switch(category) {
+    case 'academic':
+      return <BookOpen className="h-5 w-5" />;
+    case 'career':
+      return <BriefcaseBusiness className="h-5 w-5" />;
+    case 'personal':
+      return <UserPlus className="h-5 w-5" />;
+    default:
+      return <Lightbulb className="h-5 w-5" />;
+  }
+};
+
 const ExpertTips = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
@@ -117,19 +130,6 @@ const ExpertTips = () => {
     
     return matchesSearch && matchesCategory;
   });
-  
-  const getCategoryIcon = (category: string) => {
-    switch(category) {
-      case 'academic':
-        return <BookOpen className="h-5 w-5" />;
-      case 'career':
-        return <BriefcaseBusiness className="h-5 w-5" />;
-      case 'personal':
-        return <UserPlus className="h-5 w-5" />;
-      default:
-        return <Lightbulb className="h-5 w-5" />;
-    }
-  };
   
   return (
     <MainLayout>
