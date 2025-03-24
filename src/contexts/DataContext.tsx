@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from 'react';
 
 export interface Course {
@@ -1040,8 +1041,189 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
   ]);
 
+  // Mock colleges data
+  const [colleges] = useState<College[]>([
+    {
+      id: 'col-1',
+      name: 'Anna University',
+      description: 'One of the top engineering universities in Tamil Nadu',
+      location: 'Chennai',
+      ranking: 1,
+      courses: ['cs-1', 'cs-50', 'cs-55'],
+    },
+    {
+      id: 'col-2',
+      name: 'IIT Madras',
+      description: 'Premier engineering and technology institute in India',
+      location: 'Chennai',
+      ranking: 2,
+      courses: ['cs-53', 'cs-54', 'cs-45'],
+    },
+    {
+      id: 'col-3',
+      name: 'Loyola College',
+      description: 'Top arts and science college in Chennai',
+      location: 'Chennai',
+      ranking: 3,
+      courses: ['bio-29', 'com-3', 'com-11'],
+    },
+  ]);
+
+  // Mock careers data
+  const [careers] = useState<Career[]>([
+    {
+      id: 'car-1',
+      title: 'Software Developer',
+      description: 'Designs, builds, and maintains software applications',
+      skills: ['JavaScript', 'Python', 'Problem Solving'],
+      education: ['B.Tech in Computer Science', 'BCA'],
+      jobOutlook: 'Excellent',
+      salary: '₹5,00,000 - ₹25,00,000 per annum',
+      streams: ['Computer Science'],
+      interests: ['Coding', 'Problem Solving'],
+    },
+    {
+      id: 'car-2',
+      title: 'Data Scientist',
+      description: 'Analyzes and interprets complex data to help organizations make better decisions',
+      skills: ['Python', 'R', 'Machine Learning', 'Statistics'],
+      education: ['B.Tech in Data Science', 'M.Sc in Statistics'],
+      jobOutlook: 'Excellent',
+      salary: '₹6,00,000 - ₹20,00,000 per annum',
+      streams: ['Computer Science', 'Science'],
+      interests: ['Data Analysis', 'Statistics'],
+    },
+    {
+      id: 'car-3',
+      title: 'Microbiologist',
+      description: 'Studies microscopic organisms like bacteria, viruses, and fungi',
+      skills: ['Laboratory techniques', 'Analytical thinking', 'Attention to detail'],
+      education: ['B.Sc in Microbiology', 'M.Sc in Microbiology'],
+      jobOutlook: 'Good',
+      salary: '₹3,50,000 - ₹12,00,000 per annum',
+      streams: ['Biology'],
+      interests: ['Research', 'Laboratory Work'],
+    },
+    {
+      id: 'car-4',
+      title: 'Chartered Accountant',
+      description: 'Provides financial advice, auditing, and accounting services',
+      skills: ['Financial analysis', 'Attention to detail', 'Problem-solving'],
+      education: ['B.Com', 'CA qualification'],
+      jobOutlook: 'Good',
+      salary: '₹6,00,000 - ₹20,00,000 per annum',
+      streams: ['Commerce'],
+      interests: ['Finance', 'Economics'],
+    },
+  ]);
+
+  // Mock government exams data
+  const [governmentExams] = useState<GovernmentExam[]>([
+    {
+      id: 'exam-1',
+      title: 'UPSC Civil Services Examination',
+      description: 'One of the toughest exams in India for various civil services posts',
+      eligibility: ['Bachelor\'s degree in any discipline'],
+      streams: ['Computer Science', 'Biology', 'Commerce', 'Science'],
+      preparationTime: '1-2 years',
+    },
+    {
+      id: 'exam-2',
+      title: 'GATE (Graduate Aptitude Test in Engineering)',
+      description: 'Examination for admission to postgraduate programs in engineering',
+      eligibility: ['Bachelor\'s degree in Engineering/Technology'],
+      streams: ['Computer Science', 'Science'],
+      preparationTime: '6-12 months',
+    },
+    {
+      id: 'exam-3',
+      title: 'NEET (National Eligibility cum Entrance Test)',
+      description: 'Entrance examination for medical colleges in India',
+      eligibility: ['10+2 with Biology'],
+      streams: ['Biology'],
+      preparationTime: '1-2 years',
+    },
+  ]);
+
+  // Mock NIRF rankings data
+  const [nirfRankings] = useState<NIRFRanking[]>([
+    {
+      id: 'nirf-1',
+      name: 'Indian Institute of Technology Madras',
+      rank: 1,
+      location: 'Chennai',
+      category: 'Engineering',
+      score: 89.9,
+      description: 'Premier engineering institution known for excellence in teaching and research',
+    },
+    {
+      id: 'nirf-2',
+      name: 'Anna University',
+      rank: 8,
+      location: 'Chennai',
+      category: 'Engineering',
+      score: 79.8,
+      description: 'Leading state university offering various engineering programs',
+    },
+    {
+      id: 'nirf-3',
+      name: 'Loyola College',
+      rank: 6,
+      location: 'Chennai',
+      category: 'Arts & Science',
+      score: 74.6,
+      description: 'Renowned for quality education in arts and sciences',
+    },
+    {
+      id: 'nirf-4',
+      name: 'Madras Medical College',
+      rank: 4,
+      location: 'Chennai',
+      category: 'Medical',
+      score: 77.2,
+      description: 'Historic medical institution with quality medical education',
+    },
+    {
+      id: 'nirf-5',
+      name: 'Madras School of Economics',
+      rank: 12,
+      location: 'Chennai',
+      category: 'Economics',
+      score: 68.5,
+      description: 'Specialized institution focused on economic studies and research',
+    },
+  ]);
+
+  // Recommendation function
+  const getRecommendations = (stream: string) => {
+    const recommendedCourses = courses.filter(course => 
+      course.streams.includes(stream)
+    ).slice(0, 5);
+    
+    const recommendedCareers = careers.filter(career => 
+      career.streams.includes(stream)
+    ).slice(0, 3);
+    
+    const recommendedExams = governmentExams.filter(exam => 
+      exam.streams.includes(stream)
+    ).slice(0, 2);
+    
+    return {
+      recommendedCourses,
+      recommendedCareers,
+      recommendedExams
+    };
+  };
+
   return (
-    <DataContext.Provider value={{ courses }}>
+    <DataContext.Provider value={{ 
+      courses,
+      colleges,
+      careers,
+      governmentExams,
+      nirfRankings,
+      getRecommendations 
+    }}>
       {children}
     </DataContext.Provider>
   );
