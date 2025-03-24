@@ -1033,4 +1033,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
     {
       id: 'com-11',
-      title: 'B
+      title: 'B.Com in Business Analytics',
+      description: 'Specialized knowledge in business analytics.',
+      duration: '3 years',
+      streams: ['Commerce'],
+    },
+  ]);
+
+  return (
+    <DataContext.Provider value={{ courses }}>
+      {children}
+    </DataContext.Provider>
+  );
+};
