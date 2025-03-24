@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, Career } from '@/contexts/DataContext';
@@ -15,6 +16,7 @@ import {
   BadgeCheck,
   BookOpen
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface CareerCardProps {
   career: Career;
@@ -132,7 +134,7 @@ const Careers = () => {
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
   
   const filteredCareers = careers.filter(career => {
-    const matchesSearch = career.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch = career.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
       career.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStream = selectedStream ? career.streams.includes(selectedStream) : true;
@@ -271,6 +273,11 @@ const Careers = () => {
                       <span>Build a professional network in your field of interest</span>
                     </li>
                   </ul>
+                  <div className="pt-2">
+                    <Button asChild>
+                      <Link to="/expert-tips">View Expert Tips</Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </GlassCard>

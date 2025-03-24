@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
+import ExpertTips from "./pages/ExpertTips";
 
 // Protected route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -66,6 +67,7 @@ const AppRoutes = () => {
       <Route path="/nirf-rankings" element={<ProtectedRoute><NIRFRankings /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      <Route path="/expert-tips" element={<ProtectedRoute><ExpertTips /></ProtectedRoute>} />
       
       <Route path="*" element={<NotFound />} />
     </Routes>
