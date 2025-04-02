@@ -4,6 +4,8 @@ import { DataContextType } from './data/types';
 import { computerScienceCourses } from './data/computerScienceCourses';
 import { biologyCourses } from './data/biologyCourses';
 import { commerceCourses } from './data/commerceCourses';
+import { artsCourses } from './data/artsCourses';
+import { scienceCourses } from './data/scienceCourses';
 import { colleges } from './data/colleges';
 import { careers } from './data/careers';
 import { governmentExams } from './data/governmentExams';
@@ -22,7 +24,13 @@ export const useData = (): DataContextType => {
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Combine all courses
-  const courses = [...computerScienceCourses, ...biologyCourses, ...commerceCourses];
+  const courses = [
+    ...computerScienceCourses, 
+    ...biologyCourses, 
+    ...commerceCourses, 
+    ...artsCourses,
+    ...scienceCourses
+  ];
   
   // Create getRecommendations function that uses the utility
   const getRecommendations = (stream: string) => {
