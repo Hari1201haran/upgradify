@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +20,12 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!isValidEmail(email)) {
+      setError('Please enter a valid email address from a recognized provider');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -39,9 +44,25 @@ const Login = () => {
     }
   };
   
-  // Email validation regex
   const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!basicEmailRegex.test(email)) return false;
+    
+    const domain = email.split('@')[1].toLowerCase();
+    
+    const validDomains = [
+      'gmail.com',
+      'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk',
+      'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+      'aol.com', 'icloud.com', 'protonmail.com', 'proton.me', 'mail.com',
+      'edu', 'ac.in', 'ac.uk',
+      'org', 'org.in', 'org.uk',
+      'company.com'
+    ];
+    
+    return validDomains.some(validDomain => 
+      domain === validDomain || domain.endsWith('.' + validDomain)
+    );
   };
   
   return (
@@ -81,7 +102,7 @@ const Login = () => {
                   />
                 </div>
                 {email && !isValidEmail(email) && (
-                  <p className="text-sm text-red-500">Please enter a valid email address</p>
+                  <p className="text-sm text-red-500">Please enter a valid email from a recognized provider</p>
                 )}
               </div>
               
@@ -132,7 +153,7 @@ const Login = () => {
           
           <div className="mt-8 text-center text-sm text-muted-foreground">
             <p>For demo, use:</p>
-            <p>Email: student@example.com</p>
+            <p>Email: student@example.com or any valid email</p>
             <p>Password: (any password will work)</p>
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,7 +27,33 @@ const Register = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
+  const isValidEmail = (email: string) => {
+    const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!basicEmailRegex.test(email)) return false;
+    
+    const domain = email.split('@')[1].toLowerCase();
+    
+    const validDomains = [
+      'gmail.com',
+      'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk',
+      'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+      'aol.com', 'icloud.com', 'protonmail.com', 'proton.me', 'mail.com',
+      'edu', 'ac.in', 'ac.uk',
+      'org', 'org.in', 'org.uk',
+      'company.com'
+    ];
+    
+    return validDomains.some(validDomain => 
+      domain === validDomain || domain.endsWith('.' + validDomain)
+    );
+  };
+  
   const validateForm = () => {
+    if (!isValidEmail(formData.email)) {
+      setError("Please enter a valid email from a recognized provider");
+      return false;
+    }
+    
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords don't match");
       return false;
@@ -123,6 +148,9 @@ const Register = () => {
                     required
                   />
                 </div>
+                {formData.email && !isValidEmail(formData.email) && (
+                  <p className="text-sm text-red-500">Please enter a valid email from a recognized provider</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -175,7 +203,7 @@ const Register = () => {
                 </div>
               </div>
               
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" className="w-full" disabled={isSubmitting || !isValidEmail(formData.email)}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

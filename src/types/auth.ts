@@ -1,4 +1,3 @@
-
 import { Session } from '@supabase/supabase-js';
 
 export interface UserProfile {
@@ -31,3 +30,37 @@ export interface RegisterData {
   mobile: string;
   password: string;
 }
+
+// Helper to validate email domain
+export const isValidEmail = (email: string): boolean => {
+  // Basic email format validation
+  const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!basicEmailRegex.test(email)) return false;
+  
+  // Get the domain part (after @)
+  const domain = email.split('@')[1].toLowerCase();
+  
+  // List of common valid email providers
+  const validDomains = [
+    // Gmail
+    'gmail.com',
+    // Yahoo
+    'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk',
+    // Outlook/Hotmail/Live
+    'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+    // Other common providers
+    'aol.com', 'icloud.com', 'protonmail.com', 'proton.me', 'mail.com',
+    // Common educational domains
+    'edu', 'ac.in', 'ac.uk',
+    // Common organizational domains
+    'org', 'org.in', 'org.uk',
+    // Business domains
+    'company.com'
+  ];
+  
+  // Check if domain ends with any valid domain
+  // This handles both exact matches and subdomains (e.g., school.edu)
+  return validDomains.some(validDomain => 
+    domain === validDomain || domain.endsWith('.' + validDomain)
+  );
+};
