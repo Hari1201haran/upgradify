@@ -1,8 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 
-interface User {
+interface UserProfile {
   id: string;
   fullName: string;
   email: string;
@@ -14,13 +16,14 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: UserProfile | null;
+  session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
-  logout: () => void;
-  updateProfile: (data: Partial<User>) => void;
+  logout: () => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
 interface RegisterData {
@@ -29,29 +32,6 @@ interface RegisterData {
   mobile: string;
   password: string;
 }
-
-// Mock user data for demo purposes
-const MOCK_USERS: User[] = [
-  {
-    id: '1',
-    fullName: 'Admin User',
-    email: 'admin@example.com',
-    mobile: '9876543210',
-    grade: '12th',
-    stream: 'Science',
-    interests: ['Technology', 'Research'],
-    isAdmin: true
-  },
-  {
-    id: '2',
-    fullName: 'Student User',
-    email: 'student@example.com',
-    mobile: '9876543211',
-    grade: '12th',
-    stream: 'Science',
-    interests: ['Coding', 'Mathematics']
-  }
-];
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -64,52 +44,93 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for saved auth on mount
+  // Initialize auth on mount and listen for changes
   useEffect(() => {
-    const savedUser = localStorage.getItem('asoUser');
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (e) {
-        console.error('Failed to parse saved user', e);
-        localStorage.removeItem('asoUser');
+    // First set up the auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        setSession(currentSession);
+        if (currentSession?.user) {
+          fetchUserProfile(currentSession.user.id);
+        } else {
+          setUser(null);
+        }
       }
-    }
-    setIsLoading(false);
+    );
+
+    // Then check for existing session
+    const initializeAuth = async () => {
+      setIsLoading(true);
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        setSession(currentSession);
+        
+        if (currentSession?.user) {
+          await fetchUserProfile(currentSession.user.id);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    initializeAuth();
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Save user to localStorage when changed
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('asoUser', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('asoUser');
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return;
+      }
+
+      setUser({
+        id: userId,
+        fullName: profile.full_name || '',
+        email: profile.email || '',
+        mobile: profile.mobile || '',
+        grade: profile.grade || '',
+        stream: profile.stream || null,
+        interests: profile.interests || [],
+        isAdmin: false // Default to non-admin
+      });
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
     }
-  }, [user]);
+  };
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     try {
-      // Mock authentication logic
-      const mockUser = MOCK_USERS.find(
-        u => u.email.toLowerCase() === email.toLowerCase()
-      );
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
       
-      if (mockUser) {
-        setUser(mockUser);
-        toast.success(`Welcome back, ${mockUser.fullName}!`);
-      } else {
-        throw new Error('Invalid email or password');
+      if (error) {
+        throw error;
       }
-    } catch (error) {
-      toast.error('Login failed. Please check your credentials.');
+      
+      toast.success(`Welcome back!`);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to login');
       throw error;
     } finally {
       setIsLoading(false);
@@ -119,27 +140,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterData) => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
     try {
-      // Check if email already exists
-      if (MOCK_USERS.some(u => u.email.toLowerCase() === userData.email.toLowerCase())) {
-        throw new Error('Email already registered');
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            full_name: userData.fullName,
+            mobile: userData.mobile
+          }
+        }
+      });
+      
+      if (error) {
+        throw error;
       }
       
-      // Create new user
-      const newUser: User = {
-        id: `user-${Date.now()}`,
-        fullName: userData.fullName,
-        email: userData.email,
-        mobile: userData.mobile,
-        grade: '12th',
-      };
-      
-      // In a real app, we would save to backend
-      MOCK_USERS.push(newUser);
-      setUser(newUser);
       toast.success('Registration successful!');
     } catch (error: any) {
       toast.error(error.message || 'Registration failed');
@@ -149,16 +165,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    toast.info('You have been logged out');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.info('You have been logged out');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to log out');
+      console.error('Logout error:', error);
+    }
   };
 
-  const updateProfile = (data: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...data };
-      setUser(updatedUser);
+  const updateProfile = async (data: Partial<UserProfile>) => {
+    if (!user || !session) {
+      toast.error('You must be logged in to update your profile');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      // Update the profile in Supabase
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: data.fullName,
+          mobile: data.mobile,
+          grade: data.grade,
+          stream: data.stream,
+          interests: data.interests,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      setUser({
+        ...user,
+        ...data
+      });
+      
       toast.success('Profile updated successfully');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update profile');
+      console.error('Update profile error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -166,8 +220,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        session,
         isLoading,
-        isAuthenticated: !!user,
+        isAuthenticated: !!session,
         login,
         register,
         logout,

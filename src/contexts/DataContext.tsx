@@ -11,6 +11,7 @@ import { careers } from './data/careers';
 import { governmentExams } from './data/governmentExams';
 import { nirfRankings } from './data/nirfRankings';
 import { getRecommendations as getRecommendationsUtil } from './data/recommendations';
+import { useAuth } from './AuthContext';
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
@@ -23,6 +24,8 @@ export const useData = (): DataContextType => {
 };
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  
   // Combine all courses
   const courses = [
     ...computerScienceCourses, 
