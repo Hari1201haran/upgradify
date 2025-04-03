@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,7 +15,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   
-  const { login } = useAuth();
+  const { login, sendOTP } = useAuth();
   const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,13 +24,24 @@ const Login = () => {
     setIsSubmitting(true);
     
     try {
+      // First verify credentials
       await login(email, password);
-      navigate('/dashboard');
+      
+      // Then send OTP
+      await sendOTP(email);
+      
+      // Navigate to OTP verification page
+      navigate('/verify-otp', { state: { email } });
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+  
+  // Email validation regex
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
   
   return (
@@ -69,6 +80,9 @@ const Login = () => {
                     required
                   />
                 </div>
+                {email && !isValidEmail(email) && (
+                  <p className="text-sm text-red-500">Please enter a valid email address</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -92,7 +106,11 @@ const Login = () => {
                 </div>
               </div>
               
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || !isValidEmail(email)}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
