@@ -100,13 +100,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      // Fix the type issue here by ensuring stream is one of the allowed values
+      let streamValue: 'Science' | 'Commerce' | 'Arts' | null = null;
+      if (profile.stream === 'Science' || profile.stream === 'Commerce' || profile.stream === 'Arts') {
+        streamValue = profile.stream as 'Science' | 'Commerce' | 'Arts';
+      }
+
       setUser({
         id: userId,
         fullName: profile.full_name || '',
         email: profile.email || '',
         mobile: profile.mobile || '',
         grade: profile.grade || '',
-        stream: profile.stream || null,
+        stream: streamValue,
         interests: profile.interests || [],
         isAdmin: false // Default to non-admin
       });
