@@ -1,4 +1,3 @@
-
 import { Session } from '@supabase/supabase-js';
 
 export interface UserProfile {
@@ -21,8 +20,6 @@ export interface AuthContextType {
   register: (userData: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
-  sendOTP: (email: string) => Promise<string | void>; // Updated to allow string return
-  verifyOTP: (email: string, otp: string) => Promise<void>;
 }
 
 export interface RegisterData {

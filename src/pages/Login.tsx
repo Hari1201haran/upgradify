@@ -16,7 +16,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   
-  const { login, sendOTP } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,14 +31,9 @@ const Login = () => {
     setIsSubmitting(true);
     
     try {
-      // First verify credentials
       await login(email, password);
-      
-      // Then send OTP
-      await sendOTP(email);
-      
-      // Navigate to OTP verification page
-      navigate('/verify-otp', { state: { email } });
+      // Navigate to dashboard after successful login
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to login. Please try again.');
     } finally {

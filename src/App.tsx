@@ -22,7 +22,6 @@ import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import ExpertTips from "./pages/ExpertTips";
-import OTPVerification from "./pages/OTPVerification";
 
 // Protected route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -51,7 +50,6 @@ const AppRoutes = () => {
       <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Index />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
       <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <Register />} />
-      <Route path="/verify-otp" element={<OTPVerification />} />
       
       <Route 
         path="/profile-setup" 

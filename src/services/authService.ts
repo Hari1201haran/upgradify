@@ -14,7 +14,7 @@ export const login = async (email: string, password: string): Promise<void> => {
       throw error;
     }
     
-    // Don't show success toast here, as we'll be redirecting to OTP verification
+    toast.success('Login successful!');
   } catch (error: any) {
     toast.error(error.message || 'Failed to login');
     throw error;
@@ -43,7 +43,7 @@ export const register = async ({ email, password, fullName, mobile }: {
       throw error;
     }
     
-    toast.success('Registration successful! Please verify your email with the OTP sent.');
+    toast.success('Registration successful! You can now log in.');
   } catch (error: any) {
     toast.error(error.message || 'Registration failed');
     throw error;
