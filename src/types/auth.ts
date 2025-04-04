@@ -1,3 +1,4 @@
+
 import { Session } from '@supabase/supabase-js';
 
 export interface UserProfile {
@@ -29,7 +30,7 @@ export interface RegisterData {
   password: string;
 }
 
-// Helper to validate email domain
+// Enhanced email validation
 export const isValidEmail = (email: string): boolean => {
   // Basic email format validation
   const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,7 +54,9 @@ export const isValidEmail = (email: string): boolean => {
     // Common organizational domains
     'org', 'org.in', 'org.uk',
     // Business domains
-    'company.com'
+    'company.com',
+    // For testing purposes
+    'example.com'
   ];
   
   // Check if domain ends with any valid domain

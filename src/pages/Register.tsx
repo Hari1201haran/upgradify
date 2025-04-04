@@ -1,14 +1,15 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GraduationCap, User, Mail, Phone, Lock, Loader2 } from 'lucide-react';
+import { GraduationCap, User, Mail, Phone, Lock, Loader2, AlertCircle } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
 import { isValidEmail } from '@/types/auth';
+import { toast } from 'sonner';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -20,9 +21,41 @@ const Register = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [mobileError, setMobileError] = useState('');
   
   const { register } = useAuth();
   const navigate = useNavigate();
+  
+  // Validate email whenever it changes
+  useEffect(() => {
+    if (formData.email && !isValidEmail(formData.email)) {
+      setEmailError("Please enter a valid email from a recognized provider");
+    } else {
+      setEmailError('');
+    }
+  }, [formData.email]);
+
+  // Validate passwords whenever either changes
+  useEffect(() => {
+    if (formData.password && formData.password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+    } else if (formData.confirmPassword && formData.password !== formData.confirmPassword) {
+      setPasswordError("Passwords don't match");
+    } else {
+      setPasswordError('');
+    }
+  }, [formData.password, formData.confirmPassword]);
+
+  // Validate mobile number
+  useEffect(() => {
+    if (formData.mobile && !/^\d{10}$/.test(formData.mobile)) {
+      setMobileError("Mobile number should be 10 digits");
+    } else {
+      setMobileError('');
+    }
+  }, [formData.mobile]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,23 +63,29 @@ const Register = () => {
   };
   
   const validateForm = () => {
+    setError('');
+    
     if (!isValidEmail(formData.email)) {
       setError("Please enter a valid email from a recognized provider");
+      toast.error("Invalid email address");
       return false;
     }
     
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords don't match");
+      toast.error("Passwords don't match");
       return false;
     }
     
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
       return false;
     }
     
     if (!/^\d{10}$/.test(formData.mobile)) {
       setError("Mobile number should be 10 digits");
+      toast.error("Mobile number should be 10 digits");
       return false;
     }
     
@@ -77,6 +116,19 @@ const Register = () => {
     }
   };
   
+  const isFormValid = () => {
+    return (
+      formData.fullName.trim() !== '' &&
+      formData.email.trim() !== '' &&
+      isValidEmail(formData.email) &&
+      formData.mobile.trim() !== '' &&
+      !mobileError &&
+      formData.password.trim() !== '' &&
+      formData.confirmPassword.trim() !== '' &&
+      !passwordError
+    );
+  };
+  
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-indigo-50 p-4">
@@ -93,8 +145,9 @@ const Register = () => {
           
           <GlassCard className="p-6">
             {error && (
-              <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-4">
-                {error}
+              <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md mb-4 flex items-start gap-2">
+                <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+                <span>{error}</span>
               </div>
             )}
             
@@ -124,14 +177,17 @@ const Register = () => {
                     name="email"
                     type="email"
                     placeholder="Enter your email"
-                    className="pl-10"
+                    className={`pl-10 ${emailError ? 'border-red-500' : ''}`}
                     value={formData.email}
                     onChange={handleChange}
                     required
                   />
                 </div>
-                {formData.email && !isValidEmail(formData.email) && (
-                  <p className="text-sm text-red-500">Please enter a valid email from a recognized provider</p>
+                {emailError && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {emailError}
+                  </p>
                 )}
               </div>
               
@@ -143,12 +199,18 @@ const Register = () => {
                     id="mobile"
                     name="mobile"
                     placeholder="Enter your 10-digit mobile number"
-                    className="pl-10"
+                    className={`pl-10 ${mobileError ? 'border-red-500' : ''}`}
                     value={formData.mobile}
                     onChange={handleChange}
                     required
                   />
                 </div>
+                {mobileError && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {mobileError}
+                  </p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -160,7 +222,7 @@ const Register = () => {
                     name="password"
                     type="password"
                     placeholder="Create a password (min. 6 characters)"
-                    className="pl-10"
+                    className={`pl-10 ${passwordError && formData.password ? 'border-red-500' : ''}`}
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -177,15 +239,25 @@ const Register = () => {
                     name="confirmPassword"
                     type="password"
                     placeholder="Confirm your password"
-                    className="pl-10"
+                    className={`pl-10 ${passwordError && formData.confirmPassword ? 'border-red-500' : ''}`}
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
                   />
                 </div>
+                {passwordError && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {passwordError}
+                  </p>
+                )}
               </div>
               
-              <Button type="submit" className="w-full" disabled={isSubmitting || !isValidEmail(formData.email)}>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || !isFormValid()}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -1,10 +1,15 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
-import { UserProfile } from '@/types/auth';
+import { UserProfile, isValidEmail } from '@/types/auth';
 
 export const login = async (email: string, password: string): Promise<void> => {
   try {
+    // Validate email first
+    if (!isValidEmail(email)) {
+      throw new Error('Invalid email address. Please use a valid email from a recognized provider.');
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -28,6 +33,21 @@ export const register = async ({ email, password, fullName, mobile }: {
   mobile: string;
 }): Promise<void> => {
   try {
+    // Validate email first
+    if (!isValidEmail(email)) {
+      throw new Error('Invalid email address. Please use a valid email from a recognized provider.');
+    }
+
+    // Validate password
+    if (password.length < 6) {
+      throw new Error('Password must be at least 6 characters long');
+    }
+
+    // Validate mobile number
+    if (!/^\d{10}$/.test(mobile)) {
+      throw new Error('Mobile number must be 10 digits');
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -63,6 +83,12 @@ export const logout = async (): Promise<void> => {
 export const updateProfile = async (user: UserProfile | null, setUser: (user: UserProfile) => void, data: Partial<UserProfile>): Promise<void> => {
   if (!user) {
     toast.error('You must be logged in to update your profile');
+    return;
+  }
+
+  // Validate email if it's being updated
+  if (data.email && !isValidEmail(data.email)) {
+    toast.error('Invalid email address. Please use a valid email from a recognized provider.');
     return;
   }
 
