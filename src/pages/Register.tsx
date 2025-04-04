@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { GraduationCap, User, Mail, Phone, Lock, Loader2 } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
+import { isValidEmail } from '@/types/auth';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -25,27 +26,6 @@ const Register = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const isValidEmail = (email: string) => {
-    const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!basicEmailRegex.test(email)) return false;
-    
-    const domain = email.split('@')[1].toLowerCase();
-    
-    const validDomains = [
-      'gmail.com',
-      'yahoo.com', 'yahoo.co.in', 'yahoo.co.uk',
-      'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
-      'aol.com', 'icloud.com', 'protonmail.com', 'proton.me', 'mail.com',
-      'edu', 'ac.in', 'ac.uk',
-      'org', 'org.in', 'org.uk',
-      'company.com'
-    ];
-    
-    return validDomains.some(validDomain => 
-      domain === validDomain || domain.endsWith('.' + validDomain)
-    );
   };
   
   const validateForm = () => {
@@ -87,7 +67,8 @@ const Register = () => {
         mobile: formData.mobile,
         password: formData.password
       });
-      navigate('/profile-setup');
+      
+      navigate('/verify-otp', { state: { email: formData.email } });
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {

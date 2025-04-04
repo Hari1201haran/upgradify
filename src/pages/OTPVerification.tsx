@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -18,12 +18,31 @@ const OTPVerification = () => {
   const [otp, setOtp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
   
   const location = useLocation();
   const email = location.state?.email || '';
   
   const { verifyOTP, sendOTP } = useAuth();
   const navigate = useNavigate();
+  
+  // Countdown timer
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    
+    const timer = setTimeout(() => {
+      setTimeLeft(timeLeft - 1);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [timeLeft]);
+  
+  // Format countdown
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
   
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,9 +67,11 @@ const OTPVerification = () => {
     
     try {
       await sendOTP(email);
-      toast.success('A new OTP has been sent to your email');
+      setTimeLeft(300); // Reset the timer
+      setOtp(''); // Clear the input
+      toast.success('A new verification code has been sent to your email');
     } catch (err: any) {
-      setError(err.message || 'Failed to send OTP. Please try again.');
+      setError(err.message || 'Failed to send verification code. Please try again.');
     }
   };
   
@@ -87,7 +108,7 @@ const OTPVerification = () => {
             </div>
             <h1 className="text-3xl font-bold">Verify Your Email</h1>
             <p className="text-muted-foreground mt-2">
-              Enter the 6-digit code sent to {email}
+              Enter the 6-digit verification code sent to {email}
             </p>
           </div>
           
@@ -100,7 +121,7 @@ const OTPVerification = () => {
             
             <form onSubmit={handleVerify} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="otp">One-Time Password</Label>
+                <Label htmlFor="otp">Verification Code</Label>
                 <div className="flex justify-center">
                   <InputOTP 
                     maxLength={6} 
@@ -115,15 +136,29 @@ const OTPVerification = () => {
                     )}
                   />
                 </div>
+                
+                <div className="text-center mt-2">
+                  <p className="text-sm text-muted-foreground">
+                    {timeLeft > 0 ? (
+                      <>Code expires in {formatTime(timeLeft)}</>
+                    ) : (
+                      <>Code has expired. Please request a new one.</>
+                    )}
+                  </p>
+                </div>
               </div>
               
-              <Button type="submit" className="w-full" disabled={isSubmitting || otp.length !== 6}>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || otp.length !== 6 || timeLeft <= 0}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Verifying...
                   </>
-                ) : 'Verify & Login'}
+                ) : 'Verify & Continue'}
               </Button>
               
               <div className="text-center">
@@ -131,12 +166,24 @@ const OTPVerification = () => {
                   type="button"
                   onClick={handleResendOTP} 
                   className="text-primary text-sm hover:underline"
+                  disabled={timeLeft > 0 && timeLeft < 270} // Prevent spam clicks (allow resend after 30 seconds)
                 >
-                  Didn't receive the code? Resend OTP
+                  {timeLeft > 0 && timeLeft < 270 ? 
+                    `Resend code in ${formatTime(270 - timeLeft)}` : 
+                    'Resend verification code'}
                 </button>
               </div>
             </form>
           </GlassCard>
+          
+          <div className="mt-4 text-center">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="text-sm text-muted-foreground hover:text-primary hover:underline"
+            >
+              Go back
+            </button>
+          </div>
         </div>
       </div>
     </PageTransition>

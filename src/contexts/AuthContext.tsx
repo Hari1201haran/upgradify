@@ -50,7 +50,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
       }
       
-      toast.success('Registration successful! Please verify your email.');
+      // After successful registration, send OTP
+      await sendOTP(email);
+      
+      toast.success('Registration successful! Please verify your email with the OTP sent.');
     } catch (error: any) {
       toast.error(error.message || 'Registration failed');
       throw error;
@@ -138,23 +141,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const otp = generateOTP();
       storeOTP(email, otp);
       
-      // In a real application, you would send the OTP via email
-      // For demonstration, we'll show the OTP in a toast
-      toast.info(`Your OTP is: ${otp}`, { duration: 10000 });
+      // Call our edge function to send the email
+      const { error } = await supabase.functions.invoke('send-otp-email', {
+        body: { email, otp }
+      });
       
-      // For a real implementation, uncomment and modify this:
-      /*
-      const { error } = await supabase
-        .functions
-        .invoke('send-otp-email', {
-          body: { email, otp }
-        });
-        
-      if (error) throw error;
-      */
+      if (error) {
+        console.error('Error sending OTP email:', error);
+        // Fallback to showing OTP in toast for development purposes
+        toast.info(`Your OTP is: ${otp}`, { duration: 10000 });
+        throw error;
+      }
       
+      toast.success('Verification code sent to your email');
       return otp;
     } catch (error: any) {
+      console.error('Error in sendOTP:', error);
       toast.error(error.message || 'Failed to send OTP');
       throw error;
     }
