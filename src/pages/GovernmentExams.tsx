@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, GovernmentExam } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
@@ -27,7 +27,7 @@ const GovernmentExams = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table view
   
   const filteredExams = governmentExams.filter(exam => {
     const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,6 +59,14 @@ const GovernmentExams = () => {
 
   // Define stream options
   const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science'];
+  
+  // Add console logs to help with debugging
+  useEffect(() => {
+    console.log("Total government exams:", governmentExams.length);
+    console.log("Computer Science exams:", governmentExams.filter(exam => exam.streams.includes('Computer Science')).length);
+    console.log("Filtered exams:", filteredExams.length);
+    console.log("Selected stream:", selectedStream);
+  }, [governmentExams, filteredExams, selectedStream]);
 
   return (
     <MainLayout>

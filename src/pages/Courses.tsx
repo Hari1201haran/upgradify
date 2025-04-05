@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, Course, College } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
@@ -27,7 +27,7 @@ const Courses = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table view
   
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -55,6 +55,14 @@ const Courses = () => {
     'Science': courses.filter(course => course.streams.includes('Science')).length,
     'All': courses.length
   };
+
+  // Add console logs to help with debugging
+  useEffect(() => {
+    console.log("Total courses:", courses.length);
+    console.log("Computer Science courses:", courses.filter(course => course.streams.includes('Computer Science')).length);
+    console.log("Filtered courses:", filteredCourses.length);
+    console.log("Selected stream:", selectedStream);
+  }, [courses, filteredCourses, selectedStream]);
   
   return (
     <MainLayout>
