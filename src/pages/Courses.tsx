@@ -1,29 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useData, Course, College } from '@/contexts/DataContext';
+import { useData } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
-import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, BookOpen, School, ArrowRight, Clock, GraduationCap, BookText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import SearchBar from '@/components/courses/SearchBar';
+import StreamFilter from '@/components/courses/StreamFilter';
+import CoursesContent from '@/components/courses/CoursesContent';
+import CollegesContent from '@/components/courses/CollegesContent';
 
 const Courses = () => {
   const { user } = useAuth();
   const { courses, colleges, isLoading } = useData();
-  const navigate = useNavigate();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
@@ -77,56 +66,19 @@ const Courses = () => {
             </div>
             
             {/* Search and Filters */}
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                <Input
-                  placeholder="Search courses or colleges..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              
-              <div className="flex gap-2 items-center">
-                <Button 
-                  size="sm" 
-                  variant={viewMode === 'cards' ? "default" : "outline"}
-                  onClick={() => setViewMode('cards')}
-                  className="flex items-center gap-1"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  Cards
-                </Button>
-                <Button 
-                  size="sm"
-                  variant={viewMode === 'table' ? "default" : "outline"}
-                  onClick={() => setViewMode('table')}
-                  className="flex items-center gap-1"
-                >
-                  <BookText className="h-4 w-4" />
-                  Table
-                </Button>
-              </div>
-            </div>
+            <SearchBar 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+            />
             
-            <div className="flex gap-2 flex-wrap">
-              <Button 
-                variant={selectedStream === null ? "default" : "outline"}
-                onClick={() => setSelectedStream(null)}
-              >
-                All ({courseCounts['All']})
-              </Button>
-              {streamOptions.map(stream => (
-                <Button 
-                  key={stream}
-                  variant={selectedStream === stream ? "default" : "outline"}
-                  onClick={() => setSelectedStream(stream)}
-                >
-                  {stream} ({courseCounts[stream]})
-                </Button>
-              ))}
-            </div>
+            <StreamFilter 
+              streamOptions={streamOptions}
+              selectedStream={selectedStream}
+              setSelectedStream={setSelectedStream}
+              courseCounts={courseCounts}
+            />
           </section>
           
           {/* Tabs */}
@@ -137,258 +89,25 @@ const Courses = () => {
             </TabsList>
             
             <TabsContent value="courses" className="space-y-6">
-              {isLoading ? (
-                <div className="flex justify-center p-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : filteredCourses.length === 0 ? (
-                <div className="text-center py-12">
-                  <BookOpen className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
-                  <h3 className="mt-4 text-lg font-medium">No courses found</h3>
-                  <p className="text-muted-foreground">
-                    Try adjusting your search or filters
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium">
-                      Found {filteredCourses.length} courses
-                      {selectedStream ? ` in ${selectedStream}` : ''}
-                    </h3>
-                  </div>
-                  
-                  {viewMode === 'cards' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {filteredCourses.map((course) => (
-                        <CourseCard 
-                          key={course.id} 
-                          course={course} 
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <CoursesTable courses={filteredCourses} />
-                  )}
-                </>
-              )}
+              <CoursesContent 
+                isLoading={isLoading}
+                filteredCourses={filteredCourses}
+                viewMode={viewMode}
+                selectedStream={selectedStream}
+              />
             </TabsContent>
             
             <TabsContent value="colleges" className="space-y-6">
-              {isLoading ? (
-                <div className="flex justify-center p-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : filteredColleges.length === 0 ? (
-                <div className="text-center py-12">
-                  <School className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
-                  <h3 className="mt-4 text-lg font-medium">No colleges found</h3>
-                  <p className="text-muted-foreground">
-                    Try adjusting your search
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium">
-                      Found {filteredColleges.length} colleges
-                    </h3>
-                  </div>
-                  
-                  {viewMode === 'cards' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {filteredColleges.map((college) => (
-                        <CollegeCard 
-                          key={college.id} 
-                          college={college} 
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <CollegesTable colleges={filteredColleges} />
-                  )}
-                </>
-              )}
+              <CollegesContent 
+                isLoading={isLoading}
+                filteredColleges={filteredColleges}
+                viewMode={viewMode}
+              />
             </TabsContent>
           </Tabs>
         </div>
       </PageTransition>
     </MainLayout>
-  );
-};
-
-interface CourseCardProps {
-  course: Course;
-}
-
-const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
-  return (
-    <GlassCard 
-      className="p-5 hover:shadow-lg transition-all cursor-pointer scale-in-animation"
-      variant="elevated"
-    >
-      <div className="space-y-4">
-        <div className="flex items-start justify-between">
-          <div className="p-2 rounded-lg bg-indigo-100">
-            <BookOpen className="h-5 w-5 text-indigo-600" />
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {course.streams.map((stream) => (
-              <span 
-                key={stream} 
-                className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full"
-              >
-                {stream}
-              </span>
-            ))}
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">{course.title}</h3>
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {course.description}
-          </p>
-        </div>
-        
-        <div className="pt-2 flex justify-between items-center">
-          <div className="flex items-center">
-            <Clock className="h-4 w-4 text-muted-foreground mr-1" />
-            <span className="text-sm text-muted-foreground">{course.duration}</span>
-          </div>
-          <Button size="sm" variant="ghost" className="text-primary p-0">
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </GlassCard>
-  );
-};
-
-interface CoursesTableProps {
-  courses: Course[];
-}
-
-const CoursesTable: React.FC<CoursesTableProps> = ({ courses }) => {
-  return (
-    <div className="rounded-md border">
-      <Table>
-        <TableCaption>A comprehensive list of available courses</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Course Name</TableHead>
-            <TableHead>Stream</TableHead>
-            <TableHead>Duration</TableHead>
-            <TableHead className="hidden md:table-cell">Description</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {courses.map((course) => (
-            <TableRow key={course.id} className="hover:bg-muted/50 cursor-pointer">
-              <TableCell className="font-medium">{course.title}</TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {course.streams.map(stream => (
-                    <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
-                      {stream}
-                    </span>
-                  ))}
-                </div>
-              </TableCell>
-              <TableCell>{course.duration}</TableCell>
-              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                <span className="line-clamp-1">{course.description}</span>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-};
-
-interface CollegeCardProps {
-  college: College;
-}
-
-const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
-  return (
-    <GlassCard 
-      className="p-5 hover:shadow-lg transition-all cursor-pointer scale-in-animation"
-      variant="elevated"
-    >
-      <div className="flex gap-4">
-        <div className="p-2 h-fit rounded-lg bg-blue-100">
-          <School className="h-6 w-6 text-blue-600" />
-        </div>
-        <div className="space-y-2 flex-1">
-          <div className="flex justify-between items-start">
-            <h3 className="text-lg font-semibold">{college.name}</h3>
-            <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-              Rank #{college.ranking}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">{college.location}</p>
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {college.description}
-          </p>
-          <div className="pt-2 flex justify-between items-center">
-            <div className="flex flex-wrap gap-1">
-              {college.courses.slice(0, 2).map((course, index) => (
-                <span 
-                  key={index} 
-                  className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full"
-                >
-                  {course.split(' ')[0]}
-                </span>
-              ))}
-              {college.courses.length > 2 && (
-                <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">
-                  +{college.courses.length - 2}
-                </span>
-              )}
-            </div>
-            <Button size="sm" variant="ghost" className="text-primary p-0">
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </GlassCard>
-  );
-};
-
-interface CollegesTableProps {
-  colleges: College[];
-}
-
-const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
-  return (
-    <div className="rounded-md border">
-      <Table>
-        <TableCaption>Top colleges in India</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Ranking</TableHead>
-            <TableHead className="hidden md:table-cell">Description</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {colleges.map((college) => (
-            <TableRow key={college.id} className="hover:bg-muted/50 cursor-pointer">
-              <TableCell className="font-medium">{college.name}</TableCell>
-              <TableCell>{college.location}</TableCell>
-              <TableCell>#{college.ranking}</TableCell>
-              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                <span className="line-clamp-1">{college.description}</span>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
   );
 };
 
