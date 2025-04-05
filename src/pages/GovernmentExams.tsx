@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const GovernmentExams = () => {
   const { user } = useAuth();
-  const { governmentExams } = useData();
+  const { governmentExams, isLoading } = useData();
   const navigate = useNavigate();
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,6 +37,19 @@ const GovernmentExams = () => {
     (selectedStream ? exam.streams.includes(selectedStream) : true)
   );
   
+  // Count exams per stream
+  const examCounts = {
+    'Computer Science': governmentExams.filter(exam => exam.streams.includes('Computer Science')).length,
+    'Biology': governmentExams.filter(exam => exam.streams.includes('Biology')).length,
+    'Commerce': governmentExams.filter(exam => exam.streams.includes('Commerce')).length,
+    'Arts': governmentExams.filter(exam => exam.streams.includes('Arts')).length,
+    'Science': governmentExams.filter(exam => exam.streams.includes('Science')).length,
+    'All': governmentExams.length
+  };
+
+  // Define stream options
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science'];
+
   return (
     <MainLayout>
       <PageTransition>
@@ -45,7 +58,7 @@ const GovernmentExams = () => {
             <div>
               <h1 className="text-3xl font-bold">Government Exams</h1>
               <p className="text-muted-foreground mt-1">
-                Explore government exam opportunities for 12th standard students
+                Explore {governmentExams.length} government exam opportunities for 12th standard students
               </p>
             </div>
             
@@ -66,38 +79,17 @@ const GovernmentExams = () => {
                   variant={selectedStream === null ? "default" : "outline"}
                   onClick={() => setSelectedStream(null)}
                 >
-                  All
+                  All ({examCounts['All']})
                 </Button>
-                <Button 
-                  variant={selectedStream === 'Computer Science' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Computer Science')}
-                >
-                  Computer Science
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Science' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Science')}
-                >
-                  Science
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Biology' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Biology')}
-                >
-                  Biology
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Commerce' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Commerce')}
-                >
-                  Commerce
-                </Button>
-                <Button 
-                  variant={selectedStream === 'Arts' ? "default" : "outline"}
-                  onClick={() => setSelectedStream('Arts')}
-                >
-                  Arts
-                </Button>
+                {streamOptions.map(stream => (
+                  <Button 
+                    key={stream}
+                    variant={selectedStream === stream ? "default" : "outline"}
+                    onClick={() => setSelectedStream(stream)}
+                  >
+                    {stream} ({examCounts[stream]})
+                  </Button>
+                ))}
               </div>
             </div>
           </section>
@@ -110,7 +102,11 @@ const GovernmentExams = () => {
             </TabsList>
             
             <TabsContent value="all" className="space-y-6">
-              {filteredExams.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center p-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredExams.length === 0 ? (
                 <div className="text-center py-12">
                   <Award className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
                   <h3 className="mt-4 text-lg font-medium">No exams found</h3>
@@ -119,21 +115,33 @@ const GovernmentExams = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredExams.map((exam) => (
-                    <ExamCard 
-                      key={exam.id} 
-                      exam={exam}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">
+                      Found {filteredExams.length} government exams
+                      {selectedStream ? ` for ${selectedStream}` : ''}
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredExams.map((exam) => (
+                      <ExamCard 
+                        key={exam.id} 
+                        exam={exam}
+                      />
+                    ))}
+                  </div>
+                </>
               )}
             </TabsContent>
             
             <TabsContent value="stream-specific" className="space-y-6">
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold">General Exams</h2>
-                {generalExams.length === 0 ? (
+                <h2 className="text-xl font-semibold">General Exams ({generalExams.length})</h2>
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : generalExams.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">No general exams found</p>
                   </div>
@@ -147,8 +155,12 @@ const GovernmentExams = () => {
               </div>
               
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold">Stream-Specific Exams</h2>
-                {streamSpecificExams.length === 0 ? (
+                <h2 className="text-xl font-semibold">Stream-Specific Exams ({streamSpecificExams.length})</h2>
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : streamSpecificExams.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">No stream-specific exams found</p>
                   </div>

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Courses = () => {
   const { user } = useAuth();
-  const { courses, colleges } = useData();
+  const { courses, colleges, isLoading } = useData();
   const navigate = useNavigate();
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,8 +33,18 @@ const Courses = () => {
       college.description.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // Group courses by stream for the stream tabs
+  // Group courses by stream for easier navigation
   const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science'];
+  
+  // Count courses per stream
+  const courseCounts = {
+    'Computer Science': courses.filter(course => course.streams.includes('Computer Science')).length,
+    'Biology': courses.filter(course => course.streams.includes('Biology')).length,
+    'Commerce': courses.filter(course => course.streams.includes('Commerce')).length,
+    'Arts': courses.filter(course => course.streams.includes('Arts')).length,
+    'Science': courses.filter(course => course.streams.includes('Science')).length,
+    'All': courses.length
+  };
   
   return (
     <MainLayout>
@@ -44,7 +54,7 @@ const Courses = () => {
             <div>
               <h1 className="text-3xl font-bold">Courses & Colleges</h1>
               <p className="text-muted-foreground mt-1">
-                Explore courses and top colleges in Chennai
+                Explore {courses.length} courses and top colleges in Chennai
               </p>
             </div>
             
@@ -65,7 +75,7 @@ const Courses = () => {
                   variant={selectedStream === null ? "default" : "outline"}
                   onClick={() => setSelectedStream(null)}
                 >
-                  All
+                  All ({courseCounts['All']})
                 </Button>
                 {streamOptions.map(stream => (
                   <Button 
@@ -73,7 +83,7 @@ const Courses = () => {
                     variant={selectedStream === stream ? "default" : "outline"}
                     onClick={() => setSelectedStream(stream)}
                   >
-                    {stream}
+                    {stream} ({courseCounts[stream]})
                   </Button>
                 ))}
               </div>
@@ -88,7 +98,11 @@ const Courses = () => {
             </TabsList>
             
             <TabsContent value="courses" className="space-y-6">
-              {filteredCourses.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center p-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredCourses.length === 0 ? (
                 <div className="text-center py-12">
                   <BookOpen className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
                   <h3 className="mt-4 text-lg font-medium">No courses found</h3>
@@ -97,19 +111,31 @@ const Courses = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredCourses.map((course) => (
-                    <CourseCard 
-                      key={course.id} 
-                      course={course} 
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">
+                      Found {filteredCourses.length} courses
+                      {selectedStream ? ` in ${selectedStream}` : ''}
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredCourses.map((course) => (
+                      <CourseCard 
+                        key={course.id} 
+                        course={course} 
+                      />
+                    ))}
+                  </div>
+                </>
               )}
             </TabsContent>
             
             <TabsContent value="colleges" className="space-y-6">
-              {filteredColleges.length === 0 ? (
+              {isLoading ? (
+                <div className="flex justify-center p-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredColleges.length === 0 ? (
                 <div className="text-center py-12">
                   <School className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
                   <h3 className="mt-4 text-lg font-medium">No colleges found</h3>
