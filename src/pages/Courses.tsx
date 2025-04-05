@@ -8,8 +8,17 @@ import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, BookOpen, School, ArrowRight, Clock } from 'lucide-react';
+import { Search, BookOpen, School, ArrowRight, Clock, GraduationCap, BookText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const Courses = () => {
   const { user } = useAuth();
@@ -18,6 +27,7 @@ const Courses = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -54,7 +64,7 @@ const Courses = () => {
             <div>
               <h1 className="text-3xl font-bold">Courses & Colleges</h1>
               <p className="text-muted-foreground mt-1">
-                Explore {courses.length} courses and top colleges in Chennai
+                Explore {courses.length} courses and top colleges in India
               </p>
             </div>
             
@@ -70,23 +80,44 @@ const Courses = () => {
                 />
               </div>
               
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 items-center">
                 <Button 
-                  variant={selectedStream === null ? "default" : "outline"}
-                  onClick={() => setSelectedStream(null)}
+                  size="sm" 
+                  variant={viewMode === 'cards' ? "default" : "outline"}
+                  onClick={() => setViewMode('cards')}
+                  className="flex items-center gap-1"
                 >
-                  All ({courseCounts['All']})
+                  <BookOpen className="h-4 w-4" />
+                  Cards
                 </Button>
-                {streamOptions.map(stream => (
-                  <Button 
-                    key={stream}
-                    variant={selectedStream === stream ? "default" : "outline"}
-                    onClick={() => setSelectedStream(stream)}
-                  >
-                    {stream} ({courseCounts[stream]})
-                  </Button>
-                ))}
+                <Button 
+                  size="sm"
+                  variant={viewMode === 'table' ? "default" : "outline"}
+                  onClick={() => setViewMode('table')}
+                  className="flex items-center gap-1"
+                >
+                  <BookText className="h-4 w-4" />
+                  Table
+                </Button>
               </div>
+            </div>
+            
+            <div className="flex gap-2 flex-wrap">
+              <Button 
+                variant={selectedStream === null ? "default" : "outline"}
+                onClick={() => setSelectedStream(null)}
+              >
+                All ({courseCounts['All']})
+              </Button>
+              {streamOptions.map(stream => (
+                <Button 
+                  key={stream}
+                  variant={selectedStream === stream ? "default" : "outline"}
+                  onClick={() => setSelectedStream(stream)}
+                >
+                  {stream} ({courseCounts[stream]})
+                </Button>
+              ))}
             </div>
           </section>
           
@@ -118,14 +149,19 @@ const Courses = () => {
                       {selectedStream ? ` in ${selectedStream}` : ''}
                     </h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredCourses.map((course) => (
-                      <CourseCard 
-                        key={course.id} 
-                        course={course} 
-                      />
-                    ))}
-                  </div>
+                  
+                  {viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {filteredCourses.map((course) => (
+                        <CourseCard 
+                          key={course.id} 
+                          course={course} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <CoursesTable courses={filteredCourses} />
+                  )}
                 </>
               )}
             </TabsContent>
@@ -144,14 +180,26 @@ const Courses = () => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredColleges.map((college) => (
-                    <CollegeCard 
-                      key={college.id} 
-                      college={college} 
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">
+                      Found {filteredColleges.length} colleges
+                    </h3>
+                  </div>
+                  
+                  {viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredColleges.map((college) => (
+                        <CollegeCard 
+                          key={college.id} 
+                          college={college} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <CollegesTable colleges={filteredColleges} />
+                  )}
+                </>
               )}
             </TabsContent>
           </Tabs>
@@ -209,6 +257,48 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
   );
 };
 
+interface CoursesTableProps {
+  courses: Course[];
+}
+
+const CoursesTable: React.FC<CoursesTableProps> = ({ courses }) => {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableCaption>A comprehensive list of available courses</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Course Name</TableHead>
+            <TableHead>Stream</TableHead>
+            <TableHead>Duration</TableHead>
+            <TableHead className="hidden md:table-cell">Description</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {courses.map((course) => (
+            <TableRow key={course.id} className="hover:bg-muted/50 cursor-pointer">
+              <TableCell className="font-medium">{course.title}</TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {course.streams.map(stream => (
+                    <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                      {stream}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell>{course.duration}</TableCell>
+              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                <span className="line-clamp-1">{course.description}</span>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
 interface CollegeCardProps {
   college: College;
 }
@@ -257,6 +347,40 @@ const CollegeCard: React.FC<CollegeCardProps> = ({ college }) => {
         </div>
       </div>
     </GlassCard>
+  );
+};
+
+interface CollegesTableProps {
+  colleges: College[];
+}
+
+const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableCaption>Top colleges in India</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Ranking</TableHead>
+            <TableHead className="hidden md:table-cell">Description</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {colleges.map((college) => (
+            <TableRow key={college.id} className="hover:bg-muted/50 cursor-pointer">
+              <TableCell className="font-medium">{college.name}</TableCell>
+              <TableCell>{college.location}</TableCell>
+              <TableCell>#{college.ranking}</TableCell>
+              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                <span className="line-clamp-1">{college.description}</span>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

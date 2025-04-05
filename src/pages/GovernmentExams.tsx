@@ -8,8 +8,17 @@ import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, GraduationCap, Clock, Users, BookOpenCheck, Award } from 'lucide-react';
+import { Search, GraduationCap, Clock, Users, BookOpenCheck, Award, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const GovernmentExams = () => {
   const { user } = useAuth();
@@ -18,6 +27,7 @@ const GovernmentExams = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   
   const filteredExams = governmentExams.filter(exam => {
     const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -58,7 +68,7 @@ const GovernmentExams = () => {
             <div>
               <h1 className="text-3xl font-bold">Government Exams</h1>
               <p className="text-muted-foreground mt-1">
-                Explore {governmentExams.length} government exam opportunities for 12th standard students
+                Explore {governmentExams.length} government exam opportunities for students
               </p>
             </div>
             
@@ -74,23 +84,44 @@ const GovernmentExams = () => {
                 />
               </div>
               
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 items-center">
                 <Button 
-                  variant={selectedStream === null ? "default" : "outline"}
-                  onClick={() => setSelectedStream(null)}
+                  size="sm"
+                  variant={viewMode === 'cards' ? "default" : "outline"}
+                  onClick={() => setViewMode('cards')}
+                  className="flex items-center gap-1"
                 >
-                  All ({examCounts['All']})
+                  <Award className="h-4 w-4" />
+                  Cards
                 </Button>
-                {streamOptions.map(stream => (
-                  <Button 
-                    key={stream}
-                    variant={selectedStream === stream ? "default" : "outline"}
-                    onClick={() => setSelectedStream(stream)}
-                  >
-                    {stream} ({examCounts[stream]})
-                  </Button>
-                ))}
+                <Button 
+                  size="sm"
+                  variant={viewMode === 'table' ? "default" : "outline"}
+                  onClick={() => setViewMode('table')}
+                  className="flex items-center gap-1"
+                >
+                  <FileText className="h-4 w-4" />
+                  Table
+                </Button>
               </div>
+            </div>
+            
+            <div className="flex gap-2 flex-wrap">
+              <Button 
+                variant={selectedStream === null ? "default" : "outline"}
+                onClick={() => setSelectedStream(null)}
+              >
+                All ({examCounts['All']})
+              </Button>
+              {streamOptions.map(stream => (
+                <Button 
+                  key={stream}
+                  variant={selectedStream === stream ? "default" : "outline"}
+                  onClick={() => setSelectedStream(stream)}
+                >
+                  {stream} ({examCounts[stream]})
+                </Button>
+              ))}
             </div>
           </section>
           
@@ -122,14 +153,16 @@ const GovernmentExams = () => {
                       {selectedStream ? ` for ${selectedStream}` : ''}
                     </h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {filteredExams.map((exam) => (
-                      <ExamCard 
-                        key={exam.id} 
-                        exam={exam}
-                      />
-                    ))}
-                  </div>
+                  
+                  {viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {filteredExams.map((exam) => (
+                        <ExamCard key={exam.id} exam={exam} />
+                      ))}
+                    </div>
+                  ) : (
+                    <ExamsTable exams={filteredExams} />
+                  )}
                 </>
               )}
             </TabsContent>
@@ -146,11 +179,15 @@ const GovernmentExams = () => {
                     <p className="text-muted-foreground">No general exams found</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {generalExams.map((exam) => (
-                      <ExamCard key={exam.id} exam={exam} />
-                    ))}
-                  </div>
+                  viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {generalExams.map((exam) => (
+                        <ExamCard key={exam.id} exam={exam} />
+                      ))}
+                    </div>
+                  ) : (
+                    <ExamsTable exams={generalExams} />
+                  )
                 )}
               </div>
               
@@ -165,11 +202,15 @@ const GovernmentExams = () => {
                     <p className="text-muted-foreground">No stream-specific exams found</p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {streamSpecificExams.map((exam) => (
-                      <ExamCard key={exam.id} exam={exam} />
-                    ))}
-                  </div>
+                  viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {streamSpecificExams.map((exam) => (
+                        <ExamCard key={exam.id} exam={exam} />
+                      ))}
+                    </div>
+                  ) : (
+                    <ExamsTable exams={streamSpecificExams} />
+                  )
                 )}
               </div>
             </TabsContent>
@@ -242,6 +283,48 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
         </div>
       </div>
     </GlassCard>
+  );
+};
+
+interface ExamsTableProps {
+  exams: GovernmentExam[];
+}
+
+const ExamsTable: React.FC<ExamsTableProps> = ({ exams }) => {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableCaption>Government Exams List</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Exam Name</TableHead>
+            <TableHead>Streams</TableHead>
+            <TableHead>Preparation Time</TableHead>
+            <TableHead className="hidden md:table-cell">Description</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {exams.map((exam) => (
+            <TableRow key={exam.id} className="hover:bg-muted/50 cursor-pointer">
+              <TableCell className="font-medium">{exam.title}</TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {exam.streams.map(stream => (
+                    <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                      {stream}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell>{exam.preparationTime}</TableCell>
+              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                <span className="line-clamp-1">{exam.description}</span>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
