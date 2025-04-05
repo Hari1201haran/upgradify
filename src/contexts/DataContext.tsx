@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { DataContextType } from './data/types';
 import { computerScienceCourses } from './data/computerScienceCourses';
 import { biologyCourses } from './data/biologyCourses';
@@ -12,6 +12,12 @@ import { governmentExams } from './data/governmentExams';
 import { nirfRankings } from './data/nirfRankings';
 import { getRecommendations as getRecommendationsUtil } from './data/recommendations';
 import { useAuth } from './AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  Course, College, Career, GovernmentExam, NIRFRanking,
+  mapDbCourse, mapDbCollege, mapDbCareer, mapDbGovernmentExam, mapDbNIRFRanking
+} from '@/types/data';
+import { toast } from 'sonner';
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
@@ -25,15 +31,86 @@ export const useData = (): DataContextType => {
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [careers, setCareers] = useState<Career[]>([]);
+  const [governmentExams, setGovernmentExams] = useState<GovernmentExam[]>([]);
+  const [nirfRankings, setNirfRankings] = useState<NIRFRanking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Combine all courses
-  const courses = [
-    ...computerScienceCourses, 
-    ...biologyCourses, 
-    ...commerceCourses, 
-    ...artsCourses,
-    ...scienceCourses
-  ];
+  // Fetch all data from Supabase
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Fetch courses
+        const { data: coursesData, error: coursesError } = await supabase
+          .from('courses')
+          .select('*');
+        
+        if (coursesError) throw new Error(`Error fetching courses: ${coursesError.message}`);
+        setCourses(coursesData.map(mapDbCourse));
+        
+        // Fetch colleges
+        const { data: collegesData, error: collegesError } = await supabase
+          .from('colleges')
+          .select('*');
+        
+        if (collegesError) throw new Error(`Error fetching colleges: ${collegesError.message}`);
+        setColleges(collegesData.map(mapDbCollege));
+        
+        // Fetch careers
+        const { data: careersData, error: careersError } = await supabase
+          .from('careers')
+          .select('*');
+        
+        if (careersError) throw new Error(`Error fetching careers: ${careersError.message}`);
+        setCareers(careersData.map(mapDbCareer));
+        
+        // Fetch government exams
+        const { data: examsData, error: examsError } = await supabase
+          .from('government_exams')
+          .select('*');
+        
+        if (examsError) throw new Error(`Error fetching exams: ${examsError.message}`);
+        setGovernmentExams(examsData.map(mapDbGovernmentExam));
+        
+        // Fetch NIRF rankings
+        const { data: rankingsData, error: rankingsError } = await supabase
+          .from('nirf_rankings')
+          .select('*');
+        
+        if (rankingsError) throw new Error(`Error fetching rankings: ${rankingsError.message}`);
+        setNirfRankings(rankingsData.map(mapDbNIRFRanking));
+        
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        toast.error('Failed to fetch educational data');
+        
+        // Fallback to static data
+        const allCourses = [
+          ...computerScienceCourses, 
+          ...biologyCourses, 
+          ...commerceCourses, 
+          ...artsCourses,
+          ...scienceCourses
+        ];
+        setCourses(allCourses);
+        setColleges(colleges);
+        setCareers(careers);
+        setGovernmentExams(governmentExams);
+        setNirfRankings(nirfRankings);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
   
   // Create getRecommendations function that uses the utility
   const getRecommendations = (stream: string) => {
@@ -47,7 +124,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       careers,
       governmentExams,
       nirfRankings,
-      getRecommendations
+      getRecommendations,
+      isLoading,
+      error
     }}>
       {children}
     </DataContext.Provider>
@@ -61,4 +140,4 @@ export type {
   Career,
   GovernmentExam,
   NIRFRanking
-} from './data/types';
+} from '@/types/data';

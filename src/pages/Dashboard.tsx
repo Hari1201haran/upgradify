@@ -6,12 +6,13 @@ import MainLayout from '@/components/layout/MainLayout';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Bell, Award } from 'lucide-react';
+import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Bell, Award, Database, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { getRecommendations, colleges } = useData();
+  const { getRecommendations, colleges, isLoading, error, courses, careers, governmentExams } = useData();
   const navigate = useNavigate();
   
   const stream = user?.stream || 'Science';
@@ -60,6 +61,44 @@ const Dashboard = () => {
               </div>
             </GlassCard>
           </section>
+          
+          {/* Loading state */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-10">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <p className="mt-4 text-muted-foreground">Loading educational data...</p>
+            </div>
+          )}
+          
+          {/* Error state */}
+          {error && (
+            <Alert variant="destructive">
+              <AlertTitle>Error loading data</AlertTitle>
+              <AlertDescription>
+                {error}. Using fallback data instead.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Database Status */}
+          {!isLoading && (
+            <GlassCard className="p-6 bg-gradient-to-r from-green-500/5 to-emerald-500/5 border-none">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-green-100 rounded-full">
+                  <Database className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-medium">Database Status</h2>
+                  <div className="flex flex-wrap gap-4 mt-2">
+                    <p className="text-sm"><span className="font-semibold">Courses:</span> {courses.length}</p>
+                    <p className="text-sm"><span className="font-semibold">Colleges:</span> {colleges.length}</p>
+                    <p className="text-sm"><span className="font-semibold">Careers:</span> {careers.length}</p>
+                    <p className="text-sm"><span className="font-semibold">Government Exams:</span> {governmentExams.length}</p>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          )}
           
           {/* Stats Overview */}
           <section className="grid grid-cols-1 md:grid-cols-4 gap-4">

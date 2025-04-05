@@ -60,4 +60,6 @@ export interface DataContextType {
     recommendedCareers: Career[];
     recommendedExams: GovernmentExam[];
   };
+  isLoading: boolean;
+  error: string | null;
 }
