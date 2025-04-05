@@ -9,6 +9,150 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      careers: {
+        Row: {
+          description: string
+          education: string[]
+          id: string
+          interests: string[]
+          job_outlook: string
+          salary: string
+          skills: string[]
+          streams: string[]
+          title: string
+        }
+        Insert: {
+          description: string
+          education: string[]
+          id: string
+          interests: string[]
+          job_outlook: string
+          salary: string
+          skills: string[]
+          streams: string[]
+          title: string
+        }
+        Update: {
+          description?: string
+          education?: string[]
+          id?: string
+          interests?: string[]
+          job_outlook?: string
+          salary?: string
+          skills?: string[]
+          streams?: string[]
+          title?: string
+        }
+        Relationships: []
+      }
+      colleges: {
+        Row: {
+          courses: string[]
+          description: string
+          id: string
+          location: string
+          name: string
+          ranking: number
+        }
+        Insert: {
+          courses: string[]
+          description: string
+          id: string
+          location: string
+          name: string
+          ranking: number
+        }
+        Update: {
+          courses?: string[]
+          description?: string
+          id?: string
+          location?: string
+          name?: string
+          ranking?: number
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          description: string
+          duration: string
+          id: string
+          streams: string[]
+          title: string
+        }
+        Insert: {
+          description: string
+          duration: string
+          id: string
+          streams: string[]
+          title: string
+        }
+        Update: {
+          description?: string
+          duration?: string
+          id?: string
+          streams?: string[]
+          title?: string
+        }
+        Relationships: []
+      }
+      government_exams: {
+        Row: {
+          description: string
+          eligibility: string[]
+          id: string
+          preparation_time: string
+          streams: string[]
+          title: string
+        }
+        Insert: {
+          description: string
+          eligibility: string[]
+          id: string
+          preparation_time: string
+          streams: string[]
+          title: string
+        }
+        Update: {
+          description?: string
+          eligibility?: string[]
+          id?: string
+          preparation_time?: string
+          streams?: string[]
+          title?: string
+        }
+        Relationships: []
+      }
+      nirf_rankings: {
+        Row: {
+          category: string
+          description: string
+          id: string
+          location: string
+          name: string
+          rank: number
+          score: number
+        }
+        Insert: {
+          category: string
+          description: string
+          id: string
+          location: string
+          name: string
+          rank: number
+          score: number
+        }
+        Update: {
+          category?: string
+          description?: string
+          id?: string
+          location?: string
+          name?: string
+          rank?: number
+          score?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

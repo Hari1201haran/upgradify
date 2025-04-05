@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/types/auth';
-import { toast } from 'sonner';
 
 export const useAuthState = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
