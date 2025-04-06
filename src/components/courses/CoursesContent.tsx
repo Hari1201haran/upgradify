@@ -40,7 +40,7 @@ const CoursesContent: React.FC<CoursesContentProps> = ({
   
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-medium">
           Found {filteredCourses.length} courses
           {selectedStream ? ` in ${selectedStream}` : ''}
@@ -54,7 +54,7 @@ const CoursesContent: React.FC<CoursesContentProps> = ({
           ))}
         </div>
       ) : (
-        <CoursesTable courses={filteredCourses} />
+        <CoursesTable courses={filteredCourses} selectedStream={selectedStream} />
       )}
     </>
   );

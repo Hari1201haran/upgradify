@@ -19,7 +19,7 @@ const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
   return (
     <div className="rounded-md border">
       <Table>
-        <TableCaption>Top colleges in India</TableCaption>
+        <TableCaption>Top Colleges in India</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>

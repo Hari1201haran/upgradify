@@ -13,13 +13,16 @@ import {
 
 interface CoursesTableProps {
   courses: Course[];
+  selectedStream: string | null;
 }
 
-const CoursesTable: React.FC<CoursesTableProps> = ({ courses }) => {
+const CoursesTable: React.FC<CoursesTableProps> = ({ courses, selectedStream }) => {
+  const streamLabel = selectedStream || 'All Streams';
+  
   return (
     <div className="rounded-md border">
       <Table>
-        <TableCaption>A comprehensive list of available courses</TableCaption>
+        <TableCaption>{streamLabel} Courses</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Course Name</TableHead>
