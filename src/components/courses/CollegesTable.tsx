@@ -16,6 +16,20 @@ interface CollegesTableProps {
 }
 
 const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
+  // Group colleges by category for better organization
+  const collegesByCategory = colleges.reduce((acc, college) => {
+    // Use a default category if none is found
+    const category = college.category || 'General';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(college);
+    return acc;
+  }, {} as Record<string, College[]>);
+
+  // Get unique categories
+  const categories = Object.keys(collegesByCategory);
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -24,6 +38,7 @@ const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Location</TableHead>
+            <TableHead>Category</TableHead>
             <TableHead>Ranking</TableHead>
             <TableHead className="hidden md:table-cell">Description</TableHead>
           </TableRow>
@@ -33,6 +48,11 @@ const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
             <TableRow key={college.id} className="hover:bg-muted/50 cursor-pointer">
               <TableCell className="font-medium">{college.name}</TableCell>
               <TableCell>{college.location}</TableCell>
+              <TableCell>
+                <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                  {college.category || 'General'}
+                </span>
+              </TableCell>
               <TableCell>#{college.ranking}</TableCell>
               <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
                 <span className="line-clamp-1">{college.description}</span>
