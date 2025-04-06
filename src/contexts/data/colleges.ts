@@ -1,5 +1,4 @@
 
-
 import { College } from './types';
 
 export const colleges: College[] = [
@@ -29,5 +28,23 @@ export const colleges: College[] = [
     ranking: 3,
     courses: ['bio-29', 'com-3', 'com-11'],
     category: 'Arts & Science',
+  },
+  {
+    id: 'col-4',
+    name: 'National Law School of India University',
+    description: 'Premier law institution in India',
+    location: 'Bangalore',
+    ranking: 1,
+    courses: ['law-1', 'law-2', 'law-3'],
+    category: 'Law',
+  },
+  {
+    id: 'col-5',
+    name: 'NALSAR University of Law',
+    description: 'One of the top law universities in India',
+    location: 'Hyderabad',
+    ranking: 2,
+    courses: ['law-1', 'law-4', 'law-5'],
+    category: 'Law',
   },
 ];

@@ -1,3 +1,4 @@
+
 import { Database } from "@/integrations/supabase/types";
 
 // These types use the generated Supabase types but are defined separately

@@ -1,4 +1,3 @@
-
 import { GovernmentExam } from './types';
 
 export const governmentExams: GovernmentExam[] = [
@@ -7,7 +6,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'UPSC Civil Services Examination',
     description: 'One of the toughest exams in India for various civil services posts',
     eligibility: ['Bachelor\'s degree in any discipline'],
-    streams: ['Computer Science', 'Biology', 'Commerce', 'Science', 'Arts'],
+    streams: ['Computer Science', 'Biology', 'Commerce', 'Science', 'Arts', 'Law'],
     preparationTime: '1-2 years',
   },
   {
@@ -551,7 +550,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'Delhi Judiciary Exam',
     description: 'For recruitment of judges in Delhi',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -559,7 +558,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'MP Judiciary Exam',
     description: 'For judicial positions in Madhya Pradesh',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -567,7 +566,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'Rajasthan Judiciary Exam',
     description: 'For judicial recruitment in Rajasthan',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -575,7 +574,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'Bihar Judiciary Exam',
     description: 'Recruitment for judges in Bihar state',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -583,7 +582,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'Jharkhand Judiciary Exam',
     description: 'For judiciary positions in Jharkhand',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -591,7 +590,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'CLAT PG',
     description: 'For postgraduate law admissions and judiciary roles',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '6-8 months',
   },
   {
@@ -599,7 +598,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'HCS Judicial Branch',
     description: 'For judiciary positions in Haryana',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -607,7 +606,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'CGPSC Judicial Exam',
     description: 'For judiciary recruitment in Chhattisgarh',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -615,7 +614,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'Odisha Judicial Exam',
     description: 'For judicial recruitment in Odisha',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -623,7 +622,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'UKPSC Judicial Exam',
     description: 'Recruitment of judges in Uttarakhand',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -631,7 +630,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'Tamil Nadu Judiciary Exam',
     description: 'For judiciary recruitment in Tamil Nadu',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -639,7 +638,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'AP Judiciary Exam',
     description: 'Recruitment for judiciary positions in Andhra Pradesh',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -647,7 +646,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'West Bengal Judiciary Exam',
     description: 'For judiciary positions in West Bengal',
     eligibility: ['LLB degree'],
-    streams: ['Arts'],
+    streams: ['Law'],
     preparationTime: '10-12 months',
   },
   {
@@ -783,7 +782,7 @@ export const governmentExams: GovernmentExam[] = [
     title: 'CLAT (Common Law Admission Test)',
     description: 'For admission to top law schools in India',
     eligibility: ['10+2 pass'],
-    streams: ['Arts', 'Commerce', 'Science'],
+    streams: ['Arts', 'Commerce', 'Science', 'Law'],
     preparationTime: '6-8 months',
   },
   {
@@ -801,5 +800,53 @@ export const governmentExams: GovernmentExam[] = [
     eligibility: ['10+2 pass'],
     streams: ['Arts', 'Commerce', 'Science', 'Computer Science', 'Biology'],
     preparationTime: '4-6 months',
+  },
+  {
+    id: 'exam-101',
+    title: 'AILET (All India Law Entrance Test)',
+    description: 'For admission to National Law University Delhi',
+    eligibility: ['10+2 pass with minimum 50% marks'],
+    streams: ['Law'],
+    preparationTime: '6-8 months',
+  },
+  {
+    id: 'exam-102',
+    title: 'DU LLB Entrance Exam',
+    description: 'For admission to Delhi University\'s Law Faculty',
+    eligibility: ['Bachelor\'s degree with minimum 50% marks'],
+    streams: ['Law'],
+    preparationTime: '4-6 months',
+  },
+  {
+    id: 'exam-103',
+    title: 'SLAT (Symbiosis Law Admission Test)',
+    description: 'For admission to Symbiosis Law Schools',
+    eligibility: ['10+2 pass with minimum 45% marks'],
+    streams: ['Law'],
+    preparationTime: '4-6 months',
+  },
+  {
+    id: 'exam-104',
+    title: 'MH CET Law',
+    description: 'Common Entrance Test for law colleges in Maharashtra',
+    eligibility: ['10+2 pass with minimum 45% marks'],
+    streams: ['Law'],
+    preparationTime: '4-6 months',
+  },
+  {
+    id: 'exam-105',
+    title: 'BHU LLB Entrance Exam',
+    description: 'For admission to Banaras Hindu University\'s Law Faculty',
+    eligibility: ['Bachelor\'s degree with minimum 50% marks'],
+    streams: ['Law'],
+    preparationTime: '4-6 months',
+  },
+  {
+    id: 'exam-106',
+    title: 'Judicial Services Examination',
+    description: 'Common exam for various state judiciary services',
+    eligibility: ['LLB degree with minimum 3 years practice'],
+    streams: ['Law'],
+    preparationTime: '12-18 months',
   },
 ];

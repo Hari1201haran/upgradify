@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, GovernmentExam } from '@/contexts/DataContext';
@@ -54,16 +53,18 @@ const GovernmentExams = () => {
     'Commerce': governmentExams.filter(exam => exam.streams.includes('Commerce')).length,
     'Arts': governmentExams.filter(exam => exam.streams.includes('Arts')).length,
     'Science': governmentExams.filter(exam => exam.streams.includes('Science')).length,
+    'Law': governmentExams.filter(exam => exam.streams.includes('Law')).length,
     'All': governmentExams.length
   };
 
   // Define stream options
-  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science'];
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law'];
   
   // Add console logs to help with debugging
   useEffect(() => {
     console.log("Total government exams:", governmentExams.length);
     console.log("Computer Science exams:", governmentExams.filter(exam => exam.streams.includes('Computer Science')).length);
+    console.log("Law exams:", governmentExams.filter(exam => exam.streams.includes('Law')).length);
     console.log("Filtered exams:", filteredExams.length);
     console.log("Selected stream:", selectedStream);
   }, [governmentExams, filteredExams, selectedStream]);
