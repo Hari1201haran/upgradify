@@ -16,6 +16,7 @@ export interface College {
   location: string;
   ranking: number;
   courses: string[];
+  category?: string; // Add category field here too
 }
 
 export interface Career {

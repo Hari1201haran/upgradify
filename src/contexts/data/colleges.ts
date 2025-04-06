@@ -9,6 +9,7 @@ export const colleges: College[] = [
     location: 'Chennai',
     ranking: 1,
     courses: ['cs-1', 'cs-50', 'cs-55'],
+    category: 'Engineering',
   },
   {
     id: 'col-2',
@@ -17,6 +18,7 @@ export const colleges: College[] = [
     location: 'Chennai',
     ranking: 2,
     courses: ['cs-53', 'cs-54', 'cs-45'],
+    category: 'Engineering',
   },
   {
     id: 'col-3',
@@ -25,5 +27,6 @@ export const colleges: College[] = [
     location: 'Chennai',
     ranking: 3,
     courses: ['bio-29', 'com-3', 'com-11'],
+    category: 'Arts & Science',
   },
 ];
