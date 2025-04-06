@@ -47,6 +47,7 @@ export type Database = {
       }
       colleges: {
         Row: {
+          category: string | null
           courses: string[]
           description: string
           id: string
@@ -55,6 +56,7 @@ export type Database = {
           ranking: number
         }
         Insert: {
+          category?: string | null
           courses: string[]
           description: string
           id: string
@@ -63,6 +65,7 @@ export type Database = {
           ranking: number
         }
         Update: {
+          category?: string | null
           courses?: string[]
           description?: string
           id?: string

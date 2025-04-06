@@ -1,3 +1,4 @@
+
 import { Database } from "@/integrations/supabase/types";
 
 // These types use the generated Supabase types but are defined separately
@@ -69,7 +70,7 @@ export function mapDbCollege(college: Database['public']['Tables']['colleges']['
     location: college.location,
     ranking: college.ranking,
     courses: college.courses,
-    category: (college as any).category || 'General', // Add type assertion and provide default value
+    category: college.category || 'General', // Use the category field with a default value
   };
 }
 
