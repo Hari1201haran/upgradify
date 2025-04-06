@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { College } from '@/contexts/DataContext';
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -49,9 +50,9 @@ const CollegesTable: React.FC<CollegesTableProps> = ({ colleges }) => {
               <TableCell className="font-medium">{college.name}</TableCell>
               <TableCell>{college.location}</TableCell>
               <TableCell>
-                <span className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                <Badge variant="secondary" className="text-xs">
                   {college.category || 'General'}
-                </span>
+                </Badge>
               </TableCell>
               <TableCell>#{college.ranking}</TableCell>
               <TableCell className="hidden md:table-cell text-sm text-muted-foreground">

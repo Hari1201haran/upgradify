@@ -1,4 +1,3 @@
-
 import { Database } from "@/integrations/supabase/types";
 
 // These types use the generated Supabase types but are defined separately
@@ -17,6 +16,7 @@ export interface College {
   location: string;
   ranking: number;
   courses: string[];
+  category?: string; // Add the category field
 }
 
 export interface Career {
@@ -69,6 +69,7 @@ export function mapDbCollege(college: Database['public']['Tables']['colleges']['
     location: college.location,
     ranking: college.ranking,
     courses: college.courses,
+    category: college.category,
   };
 }
 
