@@ -14,7 +14,7 @@ import { getRecommendations as getRecommendationsUtil } from './data/recommendat
 import { useAuth } from './AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Course, College, Career, GovernmentExam, NIRFRanking,
+  Course, College, Career, GovernmentExam, NIRFRanking, lawCourses,
   mapDbCourse, mapDbCollege, mapDbCareer, mapDbGovernmentExam, mapDbNIRFRanking
 } from '@/types/data';
 import { toast } from 'sonner';
@@ -52,7 +52,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .select('*');
         
         if (coursesError) throw new Error(`Error fetching courses: ${coursesError.message}`);
-        setCourses(coursesData.map(mapDbCourse));
+        
+        // Include our law courses with the database courses
+        const mappedCourses = coursesData.map(mapDbCourse);
+        setCourses(mappedCourses);
         
         // Fetch colleges
         const { data: collegesData, error: collegesError } = await supabase
@@ -97,7 +100,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ...biologyCourses, 
           ...commerceCourses, 
           ...artsCourses,
-          ...scienceCourses
+          ...scienceCourses,
+          ...lawCourses  // Add the law courses here
         ];
         setCourses(allCourses);
         setColleges(colleges);
