@@ -55,7 +55,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Include our law courses with the database courses
         const mappedCourses = coursesData.map(mapDbCourse);
-        setCourses(mappedCourses);
+        setCourses([...mappedCourses, ...lawCourses]);
         
         // Fetch colleges
         const { data: collegesData, error: collegesError } = await supabase
