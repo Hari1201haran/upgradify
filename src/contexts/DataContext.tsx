@@ -53,9 +53,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (coursesError) throw new Error(`Error fetching courses: ${coursesError.message}`);
         
-        // Include our law courses with the database courses
+        // Log the number of courses to help with debugging
+        console.log(`Fetched ${coursesData.length} courses from database`);
+        console.log(`Law courses count:`, coursesData.filter(c => c.streams.includes('Law')).length);
+        
+        // Map the database courses
         const mappedCourses = coursesData.map(mapDbCourse);
-        setCourses([...mappedCourses, ...lawCourses]);
+        setCourses(mappedCourses);
         
         // Fetch colleges
         const { data: collegesData, error: collegesError } = await supabase
@@ -79,6 +83,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .select('*');
         
         if (examsError) throw new Error(`Error fetching exams: ${examsError.message}`);
+        
+        // Log the number of exams to help with debugging
+        console.log(`Fetched ${examsData.length} government exams from database`);
+        console.log(`Law exams count:`, examsData.filter(e => e.streams.includes('Law')).length);
+        
         setGovernmentExams(examsData.map(mapDbGovernmentExam));
         
         // Fetch NIRF rankings
@@ -88,6 +97,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (rankingsError) throw new Error(`Error fetching rankings: ${rankingsError.message}`);
         setNirfRankings(rankingsData.map(mapDbNIRFRanking));
+        
+        toast.success('Successfully loaded educational data');
         
       } catch (err) {
         console.error('Error fetching data:', err);
