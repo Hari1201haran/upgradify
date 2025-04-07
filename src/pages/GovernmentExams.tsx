@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, GovernmentExam } from '@/contexts/DataContext';
@@ -18,6 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const GovernmentExams = () => {
   const { user } = useAuth();
@@ -28,6 +38,10 @@ const GovernmentExams = () => {
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table view
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+  
   const filteredExams = governmentExams.filter(exam => {
     const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       exam.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -37,11 +51,22 @@ const GovernmentExams = () => {
     return matchesSearch && matchesStream;
   });
   
-  const generalExams = filteredExams.filter(exam => 
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedExams = filteredExams.slice(startIndex, endIndex);
+  
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedStream]);
+  
+  const generalExams = paginatedExams.filter(exam => 
     exam.streams.length >= 3
   );
   
-  const streamSpecificExams = filteredExams.filter(exam => 
+  const streamSpecificExams = paginatedExams.filter(exam => 
     exam.streams.length < 3 && 
     (selectedStream ? exam.streams.includes(selectedStream) : true)
   );
@@ -60,6 +85,72 @@ const GovernmentExams = () => {
   // Define stream options
   const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law'];
   
+  // Generate pagination links
+  const generatePaginationLinks = () => {
+    const links = [];
+    
+    // Always show first page
+    links.push(
+      <PaginationItem key="first">
+        <PaginationLink 
+          onClick={() => setCurrentPage(1)}
+          isActive={currentPage === 1}
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
+    );
+    
+    // Show ellipsis if needed
+    if (currentPage > 3) {
+      links.push(
+        <PaginationItem key="ellipsis-1">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+    
+    // Show current page and surrounding pages
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      if (i === 1 || i === totalPages) continue; // Skip first and last as they're always shown
+      links.push(
+        <PaginationItem key={i}>
+          <PaginationLink 
+            onClick={() => setCurrentPage(i)}
+            isActive={currentPage === i}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    // Show ellipsis if needed
+    if (currentPage < totalPages - 2) {
+      links.push(
+        <PaginationItem key="ellipsis-2">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+    
+    // Always show last page if there's more than one page
+    if (totalPages > 1) {
+      links.push(
+        <PaginationItem key="last">
+          <PaginationLink 
+            onClick={() => setCurrentPage(totalPages)}
+            isActive={currentPage === totalPages}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    return links;
+  };
+  
   // Add console logs to help with debugging
   useEffect(() => {
     console.log("Total government exams:", governmentExams.length);
@@ -67,7 +158,9 @@ const GovernmentExams = () => {
     console.log("Law exams:", governmentExams.filter(exam => exam.streams.includes('Law')).length);
     console.log("Filtered exams:", filteredExams.length);
     console.log("Selected stream:", selectedStream);
-  }, [governmentExams, filteredExams, selectedStream]);
+    console.log("Current page:", currentPage, "of", totalPages);
+    console.log("Displaying exams from", startIndex, "to", endIndex);
+  }, [governmentExams, filteredExams, selectedStream, currentPage, totalPages, startIndex, endIndex]);
 
   return (
     <MainLayout>
@@ -160,17 +253,41 @@ const GovernmentExams = () => {
                     <h3 className="text-lg font-medium">
                       Found {filteredExams.length} government exams
                       {selectedStream ? ` for ${selectedStream}` : ''}
+                      {filteredExams.length > itemsPerPage && ` (showing ${startIndex + 1}-${Math.min(endIndex, filteredExams.length)})`}
                     </h3>
                   </div>
                   
                   {viewMode === 'cards' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {filteredExams.map((exam) => (
+                      {paginatedExams.map((exam) => (
                         <ExamCard key={exam.id} exam={exam} />
                       ))}
                     </div>
                   ) : (
-                    <ExamsTable exams={filteredExams} />
+                    <ExamsTable exams={paginatedExams} />
+                  )}
+                  
+                  {/* Pagination controls */}
+                  {filteredExams.length > itemsPerPage && (
+                    <Pagination className="mt-4">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                          />
+                        </PaginationItem>
+                        
+                        {generatePaginationLinks()}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   )}
                 </>
               )}
@@ -222,6 +339,29 @@ const GovernmentExams = () => {
                   )
                 )}
               </div>
+              
+              {/* Pagination for tabbed content */}
+              {filteredExams.length > itemsPerPage && (
+                <Pagination className="mt-4">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                    
+                    {generatePaginationLinks()}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
             </TabsContent>
           </Tabs>
         </div>

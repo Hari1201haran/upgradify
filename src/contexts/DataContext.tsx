@@ -77,10 +77,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (careersError) throw new Error(`Error fetching careers: ${careersError.message}`);
         setCareers(careersData.map(mapDbCareer));
         
-        // Fetch government exams
+        // Fetch government exams - adding pagination for larger dataset
         const { data: examsData, error: examsError } = await supabase
           .from('government_exams')
-          .select('*');
+          .select('*')
+          .order('title', { ascending: true });
         
         if (examsError) throw new Error(`Error fetching exams: ${examsError.message}`);
         
