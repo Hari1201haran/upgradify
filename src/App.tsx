@@ -18,7 +18,6 @@ import Courses from "./pages/Courses";
 import GovernmentExams from "./pages/GovernmentExams";
 import NIRFRankings from "./pages/NIRFRankings";
 import Profile from "./pages/Profile";
-import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import ExpertTips from "./pages/ExpertTips";
@@ -66,7 +65,6 @@ const AppRoutes = () => {
       <Route path="/government-exams" element={<ProtectedRoute><GovernmentExams /></ProtectedRoute>} />
       <Route path="/nirf-rankings" element={<ProtectedRoute><NIRFRankings /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-      <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/expert-tips" element={<ProtectedRoute><ExpertTips /></ProtectedRoute>} />
       
       <Route path="*" element={<NotFound />} />
