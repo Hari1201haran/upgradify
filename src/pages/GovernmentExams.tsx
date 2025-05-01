@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, GraduationCap, Clock, Users, BookOpenCheck, Award, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import EligibilityFilter from '@/components/exams/EligibilityFilter';
 import {
   Table,
   TableBody,
@@ -36,6 +37,7 @@ const GovernmentExams = () => {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
+  const [selectedEligibility, setSelectedEligibility] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table view
   
   // Pagination state
@@ -48,7 +50,14 @@ const GovernmentExams = () => {
     
     const matchesStream = selectedStream ? exam.streams.includes(selectedStream) : true;
     
-    return matchesSearch && matchesStream;
+    // Filter by eligibility
+    const matchesEligibility = selectedEligibility ? 
+      (typeof exam.eligibility === 'string' ? 
+        exam.eligibility.toLowerCase().includes(selectedEligibility.toLowerCase()) : 
+        exam.eligibility.some(e => e.toLowerCase().includes(selectedEligibility.toLowerCase()))) : 
+      true;
+    
+    return matchesSearch && matchesStream && matchesEligibility;
   });
   
   // Calculate pagination values
@@ -60,7 +69,7 @@ const GovernmentExams = () => {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedStream]);
+  }, [searchQuery, selectedStream, selectedEligibility]);
   
   const generalExams = paginatedExams.filter(exam => 
     exam.streams.length >= 3
@@ -79,11 +88,19 @@ const GovernmentExams = () => {
     'Arts': governmentExams.filter(exam => exam.streams.includes('Arts')).length,
     'Science': governmentExams.filter(exam => exam.streams.includes('Science')).length,
     'Law': governmentExams.filter(exam => exam.streams.includes('Law')).length,
+    'Engineering': governmentExams.filter(exam => exam.streams.includes('Engineering')).length,
     'All': governmentExams.length
   };
 
+  // Count exams by eligibility
+  const class12ExamsCount = governmentExams.filter(exam => {
+    return typeof exam.eligibility === 'string' ? 
+      exam.eligibility.toLowerCase().includes('class 12') : 
+      exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
+  }).length;
+
   // Define stream options
-  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law'];
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law', 'Engineering'];
   
   // Generate pagination links
   const generatePaginationLinks = () => {
@@ -154,13 +171,11 @@ const GovernmentExams = () => {
   // Add console logs to help with debugging
   useEffect(() => {
     console.log("Total government exams:", governmentExams.length);
-    console.log("Computer Science exams:", governmentExams.filter(exam => exam.streams.includes('Computer Science')).length);
-    console.log("Law exams:", governmentExams.filter(exam => exam.streams.includes('Law')).length);
+    console.log("Class 12 eligible exams:", class12ExamsCount);
     console.log("Filtered exams:", filteredExams.length);
     console.log("Selected stream:", selectedStream);
-    console.log("Current page:", currentPage, "of", totalPages);
-    console.log("Displaying exams from", startIndex, "to", endIndex);
-  }, [governmentExams, filteredExams, selectedStream, currentPage, totalPages, startIndex, endIndex]);
+    console.log("Selected eligibility:", selectedEligibility);
+  }, [governmentExams, filteredExams, selectedStream, selectedEligibility]);
 
   return (
     <MainLayout>
@@ -208,22 +223,33 @@ const GovernmentExams = () => {
               </div>
             </div>
             
-            <div className="flex gap-2 flex-wrap">
-              <Button 
-                variant={selectedStream === null ? "default" : "outline"}
-                onClick={() => setSelectedStream(null)}
-              >
-                All ({examCounts['All']})
-              </Button>
-              {streamOptions.map(stream => (
-                <Button 
-                  key={stream}
-                  variant={selectedStream === stream ? "default" : "outline"}
-                  onClick={() => setSelectedStream(stream)}
-                >
-                  {stream} ({examCounts[stream]})
-                </Button>
-              ))}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1">
+                <div className="flex gap-2 flex-wrap">
+                  <Button 
+                    variant={selectedStream === null ? "default" : "outline"}
+                    onClick={() => setSelectedStream(null)}
+                  >
+                    All ({examCounts['All']})
+                  </Button>
+                  {streamOptions.map(stream => (
+                    <Button 
+                      key={stream}
+                      variant={selectedStream === stream ? "default" : "outline"}
+                      onClick={() => setSelectedStream(stream)}
+                    >
+                      {stream} ({examCounts[stream]})
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="w-full md:w-auto">
+                <EligibilityFilter 
+                  selectedEligibility={selectedEligibility}
+                  onEligibilityChange={setSelectedEligibility}
+                />
+              </div>
             </div>
           </section>
           
@@ -253,6 +279,7 @@ const GovernmentExams = () => {
                     <h3 className="text-lg font-medium">
                       Found {filteredExams.length} government exams
                       {selectedStream ? ` for ${selectedStream}` : ''}
+                      {selectedEligibility === 'Class 12' ? ' eligible for 12th pass students' : ''}
                       {filteredExams.length > itemsPerPage && ` (showing ${startIndex + 1}-${Math.min(endIndex, filteredExams.length)})`}
                     </h3>
                   </div>
@@ -375,6 +402,11 @@ interface ExamCardProps {
 }
 
 const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
+  // Check if the exam is eligible for 12th pass students
+  const isClass12Exam = typeof exam.eligibility === 'string' ? 
+    exam.eligibility.toLowerCase().includes('class 12') : 
+    exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
+  
   return (
     <GlassCard 
       className="p-5 hover:shadow-lg transition-all scale-in-animation"
@@ -386,6 +418,11 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
             <Award className="h-5 w-5 text-purple-600" />
           </div>
           <div className="flex flex-wrap gap-1">
+            {isClass12Exam && (
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">
+                12th Pass
+              </span>
+            )}
             {exam.streams && exam.streams.length > 0 && exam.streams.map((stream) => (
               <span 
                 key={stream} 
@@ -448,29 +485,47 @@ const ExamsTable: React.FC<ExamsTableProps> = ({ exams }) => {
           <TableRow>
             <TableHead>Exam Name</TableHead>
             <TableHead>Streams</TableHead>
+            <TableHead>Eligibility</TableHead>
             <TableHead>Preparation Time</TableHead>
-            <TableHead className="hidden md:table-cell">Description</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {exams.map((exam) => (
-            <TableRow key={exam.id} className="hover:bg-muted/50 cursor-pointer">
-              <TableCell className="font-medium">{exam.title}</TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {exam.streams.map(stream => (
-                    <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
-                      {stream}
-                    </span>
-                  ))}
-                </div>
-              </TableCell>
-              <TableCell>{exam.preparationTime}</TableCell>
-              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                <span className="line-clamp-1">{exam.description}</span>
-              </TableCell>
-            </TableRow>
-          ))}
+          {exams.map((exam) => {
+            // Check if the exam is eligible for 12th pass students
+            const isClass12Exam = typeof exam.eligibility === 'string' ? 
+              exam.eligibility.toLowerCase().includes('class 12') : 
+              exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
+              
+            return (
+              <TableRow key={exam.id} className="hover:bg-muted/50 cursor-pointer">
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    {exam.title}
+                    {isClass12Exam && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
+                        12th Pass
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {exam.streams.map(stream => (
+                      <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                        {stream}
+                      </span>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-[200px]">
+                  <span className="line-clamp-1">
+                    {typeof exam.eligibility === 'string' ? exam.eligibility : exam.eligibility.join(', ')}
+                  </span>
+                </TableCell>
+                <TableCell>{exam.preparationTime}</TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
