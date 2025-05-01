@@ -7,7 +7,7 @@ export interface UserProfile {
   email: string;
   mobile: string;
   grade?: string;
-  stream?: 'Science' | 'Commerce' | 'Arts' | null;
+  stream?: string | null;
   interests?: string[];
   isAdmin?: boolean;
 }

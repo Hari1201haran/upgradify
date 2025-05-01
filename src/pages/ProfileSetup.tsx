@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,14 +9,18 @@ import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
 
-const STREAMS = ['Science', 'Commerce', 'Arts'] as const;
+const STREAMS = [
+  'Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 
+  'Law', 'Humanities', 'Computer Science', 'Management'
+] as const;
 
 const INTERESTS = [
   'Technology', 'Coding', 'Mathematics', 'Problem Solving',
   'Biology', 'Chemistry', 'Physics', 'Research',
   'Finance', 'Economics', 'Business', 'Management',
   'Literature', 'History', 'Psychology', 'Sociology',
-  'Design', 'Art', 'Music', 'Communication'
+  'Design', 'Art', 'Music', 'Communication',
+  'Law', 'Medicine', 'Engineering', 'Architecture'
 ];
 
 const ProfileSetup = () => {
@@ -49,7 +52,7 @@ const ProfileSetup = () => {
       // Update user profile
       updateProfile({
         grade: '12th',
-        stream: stream as 'Science' | 'Commerce' | 'Arts',
+        stream: stream as 'Science' | 'Commerce' | 'Arts' | 'Engineering' | 'Medical' | 'Law' | 'Humanities' | 'Computer Science' | 'Management',
         interests: selectedInterests
       });
       
@@ -84,29 +87,23 @@ const ProfileSetup = () => {
                   </p>
                 </div>
                 
-                <RadioGroup
-                  value={stream || ''}
-                  onValueChange={setStream}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2"
-                >
-                  {STREAMS.map((streamOption) => (
-                    <div key={streamOption}>
-                      <RadioGroupItem
-                        value={streamOption}
-                        id={streamOption}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={streamOption}
-                        className="flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-white p-4 hover:bg-secondary hover:border-primary cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
-                      >
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="text-lg font-medium">{streamOption}</span>
-                        </div>
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+                <div className="grid grid-cols-1 gap-4">
+                  <Select
+                    value={stream || ''}
+                    onValueChange={setStream}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your academic stream" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STREAMS.map((streamOption) => (
+                        <SelectItem key={streamOption} value={streamOption}>
+                          {streamOption}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               
               {/* Interests */}

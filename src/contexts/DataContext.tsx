@@ -130,7 +130,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Create getRecommendations function that uses the utility
   const getRecommendations = (stream: string) => {
-    return getRecommendationsUtil(stream, courses, careers, governmentExams);
+    // Add support for all academic streams when getting recommendations
+    const normalizedStream = stream === 'Computer Science' ? 'Science' :
+                            stream === 'Engineering' ? 'Science' :
+                            stream === 'Medical' ? 'Science' :
+                            stream === 'Humanities' ? 'Arts' :
+                            stream === 'Management' ? 'Commerce' :
+                            stream;
+                            
+    return getRecommendationsUtil(normalizedStream, courses, careers, governmentExams);
   };
 
   return (
