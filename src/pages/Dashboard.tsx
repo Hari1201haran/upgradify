@@ -6,7 +6,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Bell, Award, Database, Loader2 } from 'lucide-react';
+import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Database, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -139,7 +139,7 @@ const Dashboard = () => {
                   <h3 className="text-2xl font-bold mt-1">25+</h3>
                 </div>
                 <div className="p-2 bg-purple-100 rounded-lg">
-                  <Award className="h-5 w-5 text-purple-600" />
+                  <GraduationCap className="h-5 w-5 text-purple-600" />
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mt-4">
@@ -266,7 +266,7 @@ const Dashboard = () => {
                   >
                     <div className="space-y-2">
                       <div className="p-2 w-fit rounded-lg bg-purple-100">
-                        <Award className="h-5 w-5 text-purple-600" />
+                        <GraduationCap className="h-5 w-5 text-purple-600" />
                       </div>
                       <h4 className="font-semibold">{exam.title}</h4>
                       <p className="text-sm text-muted-foreground line-clamp-2">
@@ -319,56 +319,6 @@ const Dashboard = () => {
                 ))}
               </div>
             </div>
-          </section>
-          
-          {/* Notifications */}
-          <section className="space-y-4">
-            <h2 className="text-2xl font-bold">Recent Notifications</h2>
-            
-            <GlassCard className="p-4 hover:shadow-md transition-all">
-              <div className="flex gap-4">
-                <div className="p-2 h-fit rounded-full bg-amber-100">
-                  <Bell className="h-5 w-5 text-amber-600" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-semibold">IIT Madras Application Opens</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Applications for B.Tech programs are now open. Last date: June 30, 2023
-                  </p>
-                  <p className="text-xs text-muted-foreground">2 days ago</p>
-                </div>
-              </div>
-            </GlassCard>
-            
-            <GlassCard className="p-4 hover:shadow-md transition-all">
-              <div className="flex gap-4">
-                <div className="p-2 h-fit rounded-full bg-green-100">
-                  <Bell className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-semibold">New Course Added: Data Science</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Loyola College has announced a new B.Sc Data Science program
-                  </p>
-                  <p className="text-xs text-muted-foreground">1 week ago</p>
-                </div>
-              </div>
-            </GlassCard>
-            
-            <GlassCard className="p-4 hover:shadow-md transition-all">
-              <div className="flex gap-4">
-                <div className="p-2 h-fit rounded-full bg-purple-100">
-                  <Bell className="h-5 w-5 text-purple-600" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-semibold">UPSC Notification Released</h4>
-                  <p className="text-sm text-muted-foreground">
-                    The UPSC Civil Services Exam notification for 2023 has been released
-                  </p>
-                  <p className="text-xs text-muted-foreground">3 days ago</p>
-                </div>
-              </div>
-            </GlassCard>
           </section>
         </div>
       </PageTransition>
