@@ -19,6 +19,8 @@ import {
   ScrollText,
   CheckCircle
 } from 'lucide-react';
+import ExpertProfileModal, { ExpertDetails } from '@/components/experts/ExpertProfileModal';
+import { experts, findExpertById } from '@/data/expertsData';
 
 // Define the structure for expert tips
 interface Tip {
@@ -122,6 +124,16 @@ const getCategoryIcon = (category: string) => {
 const ExpertTips = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedExpert, setSelectedExpert] = useState<ExpertDetails | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const handleViewProfile = (expertId: string) => {
+    const expert = findExpertById(expertId);
+    if (expert) {
+      setSelectedExpert(expert);
+      setIsModalOpen(true);
+    }
+  };
   
   const filteredTips = tips.filter(tip => {
     const matchesSearch = tip.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -135,6 +147,7 @@ const ExpertTips = () => {
     <MainLayout>
       <PageTransition>
         <div className="space-y-8">
+          {/* Search section */}
           <section className="space-y-4">
             <div>
               <h1 className="text-3xl font-bold">Expert Tips & Advice</h1>
@@ -240,18 +253,21 @@ const ExpertTips = () => {
                 expertise="Cognitive Learning Specialist"
                 experience="15+ years"
                 icon={<BookOpen className="h-5 w-5" />}
+                onViewProfile={() => handleViewProfile("1")}
               />
               <ExpertCard 
                 name="Robert Williams"
                 expertise="Career Counselor"
                 experience="10+ years"
                 icon={<BriefcaseBusiness className="h-5 w-5" />}
+                onViewProfile={() => handleViewProfile("2")}
               />
               <ExpertCard 
                 name="Dr. Emma Thompson"
                 expertise="Clinical Psychologist"
                 experience="12+ years"
                 icon={<UserPlus className="h-5 w-5" />}
+                onViewProfile={() => handleViewProfile("3")}
               />
             </div>
           </section>
@@ -353,6 +369,13 @@ const ExpertTips = () => {
             </div>
           </section>
         </div>
+        
+        {/* Expert Profile Modal */}
+        <ExpertProfileModal 
+          expert={selectedExpert} 
+          open={isModalOpen} 
+          onOpenChange={setIsModalOpen} 
+        />
       </PageTransition>
     </MainLayout>
   );
@@ -407,9 +430,10 @@ interface ExpertCardProps {
   expertise: string;
   experience: string;
   icon: React.ReactNode;
+  onViewProfile: () => void;
 }
 
-const ExpertCard: React.FC<ExpertCardProps> = ({ name, expertise, experience, icon }) => {
+const ExpertCard: React.FC<ExpertCardProps> = ({ name, expertise, experience, icon, onViewProfile }) => {
   return (
     <Card>
       <CardContent className="pt-6">
@@ -423,7 +447,14 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ name, expertise, experience, ic
             <Clock className="h-3 w-3 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">{experience}</span>
           </div>
-          <Button variant="outline" size="sm" className="mt-4">View Profile</Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-4"
+            onClick={onViewProfile}
+          >
+            View Profile
+          </Button>
         </div>
       </CardContent>
     </Card>
