@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Graduation, BookOpen } from 'lucide-react';
+import { GraduationCap, BookOpen } from 'lucide-react';
 
 interface EligibilityFilterProps {
   selectedEligibility: string | null;
@@ -31,7 +31,7 @@ const EligibilityFilter: React.FC<EligibilityFilterProps> = ({
             className="flex items-center gap-1"
           >
             {option.id === '12th-pass' ? (
-              <Graduation className="h-4 w-4" />
+              <GraduationCap className="h-4 w-4" />
             ) : option.id === 'graduate' ? (
               <BookOpen className="h-4 w-4" />
             ) : null}
