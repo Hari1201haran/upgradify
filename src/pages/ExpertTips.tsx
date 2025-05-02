@@ -104,6 +104,78 @@ const tips: Tip[] = [
     content: "Schedule regular breaks and leisure activities as non-negotiable time. Learn to set boundaries and say no when necessary. Use technology intentionally—schedule specific times to check emails and social media. Remember that perfect balance isn't always possible, but aim for harmony across different life areas.",
     author: "Dr. Nadia Patel",
     expertise: "Wellness Coach"
+  },
+  {
+    id: "10",
+    category: "academic",
+    title: "Research Paper Strategies",
+    content: "Start with a clear research question to guide your investigation. Create an outline before writing to structure your arguments. Use citation management tools like Zotero or Mendeley from the beginning. Schedule regular check-ins with your advisor or professor to ensure you're on the right track.",
+    author: "Dr. Sarah Johnson",
+    expertise: "Cognitive Learning Specialist"
+  },
+  {
+    id: "11",
+    category: "academic",
+    title: "Exam Preparation Tactics",
+    content: "Begin reviewing material at least two weeks before exams. Create summary sheets of key concepts and formulas. Form study groups to discuss complex topics and teach each other. Practice with past exams when available, and simulate test conditions to build mental stamina.",
+    author: "Prof. Michael Chen",
+    expertise: "Educational Psychology"
+  },
+  {
+    id: "12",
+    category: "academic",
+    title: "Critical Thinking Development",
+    content: "Question assumptions in the material you're studying. Look for evidence that both supports and contradicts theories. Consider multiple perspectives on complex issues. Apply concepts to real-world scenarios to deepen understanding and retention.",
+    author: "Dr. Lisa Rodriguez",
+    expertise: "Learning Methodologies"
+  },
+  {
+    id: "13",
+    category: "career",
+    title: "Internship Strategy",
+    content: "Apply for internships 3-6 months before your desired start date. Leverage your university's career center for opportunities. Create a portfolio of projects to showcase your skills. Follow up with hiring managers within a week of applying, and always negotiate for academic credit if unpaid.",
+    author: "Robert Williams",
+    expertise: "Career Counselor"
+  },
+  {
+    id: "14",
+    category: "career",
+    title: "Personal Branding",
+    content: "Develop a consistent online presence across LinkedIn, GitHub, and portfolio sites. Share thoughtful content related to your field of interest. Request recommendations from professors and supervisors. Attend industry conferences to establish visibility in your chosen field.",
+    author: "Jennifer Smith",
+    expertise: "Professional Networking Coach"
+  },
+  {
+    id: "15",
+    category: "career",
+    title: "Remote Work Success",
+    content: "Create a dedicated workspace with minimal distractions. Establish a routine that includes regular breaks and movement. Overcommunicate with teammates about progress and challenges. Use tools like Trello or Asana to track tasks and maintain accountability.",
+    author: "Daniel Park",
+    expertise: "HR Director"
+  },
+  {
+    id: "16",
+    category: "personal",
+    title: "Building Resilience",
+    content: "View setbacks as opportunities for growth rather than failures. Practice positive self-talk and challenge negative thought patterns. Build a support network you can rely on during difficult times. Keep a journal to reflect on challenges you've overcome and strategies that helped.",
+    author: "Dr. Emma Thompson",
+    expertise: "Clinical Psychologist"
+  },
+  {
+    id: "17",
+    category: "personal",
+    title: "Healthy Eating on Campus",
+    content: "Prepare simple meals in advance to avoid relying on fast food. Keep nutritious snacks like nuts and fruit available for studying sessions. Stay hydrated throughout the day with water rather than sugary drinks. Learn basic cooking skills to save money and eat healthier.",
+    author: "Marcus Lee",
+    expertise: "Wellness Specialist"
+  },
+  {
+    id: "18",
+    category: "personal",
+    title: "Building Effective Habits",
+    content: "Start with tiny habits that take less than two minutes to complete. Link new habits to existing routines (habit stacking). Track your progress visually to maintain motivation. Celebrate small wins to reinforce positive behavior patterns.",
+    author: "Dr. Nadia Patel",
+    expertise: "Wellness Coach"
   }
 ];
 
