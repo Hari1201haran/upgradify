@@ -99,6 +99,66 @@ export type Database = {
         }
         Relationships: []
       }
+      expert_consultations: {
+        Row: {
+          consultation_date: string
+          created_at: string
+          expert_id: string
+          id: string
+          status: string
+          time_slot: string
+          user_id: string
+        }
+        Insert: {
+          consultation_date: string
+          created_at?: string
+          expert_id: string
+          id?: string
+          status?: string
+          time_slot: string
+          user_id: string
+        }
+        Update: {
+          consultation_date?: string
+          created_at?: string
+          expert_id?: string
+          id?: string
+          status?: string
+          time_slot?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expert_messages: {
+        Row: {
+          created_at: string
+          expert_id: string
+          id: string
+          message: string
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expert_id: string
+          id?: string
+          message: string
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expert_id?: string
+          id?: string
+          message?: string
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       government_exams: {
         Row: {
           description: string

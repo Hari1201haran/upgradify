@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,11 +50,13 @@ interface ExpertProfileModalProps {
 }
 
 const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, onOpenChange }) => {
+  const { user, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [messageSubject, setMessageSubject] = useState('');
   const [messageContent, setMessageContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const timeSlots = [
     '09:00 AM', '10:00 AM', '11:00 AM', 
@@ -74,7 +78,16 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
     }
   };
   
-  const handleScheduleConsultation = () => {
+  const handleScheduleConsultation = async () => {
+    if (!isAuthenticated || !user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to schedule a consultation",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!selectedDate || !selectedTimeSlot) {
       toast({
         title: "Incomplete selection",
@@ -84,17 +97,50 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
       return;
     }
     
-    toast({
-      title: "Consultation Scheduled",
-      description: `Your consultation with ${expert.name} is scheduled for ${format(selectedDate, 'MMMM do, yyyy')} at ${selectedTimeSlot}.`,
-    });
+    setIsSubmitting(true);
     
-    // Reset selections
-    setSelectedDate(undefined);
-    setSelectedTimeSlot(null);
+    try {
+      const { data, error } = await supabase
+        .from('expert_consultations')
+        .insert({
+          user_id: user.id,
+          expert_id: expert.id,
+          consultation_date: format(selectedDate, 'yyyy-MM-dd'),
+          time_slot: selectedTimeSlot,
+        });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Consultation Scheduled",
+        description: `Your consultation with ${expert.name} is scheduled for ${format(selectedDate, 'MMMM do, yyyy')} at ${selectedTimeSlot}.`,
+      });
+      
+      // Reset selections
+      setSelectedDate(undefined);
+      setSelectedTimeSlot(null);
+    } catch (error: any) {
+      console.error("Error scheduling consultation:", error);
+      toast({
+        title: "Scheduling Failed",
+        description: error.message || "Failed to schedule consultation. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
+    if (!isAuthenticated || !user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to send a message",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!messageSubject.trim() || !messageContent.trim()) {
       toast({
         title: "Incomplete message",
@@ -104,14 +150,38 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
       return;
     }
     
-    toast({
-      title: "Message Sent",
-      description: `Your message has been sent to ${expert.name}.`,
-    });
+    setIsSubmitting(true);
     
-    // Reset form
-    setMessageSubject('');
-    setMessageContent('');
+    try {
+      const { data, error } = await supabase
+        .from('expert_messages')
+        .insert({
+          user_id: user.id,
+          expert_id: expert.id,
+          subject: messageSubject,
+          message: messageContent,
+        });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Message Sent",
+        description: `Your message has been sent to ${expert.name}.`,
+      });
+      
+      // Reset form
+      setMessageSubject('');
+      setMessageContent('');
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      toast({
+        title: "Message Failed",
+        description: error.message || "Failed to send message. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -265,11 +335,26 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
               <Button 
                 className="mt-4"
                 onClick={handleScheduleConsultation}
-                disabled={!selectedDate || !selectedTimeSlot}
+                disabled={!selectedDate || !selectedTimeSlot || isSubmitting}
               >
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule Consultation
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                    Scheduling...
+                  </span>
+                ) : (
+                  <>
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Schedule Consultation
+                  </>
+                )}
               </Button>
+              
+              {!isAuthenticated && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  You need to be logged in to schedule a consultation
+                </p>
+              )}
             </div>
           </TabsContent>
           
@@ -309,10 +394,26 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
                 <Button 
                   className="w-full"
                   onClick={handleSendMessage}
+                  disabled={isSubmitting}
                 >
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Send Message
+                  {isSubmitting ? (
+                    <span className="flex items-center">
+                      <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                      Sending...
+                    </span>
+                  ) : (
+                    <>
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Send Message
+                    </>
+                  )}
                 </Button>
+                
+                {!isAuthenticated && (
+                  <p className="text-sm text-muted-foreground text-center mt-2">
+                    You need to be logged in to send messages
+                  </p>
+                )}
               </div>
             </div>
           </TabsContent>

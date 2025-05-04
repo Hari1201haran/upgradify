@@ -1,243 +1,156 @@
-
-import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import MainLayout from '@/components/layout/MainLayout';
-import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User, Mail, Phone, GraduationCap, Save, CheckCircle2, Loader2 } from 'lucide-react';
-import { toast } from "sonner";
+import UserInteractionsPanel from '@/components/experts/UserInteractionsPanel';
 
-const STREAMS = [
-  'Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 
-  'Law', 'Humanities', 'Computer Science', 'Management'
-] as const;
-
-const INTERESTS = [
-  'Technology', 'Coding', 'Mathematics', 'Problem Solving',
-  'Biology', 'Chemistry', 'Physics', 'Research',
-  'Finance', 'Economics', 'Business', 'Management',
-  'Literature', 'History', 'Psychology', 'Sociology',
-  'Design', 'Art', 'Music', 'Communication',
-  'Law', 'Medicine', 'Engineering', 'Architecture'
-];
+interface ProfileData {
+  fullName: string;
+  email: string;
+  mobile: string;
+  grade: string;
+  interests: string[];
+}
 
 const Profile = () => {
   const { user, updateProfile } = useAuth();
-  
-  const [fullName, setFullName] = useState(user?.fullName || '');
-  const [email, setEmail] = useState(user?.email || '');
-  const [mobile, setMobile] = useState(user?.mobile || '');
-  const [stream, setStream] = useState<string>(user?.stream || '');
-  const [selectedInterests, setSelectedInterests] = useState<string[]>(
-    user?.interests || []
-  );
+  const [profileData, setProfileData] = useState<ProfileData>({
+    fullName: user?.fullName || '',
+    email: user?.email || '',
+    mobile: user?.mobile || '',
+    grade: user?.grade || '',
+    interests: user?.interests || [],
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const toggleInterest = (interest: string) => {
-    if (selectedInterests.includes(interest)) {
-      setSelectedInterests(selectedInterests.filter(i => i !== interest));
-    } else {
-      if (selectedInterests.length < 5) {
-        setSelectedInterests([...selectedInterests, interest]);
-      } else {
-        toast.warning("You can select up to 5 interests");
-      }
+
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        fullName: user.fullName || '',
+        email: user.email || '',
+        mobile: user.mobile || '',
+        grade: user.grade || '',
+        interests: user.interests || [],
+      });
     }
+  }, [user]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfileData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     setIsSubmitting(true);
-    
+
     try {
-      updateProfile({
-        fullName,
-        email,
-        mobile,
-        stream,
-        interests: selectedInterests
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+
+      await updateProfile(profileData);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
       });
-      
-      toast.success("Profile updated successfully");
-    } catch (error) {
-      toast.error("Failed to update profile");
-      console.error('Failed to update profile:', error);
+    } catch (error: any) {
+      console.error("Profile update failed:", error);
+      toast({
+        title: "Update Failed",
+        description: error.message || "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <MainLayout>
       <PageTransition>
-        <div className="space-y-8 max-w-4xl mx-auto">
-          <section className="space-y-2">
-            <h1 className="text-3xl font-bold">Your Profile</h1>
-            <p className="text-muted-foreground">
-              Manage your personal information and preferences
-            </p>
-          </section>
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold">Profile</h1>
+            <p className="text-muted-foreground mt-1">Manage your account settings and view your interactions</p>
+          </div>
           
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Personal Information */}
-            <GlassCard className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-medium">Personal Information</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Update your basic information
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                      <Input
-                        id="fullName"
-                        placeholder="Your full name"
-                        className="pl-10"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Your email address"
-                        className="pl-10"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="mobile">Mobile Number</Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                      <Input
-                        id="mobile"
-                        placeholder="Your mobile number"
-                        className="pl-10"
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="grade">Grade</Label>
-                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-                      <Input
-                        id="grade"
-                        placeholder="Your grade"
-                        className="pl-10"
-                        value="12th"
-                        disabled
-                      />
-                    </div>
-                  </div>
-                </div>
+          {/* Personal Information Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Personal Information</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={profileData.fullName}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                />
               </div>
-            </GlassCard>
-            
-            {/* Academic Stream */}
-            <GlassCard className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-medium">Academic Stream</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Select your current academic stream
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 gap-4">
-                  <Select
-                    value={stream}
-                    onValueChange={setStream}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select your academic stream" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STREAMS.map((streamOption) => (
-                        <SelectItem key={streamOption} value={streamOption}>
-                          {streamOption}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={profileData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  disabled
+                />
               </div>
-            </GlassCard>
-            
-            {/* Interests */}
-            <GlassCard className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-medium">Interests</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Select up to 5 interests to help us provide better recommendations
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {INTERESTS.map((interest) => {
-                    const isSelected = selectedInterests.includes(interest);
-                    return (
-                      <button
-                        key={interest}
-                        type="button"
-                        onClick={() => toggleInterest(interest)}
-                        className={`relative rounded-lg border-2 p-3 text-sm font-medium transition-all flex items-center justify-between ${
-                          isSelected
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-muted bg-white hover:border-primary/50 text-foreground'
-                        }`}
-                      >
-                        <span>{interest}</span>
-                        {isSelected && <CheckCircle2 className="h-4 w-4 text-primary" />}
-                      </button>
-                    );
-                  })}
-                </div>
+              <div>
+                <Label htmlFor="mobile">Mobile</Label>
+                <Input
+                  type="tel"
+                  id="mobile"
+                  name="mobile"
+                  value={profileData.mobile}
+                  onChange={handleChange}
+                  placeholder="Enter your mobile number"
+                />
               </div>
-            </GlassCard>
-            
-            {/* Save Button */}
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting} className="button-hover">
+              <div>
+                <Label htmlFor="grade">Grade</Label>
+                <Input
+                  type="text"
+                  id="grade"
+                  name="grade"
+                  value={profileData.grade}
+                  onChange={handleChange}
+                  placeholder="Enter your current grade"
+                />
+              </div>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
+                  <span className="flex items-center">
+                    <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                    Updating...
+                  </span>
                 ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Changes
-                  </>
+                  "Update Profile"
                 )}
               </Button>
-            </div>
-          </form>
+            </form>
+          </div>
+          
+          {/* Expert Interactions Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Expert Interactions</h2>
+            <p className="text-muted-foreground">Your consultations and messages with education experts</p>
+            <UserInteractionsPanel />
+          </div>
         </div>
       </PageTransition>
     </MainLayout>
