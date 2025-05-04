@@ -1,52 +1,67 @@
 
 import React from 'react';
 import { Course } from '@/contexts/DataContext';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BookOpen } from 'lucide-react';
 
 interface CoursesTableProps {
   courses: Course[];
   selectedStream: string | null;
+  onCourseClick: (course: Course) => void;
 }
 
-const CoursesTable: React.FC<CoursesTableProps> = ({ courses, selectedStream }) => {
-  const streamLabel = selectedStream || 'All Streams';
-  
+const CoursesTable: React.FC<CoursesTableProps> = ({ courses, selectedStream, onCourseClick }) => {
   return (
     <div className="rounded-md border">
       <Table>
-        <TableCaption>{streamLabel} Courses</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Course Name</TableHead>
-            <TableHead>Stream</TableHead>
+            <TableHead className="w-[300px]">Course Name</TableHead>
             <TableHead>Duration</TableHead>
-            <TableHead className="hidden md:table-cell">Description</TableHead>
+            <TableHead>Streams</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {courses.map((course) => (
-            <TableRow key={course.id} className="hover:bg-muted/50 cursor-pointer">
-              <TableCell className="font-medium">{course.title}</TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {course.streams.map(stream => (
-                    <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
-                      {stream}
-                    </span>
-                  ))}
+            <TableRow 
+              key={course.id}
+              className="cursor-pointer hover:bg-secondary/20"
+              onClick={() => onCourseClick(course)}
+            >
+              <TableCell className="font-medium">
+                <div className="flex items-center">
+                  <BookOpen className="h-4 w-4 mr-2 text-primary" />
+                  {course.title}
                 </div>
               </TableCell>
               <TableCell>{course.duration}</TableCell>
-              <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                <span className="line-clamp-1">{course.description}</span>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {course.streams.map((stream) => (
+                    <Badge 
+                      key={stream} 
+                      variant={stream === selectedStream ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {stream}
+                    </Badge>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell className="text-right">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCourseClick(course);
+                  }}
+                >
+                  View Careers
+                </Button>
               </TableCell>
             </TableRow>
           ))}

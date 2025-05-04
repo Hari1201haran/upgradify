@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BookOpen } from 'lucide-react';
-import { Course } from '@/contexts/DataContext';
+import { Course, Career, useData } from '@/contexts/DataContext';
 import CourseCard from './CourseCard';
 import CoursesTable from './CoursesTable';
+import CourseDetailsModal from './CourseDetailsModal';
 
 interface CoursesContentProps {
   isLoading: boolean;
@@ -18,6 +19,21 @@ const CoursesContent: React.FC<CoursesContentProps> = ({
   viewMode,
   selectedStream
 }) => {
+  const { careers } = useData();
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  
+  // Find related careers for the selected course
+  const relatedCareers = selectedCourse 
+    ? careers.filter(career => 
+        // Match careers that share at least one stream with the course
+        career.streams.some(stream => selectedCourse.streams.includes(stream))
+      )
+    : [];
+
+  const handleCourseClick = (course: Course) => {
+    setSelectedCourse(course);
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center p-8">
@@ -50,12 +66,21 @@ const CoursesContent: React.FC<CoursesContentProps> = ({
       {viewMode === 'cards' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredCourses.map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <div key={course.id} onClick={() => handleCourseClick(course)}>
+              <CourseCard course={course} />
+            </div>
           ))}
         </div>
       ) : (
-        <CoursesTable courses={filteredCourses} selectedStream={selectedStream} />
+        <CoursesTable courses={filteredCourses} selectedStream={selectedStream} onCourseClick={handleCourseClick} />
       )}
+
+      <CourseDetailsModal
+        course={selectedCourse}
+        relatedCareers={relatedCareers}
+        isOpen={selectedCourse !== null}
+        onClose={() => setSelectedCourse(null)}
+      />
     </>
   );
 };

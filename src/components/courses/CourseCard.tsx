@@ -45,6 +45,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
             <span className="text-sm text-muted-foreground">{course.duration}</span>
           </div>
           <Button size="sm" variant="ghost" className="text-primary p-0">
+            <span className="mr-1">View Careers</span>
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
