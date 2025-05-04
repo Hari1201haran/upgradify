@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import PageTransition from '@/components/layout/PageTransition';
@@ -17,7 +18,9 @@ import {
   UserPlus, 
   Clock, 
   ScrollText,
-  CheckCircle
+  CheckCircle,
+  Calendar as CalendarIcon,
+  MessageCircle
 } from 'lucide-react';
 import ExpertProfileModal, { ExpertDetails } from '@/components/experts/ExpertProfileModal';
 import { experts, findExpertById } from '@/data/expertsData';
@@ -215,6 +218,15 @@ const ExpertTips = () => {
     return matchesSearch && matchesCategory;
   });
   
+  const handleScheduleWithExpert = (expertId: string) => {
+    const expert = findExpertById(expertId);
+    if (expert) {
+      setSelectedExpert(expert);
+      setIsModalOpen(true);
+      // This will be handled by the modal's internal tab state
+    }
+  };
+  
   return (
     <MainLayout>
       <PageTransition>
@@ -262,6 +274,10 @@ const ExpertTips = () => {
                     <p className="font-medium">Dr. Robert Williams</p>
                     <p className="text-sm text-muted-foreground">Education Specialist</p>
                   </div>
+                  <Button variant="outline" size="sm" className="ml-auto" onClick={() => handleViewProfile("2")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    Schedule Call
+                  </Button>
                 </div>
               </div>
             </div>
@@ -279,7 +295,11 @@ const ExpertTips = () => {
             <TabsContent value="all" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredTips.map(tip => (
-                  <TipCard key={tip.id} tip={tip} />
+                  <TipCard 
+                    key={tip.id} 
+                    tip={tip} 
+                    onContactExpert={() => handleViewProfile(tip.id.charAt(0))} 
+                  />
                 ))}
               </div>
             </TabsContent>
@@ -287,7 +307,11 @@ const ExpertTips = () => {
             <TabsContent value="academic" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredTips.filter(tip => tip.category === 'academic').map(tip => (
-                  <TipCard key={tip.id} tip={tip} />
+                  <TipCard 
+                    key={tip.id} 
+                    tip={tip} 
+                    onContactExpert={() => handleViewProfile(tip.id.charAt(0))} 
+                  />
                 ))}
               </div>
             </TabsContent>
@@ -295,7 +319,11 @@ const ExpertTips = () => {
             <TabsContent value="career" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredTips.filter(tip => tip.category === 'career').map(tip => (
-                  <TipCard key={tip.id} tip={tip} />
+                  <TipCard 
+                    key={tip.id} 
+                    tip={tip} 
+                    onContactExpert={() => handleViewProfile(tip.id.charAt(0))} 
+                  />
                 ))}
               </div>
             </TabsContent>
@@ -303,7 +331,11 @@ const ExpertTips = () => {
             <TabsContent value="personal" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredTips.filter(tip => tip.category === 'personal').map(tip => (
-                  <TipCard key={tip.id} tip={tip} />
+                  <TipCard 
+                    key={tip.id} 
+                    tip={tip} 
+                    onContactExpert={() => handleViewProfile(tip.id.charAt(0))} 
+                  />
                 ))}
               </div>
             </TabsContent>
@@ -326,6 +358,7 @@ const ExpertTips = () => {
                 experience="15+ years"
                 icon={<BookOpen className="h-5 w-5" />}
                 onViewProfile={() => handleViewProfile("1")}
+                onSchedule={() => handleScheduleWithExpert("1")}
               />
               <ExpertCard 
                 name="Robert Williams"
@@ -333,6 +366,7 @@ const ExpertTips = () => {
                 experience="10+ years"
                 icon={<BriefcaseBusiness className="h-5 w-5" />}
                 onViewProfile={() => handleViewProfile("2")}
+                onSchedule={() => handleScheduleWithExpert("2")}
               />
               <ExpertCard 
                 name="Dr. Emma Thompson"
@@ -340,6 +374,7 @@ const ExpertTips = () => {
                 experience="12+ years"
                 icon={<UserPlus className="h-5 w-5" />}
                 onViewProfile={() => handleViewProfile("3")}
+                onSchedule={() => handleScheduleWithExpert("3")}
               />
             </div>
           </section>
@@ -456,9 +491,10 @@ const ExpertTips = () => {
 // Tip Card Component
 interface TipCardProps {
   tip: Tip;
+  onContactExpert: () => void;
 }
 
-const TipCard: React.FC<TipCardProps> = ({ tip }) => {
+const TipCard: React.FC<TipCardProps> = ({ tip, onContactExpert }) => {
   return (
     <Card className="hover:shadow-md transition-all">
       <CardHeader className="pb-2">
@@ -487,9 +523,14 @@ const TipCard: React.FC<TipCardProps> = ({ tip }) => {
               <p className="text-xs text-muted-foreground">{tip.expertise}</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="p-0">
-            <ScrollText className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={onContactExpert}>
+              <MessageCircle className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <ScrollText className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -503,9 +544,17 @@ interface ExpertCardProps {
   experience: string;
   icon: React.ReactNode;
   onViewProfile: () => void;
+  onSchedule: () => void;
 }
 
-const ExpertCard: React.FC<ExpertCardProps> = ({ name, expertise, experience, icon, onViewProfile }) => {
+const ExpertCard: React.FC<ExpertCardProps> = ({ 
+  name, 
+  expertise, 
+  experience, 
+  icon, 
+  onViewProfile,
+  onSchedule 
+}) => {
   return (
     <Card>
       <CardContent className="pt-6">
@@ -519,14 +568,22 @@ const ExpertCard: React.FC<ExpertCardProps> = ({ name, expertise, experience, ic
             <Clock className="h-3 w-3 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">{experience}</span>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="mt-4"
-            onClick={onViewProfile}
-          >
-            View Profile
-          </Button>
+          <div className="flex gap-2 mt-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onViewProfile}
+            >
+              View Profile
+            </Button>
+            <Button 
+              size="sm" 
+              onClick={onSchedule}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              Schedule
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

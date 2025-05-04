@@ -1,9 +1,28 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { BookOpen, BriefcaseBusiness, GraduationCap, UserPlus, Globe, Clock, MapPin, Mail, Phone, Award } from 'lucide-react';
+import { 
+  BookOpen, 
+  BriefcaseBusiness, 
+  GraduationCap, 
+  UserPlus, 
+  Globe, 
+  Clock, 
+  MapPin, 
+  Mail, 
+  Phone, 
+  Award,
+  Calendar,
+  MessageCircle
+} from 'lucide-react';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
 
 export interface ExpertDetails {
   id: string;
@@ -29,6 +48,17 @@ interface ExpertProfileModalProps {
 }
 
 const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, onOpenChange }) => {
+  const [activeTab, setActiveTab] = useState('profile');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
+  const [messageSubject, setMessageSubject] = useState('');
+  const [messageContent, setMessageContent] = useState('');
+  
+  const timeSlots = [
+    '09:00 AM', '10:00 AM', '11:00 AM', 
+    '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM'
+  ];
+  
   if (!expert) return null;
   
   const getExpertIcon = (type: string) => {
@@ -42,6 +72,46 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
       default:
         return <GraduationCap className="h-5 w-5" />;
     }
+  };
+  
+  const handleScheduleConsultation = () => {
+    if (!selectedDate || !selectedTimeSlot) {
+      toast({
+        title: "Incomplete selection",
+        description: "Please select both a date and time slot",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Consultation Scheduled",
+      description: `Your consultation with ${expert.name} is scheduled for ${format(selectedDate, 'MMMM do, yyyy')} at ${selectedTimeSlot}.`,
+    });
+    
+    // Reset selections
+    setSelectedDate(undefined);
+    setSelectedTimeSlot(null);
+  };
+  
+  const handleSendMessage = () => {
+    if (!messageSubject.trim() || !messageContent.trim()) {
+      toast({
+        title: "Incomplete message",
+        description: "Please provide both a subject and message content",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    toast({
+      title: "Message Sent",
+      description: `Your message has been sent to ${expert.name}.`,
+    });
+    
+    // Reset form
+    setMessageSubject('');
+    setMessageContent('');
   };
 
   return (
@@ -77,58 +147,182 @@ const ExpertProfileModal: React.FC<ExpertProfileModalProps> = ({ expert, open, o
           </div>
         </div>
         
-        <div className="space-y-4 text-left">
-          <div>
-            <h3 className="font-medium mb-1">About</h3>
-            <p className="text-sm text-muted-foreground">{expert.bio}</p>
-          </div>
+        <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-3">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="message">Message</TabsTrigger>
+          </TabsList>
           
-          <div>
-            <h3 className="font-medium mb-1">Education</h3>
-            <ul className="space-y-1">
-              {expert.education.map((edu, index) => (
-                <li key={index} className="text-sm flex items-start gap-2">
-                  <GraduationCap className="h-4 w-4 mt-0.5 text-primary" />
-                  <span>{edu}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-1">Publications</h3>
-            <ul className="space-y-1">
-              {expert.publications.map((pub, index) => (
-                <li key={index} className="text-sm flex items-start gap-2">
-                  <Award className="h-4 w-4 mt-0.5 text-primary" />
-                  <span>{pub}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-medium mb-1">Contact Information</h3>
-            <div className="grid grid-cols-1 gap-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{expert.contact.email}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <span>{expert.contact.phone}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>{expert.contact.location}</span>
+          <TabsContent value="profile" className="space-y-4">
+            <div>
+              <h3 className="font-medium mb-1">About</h3>
+              <p className="text-sm text-muted-foreground">{expert.bio}</p>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-1">Education</h3>
+              <ul className="space-y-1">
+                {expert.education.map((edu, index) => (
+                  <li key={index} className="text-sm flex items-start gap-2">
+                    <GraduationCap className="h-4 w-4 mt-0.5 text-primary" />
+                    <span>{edu}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-1">Publications</h3>
+              <ul className="space-y-1">
+                {expert.publications.map((pub, index) => (
+                  <li key={index} className="text-sm flex items-start gap-2">
+                    <Award className="h-4 w-4 mt-0.5 text-primary" />
+                    <span>{pub}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-1">Contact Information</h3>
+              <div className="grid grid-cols-1 gap-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span>{expert.contact.email}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span>{expert.contact.phone}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <span>{expert.contact.location}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+          
+          <TabsContent value="schedule" className="space-y-4">
+            <div className="flex flex-col items-center">
+              <div className="mb-4 text-center">
+                <h3 className="font-medium">Schedule a Consultation</h3>
+                <p className="text-sm text-muted-foreground">Select a date and time slot to meet with {expert.name}</p>
+              </div>
+              
+              <div className="w-full flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="border rounded-md">
+                    <CalendarComponent
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      disabled={(date) => {
+                        // Disable past dates, weekends, and dates more than 30 days in the future
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const thirtyDaysLater = new Date();
+                        thirtyDaysLater.setDate(today.getDate() + 30);
+                        
+                        return (
+                          date < today ||
+                          date > thirtyDaysLater ||
+                          date.getDay() === 0 ||
+                          date.getDay() === 6
+                        );
+                      }}
+                      className="rounded-md border-none"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex-1">
+                  <div className="border rounded-md p-4">
+                    <h4 className="text-sm font-medium mb-2">Available Time Slots</h4>
+                    {selectedDate ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {timeSlots.map((time) => (
+                          <Button
+                            key={time}
+                            variant={selectedTimeSlot === time ? "default" : "outline"}
+                            size="sm"
+                            className="justify-center"
+                            onClick={() => setSelectedTimeSlot(time)}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-sm text-muted-foreground">
+                        Please select a date first
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              <Button 
+                className="mt-4"
+                onClick={handleScheduleConsultation}
+                disabled={!selectedDate || !selectedTimeSlot}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                Schedule Consultation
+              </Button>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="message" className="space-y-4">
+            <div>
+              <h3 className="font-medium mb-1">Send a Message</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Have a quick question for {expert.name}? Send a direct message.
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="subject" className="text-sm font-medium block mb-1">
+                    Subject
+                  </label>
+                  <Input 
+                    id="subject"
+                    placeholder="Enter message subject"
+                    value={messageSubject}
+                    onChange={(e) => setMessageSubject(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="message" className="text-sm font-medium block mb-1">
+                    Message
+                  </label>
+                  <Textarea 
+                    id="message"
+                    placeholder="Type your message here..."
+                    className="min-h-[120px]"
+                    value={messageContent}
+                    onChange={(e) => setMessageContent(e.target.value)}
+                  />
+                </div>
+                
+                <Button 
+                  className="w-full"
+                  onClick={handleSendMessage}
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Send Message
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
-          <Button>Contact Expert</Button>
+          {activeTab === 'profile' && (
+            <Button onClick={() => setActiveTab('schedule')}>Schedule Consultation</Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
