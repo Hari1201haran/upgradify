@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { BookOpen } from 'lucide-react';
-import { Course, Career, useData } from '@/contexts/DataContext';
+import { Course, Career, GovernmentExam, useData } from '@/contexts/DataContext';
 import CourseCard from './CourseCard';
 import CoursesTable from './CoursesTable';
 import CourseDetailsModal from './CourseDetailsModal';
@@ -19,14 +19,21 @@ const CoursesContent: React.FC<CoursesContentProps> = ({
   viewMode,
   selectedStream
 }) => {
-  const { careers } = useData();
+  const { careers, governmentExams } = useData();
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   
-  // Find related careers for the selected course
+  // Find related careers and exams for the selected course
   const relatedCareers = selectedCourse 
     ? careers.filter(career => 
         // Match careers that share at least one stream with the course
         career.streams.some(stream => selectedCourse.streams.includes(stream))
+      )
+    : [];
+
+  const relatedExams = selectedCourse
+    ? governmentExams.filter(exam =>
+        // Match exams that share at least one stream with the course
+        exam.streams.some(stream => selectedCourse.streams.includes(stream))
       )
     : [];
 
@@ -78,6 +85,7 @@ const CoursesContent: React.FC<CoursesContentProps> = ({
       <CourseDetailsModal
         course={selectedCourse}
         relatedCareers={relatedCareers}
+        relatedExams={relatedExams}
         isOpen={selectedCourse !== null}
         onClose={() => setSelectedCourse(null)}
       />

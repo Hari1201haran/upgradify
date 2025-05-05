@@ -1,14 +1,16 @@
 
 import React from 'react';
-import { Career, Course } from '@/contexts/DataContext';
+import { Career, Course, GovernmentExam } from '@/contexts/DataContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Clock, Briefcase, GraduationCap } from 'lucide-react';
 
 interface CourseDetailsModalProps {
   course: Course | null;
   relatedCareers: Career[];
+  relatedExams: GovernmentExam[];
   isOpen: boolean;
   onClose: () => void;
 }
@@ -16,6 +18,7 @@ interface CourseDetailsModalProps {
 const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   course,
   relatedCareers,
+  relatedExams,
   isOpen,
   onClose
 }) => {
@@ -45,29 +48,71 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
 
           <Separator />
 
-          <div className="space-y-4">
-            <h3 className="text-xl font-semibold flex items-center">
-              <Briefcase className="h-5 w-5 mr-2" />
-              Related Careers ({relatedCareers.length})
-            </h3>
-
-            {relatedCareers.length === 0 ? (
-              <p className="text-muted-foreground">No related careers found for this course.</p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {relatedCareers.map((career) => (
-                  <div key={career.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <h4 className="font-medium">{career.title}</h4>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{career.description}</p>
-                    <div className="mt-2 flex items-center">
-                      <GraduationCap className="h-4 w-4 text-muted-foreground mr-1" />
-                      <span className="text-xs text-muted-foreground">{career.jobOutlook}</span>
+          <Tabs defaultValue="careers" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="careers">
+                <div className="flex items-center">
+                  <Briefcase className="h-4 w-4 mr-2" />
+                  Careers ({relatedCareers.length})
+                </div>
+              </TabsTrigger>
+              <TabsTrigger value="exams">
+                <div className="flex items-center">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Exams ({relatedExams.length})
+                </div>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="careers" className="space-y-4 pt-4">
+              {relatedCareers.length === 0 ? (
+                <p className="text-muted-foreground">No related careers found for this course.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {relatedCareers.map((career) => (
+                    <div key={career.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <h4 className="font-medium">{career.title}</h4>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{career.description}</p>
+                      <div className="mt-2 flex items-center">
+                        <GraduationCap className="h-4 w-4 text-muted-foreground mr-1" />
+                        <span className="text-xs text-muted-foreground">{career.jobOutlook}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="exams" className="space-y-4 pt-4">
+              {relatedExams.length === 0 ? (
+                <p className="text-muted-foreground">No related government exams found for this course.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {relatedExams.map((exam) => (
+                    <div key={exam.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <h4 className="font-medium">{exam.title}</h4>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{exam.description}</p>
+                      <div className="mt-2 space-y-1">
+                        <div className="flex items-center">
+                          <Clock className="h-3.5 w-3.5 text-muted-foreground mr-1" />
+                          <span className="text-xs text-muted-foreground">Prep: {exam.preparationTime}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {typeof exam.eligibility === 'string' ? (
+                            <Badge variant="outline" className="text-xs">{exam.eligibility}</Badge>
+                          ) : (
+                            exam.eligibility.slice(0, 1).map((req, i) => (
+                              <Badge key={i} variant="outline" className="text-xs">{req}</Badge>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </DialogContent>
     </Dialog>
