@@ -22,18 +22,13 @@ export const useAuthState = () => {
         return;
       }
 
-      let streamValue: 'Science' | 'Commerce' | 'Arts' | null = null;
-      if (profile.stream === 'Science' || profile.stream === 'Commerce' || profile.stream === 'Arts') {
-        streamValue = profile.stream as 'Science' | 'Commerce' | 'Arts';
-      }
-
       setUser({
         id: userId,
         fullName: profile.full_name || '',
         email: profile.email || '',
         mobile: profile.mobile || '',
         grade: profile.grade || '',
-        stream: streamValue,
+        stream: profile.stream || null,
         interests: profile.interests || [],
         isAdmin: false
       });

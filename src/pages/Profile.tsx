@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,12 +9,19 @@ import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import UserInteractionsPanel from '@/components/experts/UserInteractionsPanel';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const STREAMS = [
+  'Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 
+  'Law', 'Humanities', 'Computer Science', 'Management'
+] as const;
 
 interface ProfileData {
   fullName: string;
   email: string;
   mobile: string;
   grade: string;
+  stream: string | null;
   interests: string[];
 }
 
@@ -24,6 +32,7 @@ const Profile = () => {
     email: user?.email || '',
     mobile: user?.mobile || '',
     grade: user?.grade || '',
+    stream: user?.stream || null,
     interests: user?.interests || [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,6 +44,7 @@ const Profile = () => {
         email: user.email || '',
         mobile: user.mobile || '',
         grade: user.grade || '',
+        stream: user.stream || null,
         interests: user.interests || [],
       });
     }
@@ -45,6 +55,13 @@ const Profile = () => {
     setProfileData(prevData => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleStreamChange = (value: string) => {
+    setProfileData(prevData => ({
+      ...prevData,
+      stream: value,
     }));
   };
 
@@ -131,6 +148,24 @@ const Profile = () => {
                   onChange={handleChange}
                   placeholder="Enter your current grade"
                 />
+              </div>
+              <div>
+                <Label htmlFor="stream">Academic Stream</Label>
+                <Select
+                  value={profileData.stream || ''}
+                  onValueChange={handleStreamChange}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your academic stream" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STREAMS.map((streamOption) => (
+                      <SelectItem key={streamOption} value={streamOption}>
+                        {streamOption}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
