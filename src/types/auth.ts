@@ -9,6 +9,7 @@ export interface UserProfile {
   grade?: string;
   stream?: string | null;
   interests?: string[];
+  age?: number | null;
   isAdmin?: boolean;
 }
 

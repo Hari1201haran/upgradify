@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,9 +26,10 @@ export const useAuthState = () => {
         fullName: profile.full_name || '',
         email: profile.email || '',
         mobile: profile.mobile || '',
-        grade: profile.grade || '',
+        grade: profile.grade || '12',
         stream: profile.stream || null,
         interests: profile.interests || [],
+        age: profile.age || null,
         isAdmin: false
       });
     } catch (error) {

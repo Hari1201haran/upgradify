@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Clock, Briefcase, GraduationCap } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CourseDetailsModalProps {
   course: Course | null;
@@ -22,7 +23,33 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const { user } = useAuth();
+  
   if (!course) return null;
+
+  // Filter exams based on age eligibility
+  const filteredExams = relatedExams.filter(exam => {
+    // If no age is specified, show all exams
+    if (!user?.age) return true;
+    
+    // Check eligibility rules based on age
+    // Most government exams have age limits in the 18-32 range
+    if (user.age > 32) {
+      // Filter out exams that typically have upper age limits
+      return !['UPSC', 'SSC', 'Banking', 'NDA', 'CDS'].some(
+        keyword => exam.title.includes(keyword)
+      );
+    } else if (user.age < 18) {
+      // Show only exams that are available for minors
+      return ['NTSE', 'Olympiad', 'NEET', 'JEE', 'Class', 'NDA', 'Foundation'].some(
+        keyword => exam.title.includes(keyword) || 
+        exam.eligibility.some(e => typeof e === 'string' && e.includes('Class'))
+      );
+    }
+    
+    // Show all exams for ages 18-32
+    return true;
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -59,7 +86,7 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
               <TabsTrigger value="exams">
                 <div className="flex items-center">
                   <BookOpen className="h-4 w-4 mr-2" />
-                  Exams ({relatedExams.length})
+                  Exams ({filteredExams.length})
                 </div>
               </TabsTrigger>
             </TabsList>
@@ -84,11 +111,15 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
             </TabsContent>
             
             <TabsContent value="exams" className="space-y-4 pt-4">
-              {relatedExams.length === 0 ? (
-                <p className="text-muted-foreground">No related government exams found for this course.</p>
+              {filteredExams.length === 0 ? (
+                <p className="text-muted-foreground">
+                  {user?.age && (user.age > 32 || user.age < 18) ? 
+                    "No eligible government exams found for your age. Some exams have age restrictions." : 
+                    "No related government exams found for this course."}
+                </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {relatedExams.map((exam) => (
+                  {filteredExams.map((exam) => (
                     <div key={exam.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                       <h4 className="font-medium">{exam.title}</h4>
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{exam.description}</p>

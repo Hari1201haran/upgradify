@@ -23,6 +23,7 @@ interface ProfileData {
   grade: string;
   stream: string | null;
   interests: string[];
+  age: number | null;
 }
 
 const Profile = () => {
@@ -31,9 +32,10 @@ const Profile = () => {
     fullName: user?.fullName || '',
     email: user?.email || '',
     mobile: user?.mobile || '',
-    grade: user?.grade || '',
+    grade: user?.grade || '12',
     stream: user?.stream || null,
     interests: user?.interests || [],
+    age: user?.age || null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -43,9 +45,10 @@ const Profile = () => {
         fullName: user.fullName || '',
         email: user.email || '',
         mobile: user.mobile || '',
-        grade: user.grade || '',
+        grade: user.grade || '12',
         stream: user.stream || null,
         interests: user.interests || [],
+        age: user.age || null
       });
     }
   }, [user]);
@@ -55,6 +58,15 @@ const Profile = () => {
     setProfileData(prevData => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numberValue = value ? parseInt(value, 10) : null;
+    setProfileData(prevData => ({
+      ...prevData,
+      [name]: numberValue,
     }));
   };
 
@@ -136,6 +148,19 @@ const Profile = () => {
                   value={profileData.mobile}
                   onChange={handleChange}
                   placeholder="Enter your mobile number"
+                />
+              </div>
+              <div>
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  type="number"
+                  id="age"
+                  name="age"
+                  min="14"
+                  max="100"
+                  value={profileData.age || ''}
+                  onChange={handleNumberChange}
+                  placeholder="Enter your age"
                 />
               </div>
               <div>
