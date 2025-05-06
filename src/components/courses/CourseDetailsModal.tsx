@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Career, Course, GovernmentExam } from '@/contexts/DataContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -27,10 +26,18 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   
   if (!course) return null;
 
+  console.log('Current user age:', user?.age); // Debug current user age
+  console.log('Related exams before filtering:', relatedExams); // Debug exams before filtering
+
   // Filter exams based on age eligibility
   const filteredExams = relatedExams.filter(exam => {
     // If no age is specified, show all exams
-    if (!user?.age) return true;
+    if (user?.age === null || user?.age === undefined) {
+      console.log('No age specified, showing all exams');
+      return true;
+    }
+    
+    console.log(`Filtering exam ${exam.title} for user age ${user.age}`);
     
     // Check eligibility rules based on age
     // Most government exams have age limits in the 18-32 range
@@ -52,6 +59,8 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
     // Show all exams for ages 18-32
     return true;
   });
+
+  console.log('Filtered exams:', filteredExams); // Debug exams after filtering
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
