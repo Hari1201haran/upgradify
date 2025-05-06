@@ -43,7 +43,9 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
       // Show only exams that are available for minors
       return ['NTSE', 'Olympiad', 'NEET', 'JEE', 'Class', 'NDA', 'Foundation'].some(
         keyword => exam.title.includes(keyword) || 
-        exam.eligibility.some(e => typeof e === 'string' && e.includes('Class'))
+        (Array.isArray(exam.eligibility) ? 
+          exam.eligibility.some(e => typeof e === 'string' && e.includes('Class')) :
+          exam.eligibility.includes('Class'))
       );
     }
     
