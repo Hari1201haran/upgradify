@@ -45,7 +45,7 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
         keyword => exam.title.includes(keyword) || 
         (Array.isArray(exam.eligibility) ? 
           exam.eligibility.some(e => typeof e === 'string' && e.includes('Class')) :
-          exam.eligibility.includes('Class'))
+          typeof exam.eligibility === 'string' && exam.eligibility.includes('Class'))
       );
     }
     
