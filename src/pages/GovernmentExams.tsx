@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, GovernmentExam } from '@/contexts/DataContext';
@@ -11,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, GraduationCap, Clock, Users, BookOpenCheck, Award, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EligibilityFilter from '@/components/exams/EligibilityFilter';
+import ExamDetailsModal from '@/components/exams/ExamDetailsModal';
 import {
   Table,
   TableBody,
@@ -39,10 +39,24 @@ const GovernmentExams = () => {
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
   const [selectedEligibility, setSelectedEligibility] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table view
+  const [selectedExam, setSelectedExam] = useState<GovernmentExam | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
+  
+  // Close modal function
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedExam(null);
+  };
+
+  // Open modal function
+  const handleExamClick = (exam: GovernmentExam) => {
+    setSelectedExam(exam);
+    setIsModalOpen(true);
+  };
   
   const filteredExams = governmentExams.filter(exam => {
     const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -287,11 +301,18 @@ const GovernmentExams = () => {
                   {viewMode === 'cards' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {paginatedExams.map((exam) => (
-                        <ExamCard key={exam.id} exam={exam} />
+                        <ExamCard 
+                          key={exam.id} 
+                          exam={exam} 
+                          onExplore={() => handleExamClick(exam)}
+                        />
                       ))}
                     </div>
                   ) : (
-                    <ExamsTable exams={paginatedExams} />
+                    <ExamsTable 
+                      exams={paginatedExams} 
+                      onExamClick={handleExamClick} 
+                    />
                   )}
                   
                   {/* Pagination controls */}
@@ -335,11 +356,18 @@ const GovernmentExams = () => {
                   viewMode === 'cards' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {generalExams.map((exam) => (
-                        <ExamCard key={exam.id} exam={exam} />
+                        <ExamCard 
+                          key={exam.id} 
+                          exam={exam} 
+                          onExplore={() => handleExamClick(exam)}
+                        />
                       ))}
                     </div>
                   ) : (
-                    <ExamsTable exams={generalExams} />
+                    <ExamsTable 
+                      exams={generalExams} 
+                      onExamClick={handleExamClick} 
+                    />
                   )
                 )}
               </div>
@@ -358,11 +386,18 @@ const GovernmentExams = () => {
                   viewMode === 'cards' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {streamSpecificExams.map((exam) => (
-                        <ExamCard key={exam.id} exam={exam} />
+                        <ExamCard 
+                          key={exam.id} 
+                          exam={exam} 
+                          onExplore={() => handleExamClick(exam)}
+                        />
                       ))}
                     </div>
                   ) : (
-                    <ExamsTable exams={streamSpecificExams} />
+                    <ExamsTable 
+                      exams={streamSpecificExams} 
+                      onExamClick={handleExamClick} 
+                    />
                   )
                 )}
               </div>
@@ -392,6 +427,13 @@ const GovernmentExams = () => {
             </TabsContent>
           </Tabs>
         </div>
+        
+        {/* Exam Details Modal */}
+        <ExamDetailsModal
+          exam={selectedExam}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
       </PageTransition>
     </MainLayout>
   );
@@ -399,9 +441,10 @@ const GovernmentExams = () => {
 
 interface ExamCardProps {
   exam: GovernmentExam;
+  onExplore: () => void;
 }
 
-const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
+const ExamCard: React.FC<ExamCardProps> = ({ exam, onExplore }) => {
   // Check if the exam is eligible for 12th pass students
   const isClass12Exam = typeof exam.eligibility === 'string' ? 
     exam.eligibility.toLowerCase().includes('class 12') : 
@@ -462,7 +505,7 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
             <Clock className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Preparation: {exam.preparationTime}</span>
           </div>
-          <Button size="sm" variant="outline" className="text-primary">
+          <Button size="sm" variant="outline" className="text-primary" onClick={onExplore}>
             <BookOpenCheck className="h-4 w-4 mr-1" />
             Explore
           </Button>
@@ -474,9 +517,10 @@ const ExamCard: React.FC<ExamCardProps> = ({ exam }) => {
 
 interface ExamsTableProps {
   exams: GovernmentExam[];
+  onExamClick: (exam: GovernmentExam) => void;
 }
 
-const ExamsTable: React.FC<ExamsTableProps> = ({ exams }) => {
+const ExamsTable: React.FC<ExamsTableProps> = ({ exams, onExamClick }) => {
   return (
     <div className="rounded-md border">
       <Table>
@@ -487,6 +531,7 @@ const ExamsTable: React.FC<ExamsTableProps> = ({ exams }) => {
             <TableHead>Streams</TableHead>
             <TableHead>Eligibility</TableHead>
             <TableHead>Preparation Time</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -497,7 +542,7 @@ const ExamsTable: React.FC<ExamsTableProps> = ({ exams }) => {
               exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
               
             return (
-              <TableRow key={exam.id} className="hover:bg-muted/50 cursor-pointer">
+              <TableRow key={exam.id} className="hover:bg-muted/50">
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     {exam.title}
@@ -523,6 +568,12 @@ const ExamsTable: React.FC<ExamsTableProps> = ({ exams }) => {
                   </span>
                 </TableCell>
                 <TableCell>{exam.preparationTime}</TableCell>
+                <TableCell>
+                  <Button size="sm" variant="outline" onClick={() => onExamClick(exam)}>
+                    <BookOpenCheck className="h-4 w-4" />
+                    <span className="sr-only">Explore</span>
+                  </Button>
+                </TableCell>
               </TableRow>
             );
           })}
