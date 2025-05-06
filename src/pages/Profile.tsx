@@ -32,7 +32,7 @@ const Profile = () => {
     fullName: user?.fullName || '',
     email: user?.email || '',
     mobile: user?.mobile || '',
-    grade: user?.grade || '12',
+    grade: '12th', // Always set to '12th'
     stream: user?.stream || null,
     interests: user?.interests || [],
     age: user?.age || null
@@ -45,7 +45,7 @@ const Profile = () => {
         fullName: user.fullName || '',
         email: user.email || '',
         mobile: user.mobile || '',
-        grade: user.grade || '12',
+        grade: '12th', // Always set to '12th' regardless of user data
         stream: user.stream || null,
         interests: user.interests || [],
         age: user.age || null
@@ -86,7 +86,13 @@ const Profile = () => {
         throw new Error("User not authenticated.");
       }
 
-      await updateProfile(profileData);
+      // Always set grade to '12th' before submitting
+      const dataToSubmit = {
+        ...profileData,
+        grade: '12th'
+      };
+
+      await updateProfile(dataToSubmit);
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
@@ -162,6 +168,9 @@ const Profile = () => {
                   onChange={handleNumberChange}
                   placeholder="Enter your age"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Note: Government exam eligibility is typically for ages 16-24
+                </p>
               </div>
               <div>
                 <Label htmlFor="grade">Grade</Label>
@@ -169,10 +178,13 @@ const Profile = () => {
                   type="text"
                   id="grade"
                   name="grade"
-                  value={profileData.grade}
-                  onChange={handleChange}
-                  placeholder="Enter your current grade"
+                  value="12th"
+                  disabled
+                  className="bg-gray-100"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Grade is fixed at 12th for all students
+                </p>
               </div>
               <div>
                 <Label htmlFor="stream">Academic Stream</Label>

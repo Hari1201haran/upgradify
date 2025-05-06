@@ -22,14 +22,14 @@ export const useAuthState = () => {
         return;
       }
 
-      console.log('User profile data:', profile); // Add this to debug
+      console.log('User profile data:', profile); // Debug log
 
       setUser({
         id: userId,
         fullName: profile.full_name || '',
         email: profile.email || '',
         mobile: profile.mobile || '',
-        grade: profile.grade || '12', // Default grade to '12'
+        grade: '12th', // Always set grade to '12th' regardless of database value
         stream: profile.stream || null,
         interests: profile.interests || [],
         age: profile.age !== null && profile.age !== undefined ? Number(profile.age) : null,

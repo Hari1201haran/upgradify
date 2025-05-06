@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Career, Course, GovernmentExam } from '@/contexts/DataContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -26,41 +27,33 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   
   if (!course) return null;
 
-  console.log('Current user age:', user?.age); // Debug current user age
-  console.log('Related exams before filtering:', relatedExams); // Debug exams before filtering
+  console.log('Current user age:', user?.age); // Debug log
+  console.log('Related exams before filtering:', relatedExams); // Debug log
 
   // Filter exams based on age eligibility
   const filteredExams = relatedExams.filter(exam => {
-    // If no age is specified, show all exams
-    if (user?.age === null || user?.age === undefined) {
+    const userAge = user?.age;
+    
+    // Apply strict age filtering criteria
+    if (userAge === null || userAge === undefined) {
       console.log('No age specified, showing all exams');
-      return true;
+      return true; // If no age is specified, show all exams
     }
     
-    console.log(`Filtering exam ${exam.title} for user age ${user.age}`);
+    // Log the filtering decision for debugging
+    console.log(`Filtering exam ${exam.title} for user age ${userAge}`);
     
-    // Check eligibility rules based on age
-    // Most government exams have age limits in the 18-32 range
-    if (user.age > 32) {
-      // Filter out exams that typically have upper age limits
-      return !['UPSC', 'SSC', 'Banking', 'NDA', 'CDS'].some(
-        keyword => exam.title.includes(keyword)
-      );
-    } else if (user.age < 18) {
-      // Show only exams that are available for minors
-      return ['NTSE', 'Olympiad', 'NEET', 'JEE', 'Class', 'NDA', 'Foundation'].some(
-        keyword => exam.title.includes(keyword) || 
-        (Array.isArray(exam.eligibility) ? 
-          exam.eligibility.some(e => typeof e === 'string' && e.includes('Class')) :
-          typeof exam.eligibility === 'string' && exam.eligibility.includes('Class'))
-      );
+    // Hide exams for ages above 24 or below 16
+    if (userAge > 24 || userAge < 16) {
+      console.log(`User age ${userAge} is outside 16-24 range, hiding exam ${exam.title}`);
+      return false;
     }
     
-    // Show all exams for ages 18-32
+    // Show exams for users within age range 16-24
     return true;
   });
 
-  console.log('Filtered exams:', filteredExams); // Debug exams after filtering
+  console.log('Filtered exams after age criteria:', filteredExams); // Debug log
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -124,8 +117,8 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
             <TabsContent value="exams" className="space-y-4 pt-4">
               {filteredExams.length === 0 ? (
                 <p className="text-muted-foreground">
-                  {user?.age && (user.age > 32 || user.age < 18) ? 
-                    "No eligible government exams found for your age. Some exams have age restrictions." : 
+                  {user?.age && (user.age > 24 || user.age < 16) ? 
+                    "No eligible government exams found for your age. Most exams are available for students between 16-24 years." : 
                     "No related government exams found for this course."}
                 </p>
               ) : (

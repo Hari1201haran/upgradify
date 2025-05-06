@@ -6,7 +6,7 @@ export interface UserProfile {
   fullName: string;
   email: string;
   mobile: string;
-  grade?: string;
+  grade: string; // Will always be '12th'
   stream?: string | null;
   interests?: string[];
   age?: number | null;
