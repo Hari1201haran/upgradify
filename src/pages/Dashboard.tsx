@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { ArrowUpRight, GraduationCap, BookOpen, School, Clock, Database, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
+import DecorativeImage from '@/components/ui/DecorativeImage';
+import EducationDecoration from '@/components/ui/EducationDecoration';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -23,7 +26,10 @@ const Dashboard = () => {
   return (
     <MainLayout>
       <PageTransition>
-        <div className="space-y-8">
+        <div className="space-y-8 relative">
+          <BackgroundDecorations variant="light" />
+          <EducationDecoration variant="careers" position="top-right" />
+          
           {/* Welcome Section */}
           <section className="space-y-4">
             <div className="space-y-2">
@@ -33,33 +39,44 @@ const Dashboard = () => {
               </p>
             </div>
             
-            <GlassCard className="p-6 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 border-none">
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div className="space-y-2">
-                  <h2 className="text-xl font-medium">Your journey begins here!</h2>
-                  <p className="text-muted-foreground">
-                    Explore careers, courses, and colleges based on your interests.
-                  </p>
-                </div>
-                <div className="flex gap-3 mt-4 md:mt-0">
-                  <Button 
-                    size="sm" 
-                    variant="secondary"
-                    onClick={() => navigate('/profile')}
-                    className="button-hover"
-                  >
-                    Edit Profile
-                  </Button>
-                  <Button 
-                    size="sm"
-                    onClick={() => navigate('/careers')}
-                    className="button-hover"
-                  >
-                    Explore Careers
-                  </Button>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="md:col-span-2">
+                <GlassCard className="p-6 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 border-none h-full">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between h-full">
+                    <div className="space-y-2">
+                      <h2 className="text-xl font-medium">Your journey begins here!</h2>
+                      <p className="text-muted-foreground">
+                        Explore careers, courses, and colleges based on your interests.
+                      </p>
+                      <div className="flex gap-3 mt-4">
+                        <Button 
+                          size="sm" 
+                          variant="secondary"
+                          onClick={() => navigate('/profile')}
+                          className="button-hover"
+                        >
+                          Edit Profile
+                        </Button>
+                        <Button 
+                          size="sm"
+                          onClick={() => navigate('/careers')}
+                          className="button-hover"
+                        >
+                          Explore Careers
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </GlassCard>
               </div>
-            </GlassCard>
+              <div className="hidden md:block">
+                <DecorativeImage 
+                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" 
+                  alt="Education illustration" 
+                  className="h-full min-h-[180px] rounded-xl shadow-lg"
+                />
+              </div>
+            </div>
           </section>
           
           {/* Loading state */}
@@ -163,9 +180,20 @@ const Dashboard = () => {
             </GlassCard>
           </section>
           
+          {/* Decorative Image */}
+          <div className="my-8">
+            <DecorativeImage 
+              src="https://images.unsplash.com/photo-1523712999610-f77fbcfc3843" 
+              alt="Educational journey" 
+              className="w-full h-40 rounded-xl" 
+              animationDelay={0.3}
+            />
+          </div>
+          
           {/* Recommendations */}
-          <section className="space-y-6">
+          <section className="space-y-6 relative">
             <h2 className="text-2xl font-bold">Personalized Recommendations</h2>
+            <EducationDecoration variant="courses" position="bottom-left" />
             
             {/* Career Recommendations */}
             <div className="space-y-4">

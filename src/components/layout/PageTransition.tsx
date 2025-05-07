@@ -13,10 +13,11 @@ const PageTransition: React.FC<PageTransitionProps> = ({ children, className }) 
       className={`page-transition w-full ${className || ''}`}
       variants={{
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } }
+        visible: { opacity: 1, y: 0 }
       }}
       initial="hidden"
       animate="visible"
+      transition={{ duration: 0.5, ease: "easeInOut" }}
     >
       {children}
     </motion.div>
