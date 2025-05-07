@@ -8,7 +8,6 @@ import SearchBar from '@/components/courses/SearchBar';
 import StreamFilter from '@/components/courses/StreamFilter';
 import CoursesContent from '@/components/courses/CoursesContent';
 import CollegesContent from '@/components/courses/CollegesContent';
-import CoursesDecoration from '@/components/courses/CoursesDecoration';
 
 const Courses = () => {
   const { user } = useAuth();
@@ -60,16 +59,11 @@ const Courses = () => {
       <PageTransition>
         <div className="space-y-8">
           <section className="space-y-4">
-            <div className="flex flex-wrap justify-between items-start">
-              <div>
-                <h1 className="text-3xl font-bold">Courses & Colleges</h1>
-                <p className="text-muted-foreground mt-1">
-                  Explore {courses.length} courses and top colleges in India
-                </p>
-              </div>
-              <div className="hidden md:block w-[300px]">
-                <CoursesDecoration />
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold">Courses & Colleges</h1>
+              <p className="text-muted-foreground mt-1">
+                Explore {courses.length} courses and top colleges in India
+              </p>
             </div>
             
             {/* Search and Filters */}

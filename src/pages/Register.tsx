@@ -5,14 +5,11 @@ import { GraduationCap } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
 import RegisterForm from '@/components/auth/RegisterForm';
-import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
 
 const Register = () => {
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-indigo-50 p-4">
-        <BackgroundDecorations variant="light" />
-        
         <div className="w-full max-w-md scale-in-animation">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center p-2 bg-primary rounded-xl mb-4">

@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
-import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
 
 const STREAMS = [
   'Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 
@@ -69,8 +68,6 @@ const ProfileSetup = () => {
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-indigo-50 p-4">
-        <BackgroundDecorations variant="light" />
-        
         <div className="w-full max-w-2xl scale-in-animation">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold">Set Up Your Profile</h1>

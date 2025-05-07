@@ -4,7 +4,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { GraduationCap, User, Compass, BookOpen, LogOut, Menu, X, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -93,8 +92,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      <BackgroundDecorations variant="default" />
-      
       {/* Mobile Header */}
       {isMobile && (
         <header className="sticky top-0 z-50 flex items-center justify-between p-4 bg-white/80 backdrop-blur-md border-b">

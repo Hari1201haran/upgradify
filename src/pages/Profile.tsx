@@ -10,9 +10,6 @@ import { toast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import UserInteractionsPanel from '@/components/experts/UserInteractionsPanel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
-import EducationDecoration from '@/components/ui/EducationDecoration';
-import DecorativeImage from '@/components/ui/DecorativeImage';
 
 const STREAMS = [
   'Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 
@@ -115,141 +112,116 @@ const Profile = () => {
   return (
     <MainLayout>
       <PageTransition>
-        <div className="space-y-8 relative">
-          <BackgroundDecorations variant="light" />
-          <EducationDecoration variant="profile" position="top-right" />
-          
+        <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-bold">Profile</h1>
             <p className="text-muted-foreground mt-1">Manage your account settings and view your interactions</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Left Column - Personal Information */}
-            <div className="md:col-span-2 space-y-6">
-              {/* Personal Information Section */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold">Personal Information</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      value={profileData.fullName}
-                      onChange={handleChange}
-                      placeholder="Enter your full name"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={profileData.email}
-                      onChange={handleChange}
-                      placeholder="Enter your email"
-                      disabled
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="mobile">Mobile</Label>
-                    <Input
-                      type="tel"
-                      id="mobile"
-                      name="mobile"
-                      value={profileData.mobile}
-                      onChange={handleChange}
-                      placeholder="Enter your mobile number"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="age">Age</Label>
-                    <Input
-                      type="number"
-                      id="age"
-                      name="age"
-                      min="14"
-                      max="100"
-                      value={profileData.age || ''}
-                      onChange={handleNumberChange}
-                      placeholder="Enter your age"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Note: Government exam eligibility is typically for ages 16-24
-                    </p>
-                  </div>
-                  <div>
-                    <Label htmlFor="grade">Grade</Label>
-                    <Input
-                      type="text"
-                      id="grade"
-                      name="grade"
-                      value="12th"
-                      disabled
-                      className="bg-gray-100"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Grade is fixed at 12th for all students
-                    </p>
-                  </div>
-                  <div>
-                    <Label htmlFor="stream">Academic Stream</Label>
-                    <Select
-                      value={profileData.stream || ''}
-                      onValueChange={handleStreamChange}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select your academic stream" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {STREAMS.map((streamOption) => (
-                          <SelectItem key={streamOption} value={streamOption}>
-                            {streamOption}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full">
-                    {isSubmitting ? (
-                      <span className="flex items-center">
-                        <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-                        Updating...
-                      </span>
-                    ) : (
-                      "Update Profile"
-                    )}
-                  </Button>
-                </form>
+          {/* Personal Information Section */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Personal Information</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={profileData.fullName}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                />
               </div>
-            </div>
-            
-            {/* Right Column - Profile Decorative Images */}
-            <div className="space-y-6">
-              <DecorativeImage 
-                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b" 
-                alt="Education technology" 
-                className="w-full h-48 object-cover rounded-xl"
-              />
-              
-              <DecorativeImage 
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f" 
-                alt="Student workspace" 
-                className="w-full h-48 object-cover rounded-xl"
-                animationDelay={0.3}
-              />
-            </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={profileData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  disabled
+                />
+              </div>
+              <div>
+                <Label htmlFor="mobile">Mobile</Label>
+                <Input
+                  type="tel"
+                  id="mobile"
+                  name="mobile"
+                  value={profileData.mobile}
+                  onChange={handleChange}
+                  placeholder="Enter your mobile number"
+                />
+              </div>
+              <div>
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  type="number"
+                  id="age"
+                  name="age"
+                  min="14"
+                  max="100"
+                  value={profileData.age || ''}
+                  onChange={handleNumberChange}
+                  placeholder="Enter your age"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Note: Government exam eligibility is typically for ages 16-24
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="grade">Grade</Label>
+                <Input
+                  type="text"
+                  id="grade"
+                  name="grade"
+                  value="12th"
+                  disabled
+                  className="bg-gray-100"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Grade is fixed at 12th for all students
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="stream">Academic Stream</Label>
+                <Select
+                  value={profileData.stream || ''}
+                  onValueChange={handleStreamChange}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select your academic stream" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STREAMS.map((streamOption) => (
+                      <SelectItem key={streamOption} value={streamOption}>
+                        {streamOption}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <span className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                    Updating...
+                  </span>
+                ) : (
+                  "Update Profile"
+                )}
+              </Button>
+            </form>
           </div>
           
           {/* Expert Interactions Section */}
-          <div className="space-y-4 relative">
+          <div className="space-y-4">
             <h2 className="text-xl font-semibold">Expert Interactions</h2>
             <p className="text-muted-foreground">Your consultations and messages with education experts</p>
             <UserInteractionsPanel />
-            <EducationDecoration variant="tips" position="bottom-right" />
           </div>
         </div>
       </PageTransition>
