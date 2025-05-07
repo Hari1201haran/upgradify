@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { GraduationCap, Mail, Lock, Loader2, AlertCircle } from 'lucide-react';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
+import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
 import { isValidEmail } from '@/types/auth';
 import { toast } from 'sonner';
 
@@ -56,6 +57,8 @@ const Login = () => {
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-indigo-50 p-4">
+        <BackgroundDecorations variant="light" />
+        
         <div className="w-full max-w-md scale-in-animation">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center p-2 bg-primary rounded-xl mb-4">
