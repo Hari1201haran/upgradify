@@ -17,16 +17,19 @@ import {
   BookOpen
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import CareerDetailsModal from '@/components/careers/CareerDetailsModal';
 
 interface CareerCardProps {
   career: Career;
+  onClick: () => void;
 }
 
-const CareerCard: React.FC<CareerCardProps> = ({ career }) => {
+const CareerCard: React.FC<CareerCardProps> = ({ career, onClick }) => {
   return (
     <GlassCard 
       className="p-5 hover:shadow-lg transition-all cursor-pointer scale-in-animation"
       variant="elevated"
+      onClick={onClick}
     >
       <div className="space-y-4">
         <div className="flex items-start justify-between">
@@ -100,9 +103,10 @@ interface OutlookCardProps {
   title: string;
   careers: Career[];
   color: 'green' | 'blue' | 'amber';
+  onCareerClick: (career: Career) => void;
 }
 
-const OutlookCard: React.FC<OutlookCardProps> = ({ title, careers, color }) => {
+const OutlookCard: React.FC<OutlookCardProps> = ({ title, careers, color, onCareerClick }) => {
   const colorClasses = {
     green: 'bg-green-50 text-green-800 border-green-200',
     blue: 'bg-blue-50 text-blue-800 border-blue-200',
@@ -114,7 +118,7 @@ const OutlookCard: React.FC<OutlookCardProps> = ({ title, careers, color }) => {
       <h3 className="font-medium mb-3">{title}</h3>
       <ul className="space-y-2">
         {careers.slice(0, 4).map((career) => (
-          <li key={career.id} className="flex items-center gap-2">
+          <li key={career.id} className="flex items-center gap-2 hover:bg-gray-50 rounded p-1 cursor-pointer" onClick={() => onCareerClick(career)}>
             <Briefcase className="h-4 w-4" />
             <span className="text-sm">{career.title}</span>
           </li>
@@ -132,6 +136,8 @@ const Careers = () => {
   const { careers } = useData();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
+  const [selectedCareer, setSelectedCareer] = useState<Career | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const filteredCareers = careers.filter(career => {
     const matchesSearch = career.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -150,7 +156,16 @@ const Careers = () => {
   };
   
   // Available streams for filter buttons
-  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science'];
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law'];
+  
+  const handleCareerClick = (career: Career) => {
+    setSelectedCareer(career);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
   
   return (
     <MainLayout>
@@ -214,6 +229,7 @@ const Careers = () => {
                   <CareerCard 
                     key={career.id} 
                     career={career} 
+                    onClick={() => handleCareerClick(career)}
                   />
                 ))}
               </div>
@@ -232,16 +248,19 @@ const Careers = () => {
                 title="Excellent Outlook" 
                 careers={careersByOutlook.Excellent} 
                 color="green"
+                onCareerClick={handleCareerClick}
               />
               <OutlookCard 
                 title="Good Outlook" 
                 careers={careersByOutlook.Good} 
                 color="blue"
+                onCareerClick={handleCareerClick}
               />
               <OutlookCard 
                 title="Moderate Outlook" 
                 careers={careersByOutlook.Moderate} 
                 color="amber"
+                onCareerClick={handleCareerClick}
               />
             </div>
           </section>
@@ -282,6 +301,13 @@ const Careers = () => {
               </div>
             </GlassCard>
           </section>
+          
+          {/* Career Details Modal */}
+          <CareerDetailsModal
+            career={selectedCareer}
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+          />
         </div>
       </PageTransition>
     </MainLayout>
