@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useData } from '@/contexts/DataContext';
@@ -266,12 +265,12 @@ const NIRFRankings = () => {
                             </div>
                             <div className="flex items-center gap-1">
                               <Users className="h-4 w-4" />
-                              {college.type}
+                              {college.type || 'Public'}
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             <Badge variant="outline">{college.category}</Badge>
-                            <Badge variant="outline">{college.type}</Badge>
+                            <Badge variant="outline">{college.type || 'Public'}</Badge>
                           </div>
                         </div>
                         

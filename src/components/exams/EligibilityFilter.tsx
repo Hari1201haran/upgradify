@@ -4,38 +4,34 @@ import { Button } from '@/components/ui/button';
 import { GraduationCap, BookOpen } from 'lucide-react';
 
 interface EligibilityFilterProps {
-  selectedEligibility: string | null;
-  onEligibilityChange: (eligibility: string | null) => void;
+  eligibilityOptions: string[];
+  selectedEligibility: string;
+  setSelectedEligibility: (eligibility: string) => void;
 }
 
 const EligibilityFilter: React.FC<EligibilityFilterProps> = ({
+  eligibilityOptions,
   selectedEligibility,
-  onEligibilityChange,
+  setSelectedEligibility,
 }) => {
-  const eligibilityOptions = [
-    { id: '12th-pass', label: 'Class 12 Pass', value: 'Class 12' },
-    { id: 'graduate', label: 'Graduates', value: 'graduation' },
-    { id: 'all', label: 'All Eligibility', value: null }
-  ];
-  
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium text-muted-foreground">Eligibility Filter</h3>
       <div className="flex flex-wrap gap-2">
         {eligibilityOptions.map(option => (
           <Button 
-            key={option.id}
-            variant={selectedEligibility === option.value ? "default" : "outline"}
+            key={option}
+            variant={selectedEligibility === option ? "default" : "outline"}
             size="sm"
-            onClick={() => onEligibilityChange(option.value)}
+            onClick={() => setSelectedEligibility(option)}
             className="flex items-center gap-1"
           >
-            {option.id === '12th-pass' ? (
+            {option === '12th Pass' ? (
               <GraduationCap className="h-4 w-4" />
-            ) : option.id === 'graduate' ? (
+            ) : option === 'Graduate' ? (
               <BookOpen className="h-4 w-4" />
             ) : null}
-            {option.label}
+            {option}
           </Button>
         ))}
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import MainLayout from '@/components/layout/MainLayout';
@@ -296,7 +295,7 @@ const ExpertTips = () => {
           {/* Expert Profile Modal */}
           <ExpertProfileModal
             expert={selectedExpert}
-            isOpen={isModalOpen}
+            open={isModalOpen}
             onClose={() => setIsModalOpen(false)}
           />
         </div>

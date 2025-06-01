@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useData } from '@/contexts/DataContext';
@@ -35,9 +34,11 @@ const GovernmentExams = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredExams = governmentExams.filter(exam => {
-    const matchesSearch = exam.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const examName = exam.name || exam.title;
+    const matchesSearch = examName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       exam.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesEligibility = selectedEligibility === 'All' || exam.eligibility.includes(selectedEligibility);
+    const eligibilityArray = Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility];
+    const matchesEligibility = selectedEligibility === 'All' || eligibilityArray.includes(selectedEligibility);
     return matchesSearch && matchesEligibility;
   });
 
@@ -76,7 +77,7 @@ const GovernmentExams = () => {
   ];
 
   const upcomingExams = filteredExams.filter(exam => {
-    const examDate = new Date(exam.applicationDeadline);
+    const examDate = new Date(exam.applicationDeadline || '2024-12-31');
     const today = new Date();
     return examDate > today;
   }).slice(0, 3);
@@ -183,18 +184,18 @@ const GovernmentExams = () => {
                     </Badge>
                     <AlertCircle className="h-5 w-5 text-red-500" />
                   </div>
-                  <h3 className="font-bold text-lg mb-2">{exam.name}</h3>
+                  <h3 className="font-bold text-lg mb-2">{exam.name || exam.title}</h3>
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {exam.description}
                   </p>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>Deadline: {exam.applicationDeadline}</span>
+                      <span>Deadline: {exam.applicationDeadline || 'TBA'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-muted-foreground" />
-                      <span>Age: {exam.ageLimit}</span>
+                      <span>Age: {exam.ageLimit || '18-35 years'}</span>
                     </div>
                   </div>
                   <Button 
@@ -266,7 +267,7 @@ const GovernmentExams = () => {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                              {exam.name}
+                              {exam.name || exam.title}
                             </h3>
                             <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
                               {exam.description}
@@ -278,23 +279,23 @@ const GovernmentExams = () => {
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-muted-foreground" />
-                            <span>Deadline: {exam.applicationDeadline}</span>
+                            <span>Deadline: {exam.applicationDeadline || 'TBA'}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-muted-foreground" />
-                            <span>Age: {exam.ageLimit}</span>
+                            <span>Age: {exam.ageLimit || '18-35 years'}</span>
                           </div>
                         </div>
                         
                         <div className="flex flex-wrap gap-1">
-                          {exam.eligibility.slice(0, 2).map((req, idx) => (
+                          {(Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility]).slice(0, 2).map((req, idx) => (
                             <Badge key={idx} variant="outline" className="text-xs">
                               {req}
                             </Badge>
                           ))}
-                          {exam.eligibility.length > 2 && (
+                          {(Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility]).length > 2 && (
                             <Badge variant="outline" className="text-xs">
-                              +{exam.eligibility.length - 2} more
+                              +{(Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility]).length - 2} more
                             </Badge>
                           )}
                         </div>
