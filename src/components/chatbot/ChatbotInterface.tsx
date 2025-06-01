@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, User, PaperPlaneIcon } from 'lucide-react';
+import { Bot, Send, User } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -170,7 +170,7 @@ const ChatbotInterface: React.FC = () => {
             onClick={handleSend} 
             disabled={!input.trim() || isTyping}
           >
-            <PaperPlaneIcon className="h-4 w-4" />
+            <Send className="h-4 w-4" />
             <span className="sr-only">Send</span>
           </Button>
         </div>
