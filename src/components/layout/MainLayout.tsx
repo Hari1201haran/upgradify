@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { GraduationCap, User, Compass, BookOpen, LogOut, Menu, X, Lightbulb, MessageCircle } from 'lucide-react';
+import { GraduationCap, User, Compass, BookOpen, LogOut, Menu, X, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -76,11 +75,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       icon: <Lightbulb size={20} />,
       label: "Expert Tips",
       href: "/expert-tips",
-    },
-    {
-      icon: <MessageCircle size={20} />,
-      label: "Chatbot",
-      href: "/chatbot",
     },
     {
       icon: <User size={20} />,
