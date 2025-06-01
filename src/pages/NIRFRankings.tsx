@@ -1,328 +1,342 @@
 
-import React, { useState, useEffect } from 'react';
-import { useData, NIRFRanking } from '@/contexts/DataContext';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useData } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
-import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
-import { Input } from '@/components/ui/input';
+import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
+import GradientText from '@/components/ui/GradientText';
+import GlassCard from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/button';
-import { Search, Trophy, MapPin, School, ListOrdered, Filter } from 'lucide-react';
-import { 
-  Table, 
-  TableBody, 
-  TableCaption, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
+import { 
+  Search, 
+  Trophy, 
+  TrendingUp, 
+  Award,
+  Star,
+  MapPin,
+  Users,
+  BookOpen,
+  Target,
+  ExternalLink,
+  Medal,
+  Crown,
+  Zap
+} from 'lucide-react';
+import { staggerContainer, slideUpVariants } from '@/utils/animation';
 
 const NIRFRankings = () => {
-  const { nirfRankings, isLoading } = useData();
+  const { nirfRankings } = useData();
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [categoryStats, setCategoryStats] = useState<{category: string, count: number}[]>([]);
-  
-  // Get all unique categories
-  const categories = Array.from(new Set(nirfRankings.map(ranking => ranking.category))).sort();
-  
-  // Calculate top college per category
-  const topCollegesByCategory = categories.reduce((acc, category) => {
-    const collegesInCategory = nirfRankings.filter(r => r.category === category);
-    if (collegesInCategory.length > 0) {
-      // Sort by rank and get the first one
-      const topCollege = collegesInCategory.sort((a, b) => a.rank - b.rank)[0];
-      acc[category] = topCollege;
-    }
-    return acc;
-  }, {} as Record<string, NIRFRanking>);
-  
-  // Count colleges per category
-  useEffect(() => {
-    const stats = categories.map(category => ({
-      category,
-      count: nirfRankings.filter(r => r.category === category).length
-    }));
-    setCategoryStats(stats.sort((a, b) => b.count - a.count));
-    
-    // If we have a lot of data, show a toast notification
-    if (nirfRankings.length > 100) {
-      toast.info(`Loaded ${nirfRankings.length} institutions across ${categories.length} categories`);
-    }
-  }, [nirfRankings, categories]);
-  
-  // Filter rankings based on search query and category selection
-  const filteredRankings = nirfRankings.filter(ranking => {
-    const matchesSearch = ranking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ranking.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ranking.location.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = categoryFilter ? ranking.category === categoryFilter : true;
-    
+  const [selectedCategory, setSelectedCategory] = useState<string>('Overall');
+
+  const categories = ['Overall', 'Engineering', 'Management', 'Pharmacy', 'Medical', 'Law', 'University'];
+
+  const filteredRankings = nirfRankings.filter(college => {
+    const matchesSearch = college.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      college.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'Overall' || college.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-  
-  if (isLoading) {
-    return (
-      <MainLayout>
-        <div className="flex justify-center items-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-        </div>
-      </MainLayout>
-    );
-  }
-  
+
+  const stats = [
+    { 
+      icon: <Trophy className="h-6 w-6" />, 
+      value: nirfRankings.length.toString(), 
+      label: "Ranked Institutions",
+      color: "from-yellow-500 to-orange-500" 
+    },
+    { 
+      icon: <Award className="h-6 w-6" />, 
+      value: categories.length.toString(), 
+      label: "Categories",
+      color: "from-blue-500 to-indigo-500" 
+    },
+    { 
+      icon: <Star className="h-6 w-6" />, 
+      value: "2024", 
+      label: "Latest Rankings",
+      color: "from-purple-500 to-pink-500" 
+    },
+    { 
+      icon: <TrendingUp className="h-6 w-6" />, 
+      value: "100%", 
+      label: "Authentic Data",
+      color: "from-green-500 to-teal-500" 
+    }
+  ];
+
+  const topPerformers = filteredRankings.slice(0, 3);
+
+  const getRankIcon = (rank: number) => {
+    if (rank === 1) return <Crown className="h-6 w-6 text-yellow-500" />;
+    if (rank === 2) return <Medal className="h-6 w-6 text-gray-400" />;
+    if (rank === 3) return <Medal className="h-6 w-6 text-orange-600" />;
+    return <Trophy className="h-5 w-5 text-blue-500" />;
+  };
+
+  const getRankColor = (rank: number) => {
+    if (rank === 1) return "from-yellow-400 to-yellow-600";
+    if (rank === 2) return "from-gray-300 to-gray-500";
+    if (rank === 3) return "from-orange-400 to-orange-600";
+    if (rank <= 10) return "from-blue-400 to-blue-600";
+    if (rank <= 50) return "from-green-400 to-green-600";
+    return "from-purple-400 to-purple-600";
+  };
+
   return (
     <MainLayout>
       <PageTransition>
-        <div className="space-y-8">
-          <section className="space-y-4">
-            <div>
-              <h1 className="text-3xl font-bold">NIRF Rankings</h1>
-              <p className="text-muted-foreground mt-1">
-                Explore top ranked institutions in India according to National Institutional Ranking Framework
-              </p>
+        <div className="space-y-8 relative">
+          <BackgroundDecorations variant="gradient" />
+          
+          {/* Header Section */}
+          <motion.section 
+            className="relative z-10 text-center py-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl">
+                <Trophy className="h-8 w-8 text-white" />
+              </div>
             </div>
-            
-            {/* Search and Filters */}
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              <GradientText variant="rainbow">NIRF Rankings</GradientText> 2024
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Official National Institutional Ranking Framework (NIRF) rankings 
+              to help you choose the best institutions in India
+            </p>
+          </motion.section>
+
+          {/* Stats Section */}
+          <motion.section 
+            className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {stats.map((stat, index) => (
+              <GlassCard key={index} className="p-6 text-center bg-white/60 border-0 hover:shadow-lg transition-all">
+                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${stat.color} text-white mb-3`}>
+                  {stat.icon}
+                </div>
+                <div className="text-2xl font-bold text-gray-800 mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {stat.label}
+                </div>
+              </GlassCard>
+            ))}
+          </motion.section>
+
+          {/* Top Performers Spotlight */}
+          <motion.section 
+            className="relative z-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <Zap className="h-6 w-6 text-yellow-500" />
+              Top Performers ({selectedCategory})
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {topPerformers.map((college, index) => (
+                <GlassCard 
+                  key={college.id} 
+                  className={`p-6 bg-gradient-to-br ${
+                    index === 0 ? 'from-yellow-50/80 to-orange-50/80' :
+                    index === 1 ? 'from-gray-50/80 to-slate-50/80' :
+                    'from-orange-50/80 to-red-50/80'
+                  } border-0 hover:shadow-xl transition-all`}
+                >
+                  <div className="text-center space-y-4">
+                    <div className="flex items-center justify-center">
+                      {getRankIcon(college.rank)}
+                    </div>
+                    <div>
+                      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${getRankColor(college.rank)} text-white text-2xl font-bold mb-3`}>
+                        #{college.rank}
+                      </div>
+                      <h3 className="font-bold text-lg mb-2 line-clamp-2">
+                        {college.name}
+                      </h3>
+                      <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground mb-3">
+                        <MapPin className="h-4 w-4" />
+                        {college.location}
+                      </div>
+                      <Badge className={`bg-gradient-to-r ${getRankColor(college.rank)} text-white border-0`}>
+                        {college.category}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      <span className="font-medium">{college.score}</span>
+                      <span className="text-sm text-muted-foreground">/ 100</span>
+                    </div>
+                  </div>
+                </GlassCard>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* Search and Filter */}
+          <motion.section 
+            className="relative z-10 space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
                 <Input
-                  placeholder="Search by institution name, category or location..."
-                  className="pl-10"
+                  placeholder="Search institutions by name or location..."
+                  className="pl-10 bg-white/80 backdrop-blur-sm border-0 shadow-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               
-              <Button 
-                variant="outline" 
-                onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className="md:w-auto w-full flex items-center gap-2"
-              >
-                <Filter size={16} />
-                <span>Filter Categories</span>
-                <Badge variant="secondary" className="ml-2">
-                  {categoryFilter || 'All'}
-                </Badge>
-              </Button>
-            </div>
-            
-            {/* Category Filter Panel */}
-            {showFilterMenu && (
-              <div className="bg-background rounded-lg border p-4 shadow-sm animate-in fade-in duration-200">
-                <h3 className="text-sm font-medium mb-3">Filter by Category</h3>
-                <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap">
+                {categories.map(category => (
                   <Button 
-                    size="sm"
-                    variant={categoryFilter === null ? "default" : "outline"}
-                    onClick={() => setCategoryFilter(null)}
-                    className="mb-2"
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category)}
+                    className="whitespace-nowrap"
                   >
-                    All Categories
+                    {category}
                   </Button>
-                  {categories.map(category => (
-                    <Button 
-                      key={category}
-                      size="sm"
-                      variant={categoryFilter === category ? "default" : "outline"}
-                      onClick={() => setCategoryFilter(category)}
-                      className="mb-2"
-                    >
-                      {category} <Badge variant="secondary" className="ml-1">{nirfRankings.filter(r => r.category === category).length}</Badge>
-                    </Button>
-                  ))}
-                </div>
+                ))}
               </div>
-            )}
-          </section>
-          
-          {/* Category Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {categoryFilter ? (
-              <>
-                {/* Show details about the selected category */}
-                <GlassCard className="md:col-span-2 p-4 flex flex-col gap-2 scale-in-animation">
-                  <h2 className="font-semibold text-lg flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
-                    Top Institution in {categoryFilter}
-                  </h2>
-                  {topCollegesByCategory[categoryFilter] && (
-                    <div className="flex flex-col p-4 bg-muted/50 rounded-lg">
-                      <div className="text-xl font-medium">{topCollegesByCategory[categoryFilter].name}</div>
-                      <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                        <MapPin size={14} />
-                        <span>{topCollegesByCategory[categoryFilter].location}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                          Rank #{topCollegesByCategory[categoryFilter].rank}
-                        </Badge>
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          Score: {topCollegesByCategory[categoryFilter].score.toFixed(1)}
-                        </Badge>
-                      </div>
-                      <p className="mt-2 text-sm">{topCollegesByCategory[categoryFilter].description}</p>
-                    </div>
-                  )}
-                </GlassCard>
-                
-                <GlassCard className="p-4 flex items-center justify-between scale-in-animation">
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">Institutions in category</span>
-                    <span className="text-3xl font-bold">{nirfRankings.filter(r => r.category === categoryFilter).length}</span>
-                    <span className="text-xs text-muted-foreground mt-1">Displaying {filteredRankings.length} after filters</span>
-                  </div>
-                  <div className="p-4 bg-primary/10 rounded-full">
-                    <School className="h-8 w-8 text-primary" />
-                  </div>
-                </GlassCard>
-              </>
-            ) : (
-              <>
-                {/* Overview stats when no category is selected */}
-                <GlassCard className="p-4 flex items-center gap-4 scale-in-animation">
-                  <div className="p-3 bg-yellow-100 rounded-lg">
-                    <Trophy className="h-6 w-6 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Categories</p>
-                    <p className="font-semibold">{categories.length}</p>
-                  </div>
-                </GlassCard>
-                
-                <GlassCard className="p-4 flex items-center gap-4 scale-in-animation">
-                  <div className="p-3 bg-indigo-100 rounded-lg">
-                    <School className="h-6 w-6 text-indigo-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Institutions</p>
-                    <p className="font-semibold">{nirfRankings.length}</p>
-                  </div>
-                </GlassCard>
-                
-                <GlassCard className="p-4 flex items-center gap-4 scale-in-animation">
-                  <div className="p-3 bg-green-100 rounded-lg">
-                    <ListOrdered className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Institutions Displayed</p>
-                    <p className="font-semibold">{filteredRankings.length}</p>
-                  </div>
-                </GlassCard>
-              </>
-            )}
-          </div>
-          
+            </div>
+          </motion.section>
+
           {/* Rankings Table */}
-          <GlassCard className="overflow-hidden">
-            <div className="p-4 border-b bg-muted/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-              <div>
-                <h2 className="text-lg font-semibold">
-                  {categoryFilter ? `${categoryFilter} Rankings` : 'All Categories Rankings'}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {filteredRankings.length} institutions found
+          <motion.section 
+            className="relative z-10"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <Trophy className="h-6 w-6 text-blue-500" />
+              Complete Rankings ({filteredRankings.length} institutions)
+            </h2>
+            
+            {filteredRankings.length === 0 ? (
+              <div className="text-center py-12">
+                <Trophy className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
+                <h3 className="mt-4 text-lg font-medium">No institutions found</h3>
+                <p className="text-muted-foreground">
+                  Try adjusting your search or category filter
                 </p>
               </div>
-              
-              {filteredRankings.length > 0 && !categoryFilter && (
-                <div className="text-sm flex flex-wrap gap-2">
-                  {categoryStats.slice(0, 5).map(stat => (
-                    <Badge key={stat.category} variant="outline" className="cursor-pointer" onClick={() => setCategoryFilter(stat.category)}>
-                      {stat.category}: {stat.count}
-                    </Badge>
-                  ))}
-                  {categoryStats.length > 5 && (
-                    <Badge variant="outline">+{categoryStats.length - 5} more</Badge>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">Rank</TableHead>
-                  <TableHead>Institution Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead className="text-right">NIRF Score</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRankings.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      <div className="flex flex-col items-center justify-center">
-                        <School className="h-12 w-12 text-muted-foreground opacity-30" />
-                        <h3 className="mt-4 text-lg font-medium">No institutions found</h3>
-                        <p className="text-muted-foreground">
-                          Try adjusting your search or filters
-                        </p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredRankings
-                    .sort((a, b) => a.rank - b.rank)
-                    .map((ranking) => (
-                      <TableRow key={ranking.id} className="cursor-pointer hover:bg-muted/50">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary">
-                            {ranking.rank}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{ranking.name}</div>
-                            <div className="text-sm text-muted-foreground line-clamp-1">
-                              {ranking.description}
+            ) : (
+              <div className="space-y-4">
+                {filteredRankings.map((college, index) => (
+                  <motion.div key={college.id} variants={slideUpVariants}>
+                    <GlassCard className="p-6 bg-white/70 border-0 hover:shadow-lg transition-all">
+                      <div className="flex items-center gap-6">
+                        {/* Rank */}
+                        <div className={`flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r ${getRankColor(college.rank)} text-white text-xl font-bold flex-shrink-0`}>
+                          #{college.rank}
+                        </div>
+                        
+                        {/* Institution Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg mb-2">
+                            {college.name}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {college.location}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <BookOpen className="h-4 w-4" />
+                              {college.category}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Users className="h-4 w-4" />
+                              {college.type}
                             </div>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                            {ranking.category}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span>{ranking.location}</span>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="outline">{college.category}</Badge>
+                            <Badge variant="outline">{college.type}</Badge>
                           </div>
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {ranking.score.toFixed(1)}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                )}
-              </TableBody>
-            </Table>
-          </GlassCard>
-          
-          {/* Additional Information */}
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="flex gap-3">
-              <div className="p-2 bg-blue-100 rounded-full h-fit">
-                <School className="h-5 w-5 text-blue-600" />
+                        </div>
+                        
+                        {/* Score and Actions */}
+                        <div className="text-right flex-shrink-0">
+                          <div className="mb-3">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                              <span className="text-lg font-bold">{college.score}</span>
+                              <span className="text-sm text-muted-foreground">/ 100</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">NIRF Score</p>
+                          </div>
+                          <Button size="sm" variant="outline" className="gap-2">
+                            View Details
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </GlassCard>
+                  </motion.div>
+                ))}
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-blue-900">About NIRF Rankings</h3>
-                <p className="text-sm text-blue-700 mt-1">
+            )}
+          </motion.section>
+
+          {/* Info Section */}
+          <motion.section 
+            className="relative z-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            <GlassCard className="p-8 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border-0">
+              <div className="max-w-4xl mx-auto text-center">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Target className="h-6 w-6 text-blue-500" />
+                  <h3 className="text-2xl font-bold">About NIRF Rankings</h3>
+                </div>
+                <p className="text-muted-foreground mb-6 leading-relaxed">
                   The National Institutional Ranking Framework (NIRF) was launched by the Ministry of Education, 
-                  Government of India. It outlines a methodology to rank institutions across the country based on 
-                  parameters like Teaching, Learning & Resources, Research & Professional Practice, Graduation 
-                  Outcomes, Outreach & Inclusivity, and Perception.
+                  Government of India, to rank higher education institutions across the country. The ranking is 
+                  based on five broad parameters: Teaching, Learning & Resources; Research and Professional Practice; 
+                  Graduation Outcomes; Outreach and Inclusivity; and Perception.
                 </p>
+                <div className="grid md:grid-cols-3 gap-4 text-sm">
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <Award className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                    <h4 className="font-semibold mb-1">Comprehensive Evaluation</h4>
+                    <p className="text-muted-foreground">Based on multiple parameters for holistic assessment</p>
+                  </div>
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <TrendingUp className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                    <h4 className="font-semibold mb-1">Annual Updates</h4>
+                    <p className="text-muted-foreground">Rankings updated every year for current information</p>
+                  </div>
+                  <div className="p-4 bg-white/50 rounded-lg">
+                    <Trophy className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+                    <h4 className="font-semibold mb-1">Government Approved</h4>
+                    <p className="text-muted-foreground">Official rankings by Ministry of Education</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </GlassCard>
+          </motion.section>
         </div>
       </PageTransition>
     </MainLayout>

@@ -1,197 +1,281 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { GraduationCap, ArrowRight, BookOpen, CompassIcon, Award } from 'lucide-react';
+import { 
+  GraduationCap, 
+  ArrowRight, 
+  BookOpen, 
+  Trophy, 
+  Users, 
+  Star,
+  CheckCircle,
+  TrendingUp,
+  Target,
+  Award
+} from 'lucide-react';
+import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
+import FloatingElements from '@/components/ui/FloatingElements';
+import GradientText from '@/components/ui/GradientText';
 import GlassCard from '@/components/ui/GlassCard';
-import PageTransition from '@/components/layout/PageTransition';
+import { fadeInVariants, slideUpVariants, staggerContainer } from '@/utils/animation';
 
 const Index = () => {
-  const navigate = useNavigate();
-  
+  const features = [
+    {
+      icon: <BookOpen className="h-8 w-8 text-blue-500" />,
+      title: "Comprehensive Course Database",
+      description: "Access detailed information about thousands of courses and colleges across India",
+      gradient: "from-blue-50 to-indigo-50"
+    },
+    {
+      icon: <Trophy className="h-8 w-8 text-yellow-500" />,
+      title: "Career Guidance",
+      description: "Get personalized career recommendations based on your interests and aptitude",
+      gradient: "from-yellow-50 to-orange-50"
+    },
+    {
+      icon: <Target className="h-8 w-8 text-green-500" />,
+      title: "Government Exam Prep",
+      description: "Complete information about government exams, eligibility, and preparation tips",
+      gradient: "from-green-50 to-emerald-50"
+    },
+    {
+      icon: <Award className="h-8 w-8 text-purple-500" />,
+      title: "NIRF Rankings",
+      description: "Latest NIRF rankings to help you choose the best institutions",
+      gradient: "from-purple-50 to-pink-50"
+    }
+  ];
+
+  const stats = [
+    { number: "1000+", label: "Courses", icon: <BookOpen className="h-6 w-6" /> },
+    { number: "500+", label: "Colleges", icon: <GraduationCap className="h-6 w-6" /> },
+    { number: "200+", label: "Career Paths", icon: <TrendingUp className="h-6 w-6" /> },
+    { number: "50+", label: "Exam Details", icon: <Target className="h-6 w-6" /> }
+  ];
+
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50">
-        {/* Header */}
-        <header className="fixed top-0 w-full z-10 bg-white/80 backdrop-blur-md border-b">
-          <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-semibold">After School Opportunity</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+      <BackgroundDecorations variant="default" />
+      <FloatingElements />
+      
+      {/* Navigation */}
+      <nav className="relative z-10 p-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <motion.div 
+            className="flex items-center gap-2"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl">
+              <GraduationCap className="h-8 w-8 text-white" />
             </div>
-            <div className="flex gap-2">
+            <GradientText variant="blue" className="text-2xl font-bold">
+              After School
+            </GradientText>
+          </motion.div>
+          
+          <motion.div 
+            className="flex gap-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Button variant="ghost" asChild>
+              <Link to="/login">Sign In</Link>
+            </Button>
+            <Button asChild className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600">
+              <Link to="/register">Get Started</Link>
+            </Button>
+          </motion.div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+          >
+            <motion.h1 
+              variants={slideUpVariants}
+              className="text-5xl md:text-7xl font-bold leading-tight"
+            >
+              Your Future Starts{" "}
+              <GradientText variant="rainbow" className="text-6xl md:text-8xl">
+                Here
+              </GradientText>
+            </motion.h1>
+            
+            <motion.p 
+              variants={slideUpVariants}
+              className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+            >
+              Discover your perfect career path with our comprehensive platform for 
+              <span className="font-semibold text-blue-600"> courses</span>, 
+              <span className="font-semibold text-green-600"> colleges</span>, and 
+              <span className="font-semibold text-purple-600"> career guidance</span>
+            </motion.p>
+            
+            <motion.div 
+              variants={slideUpVariants}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
               <Button 
-                variant="ghost" 
-                onClick={() => navigate('/login')}
-                className="button-hover"
+                size="lg" 
+                asChild 
+                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
               >
-                Login
+                <Link to="/register" className="flex items-center gap-2">
+                  Start Your Journey
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
               </Button>
-              <Button 
-                onClick={() => navigate('/register')}
-                className="button-hover"
-              >
-                Register
-              </Button>
-            </div>
-          </div>
-        </header>
-        
-        {/* Hero Section */}
-        <section className="pt-28 pb-20 md:pt-40 md:pb-32 px-4">
-          <div className="container mx-auto max-w-6xl">
-            <div className="flex flex-col md:flex-row md:items-center gap-12">
-              <div className="flex-1 space-y-6">
-                <div>
-                  <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-4">
-                    For Chennai 12th Standard Students
-                  </div>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                    Your Guide to <span className="text-gradient">Future Opportunities</span>
-                  </h1>
-                  <p className="mt-4 text-lg text-muted-foreground">
-                    Discover career paths, explore courses, and find top colleges in Chennai tailored to your interests and academic stream.
-                  </p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button 
-                    size="lg" 
-                    onClick={() => navigate('/register')}
-                    className="button-hover group"
-                  >
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    onClick={() => navigate('/login')}
-                    className="button-hover"
-                  >
-                    Login to Your Account
-                  </Button>
-                </div>
-              </div>
               
-              <div className="flex-1 relative">
-                <div className="absolute -z-10 inset-0 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-3xl transform rotate-3 scale-95 opacity-70"></div>
-                <GlassCard className="p-8 mx-auto max-w-md scale-in-animation">
-                  <div className="space-y-8">
-                    <div className="p-3 bg-primary/10 w-fit rounded-xl">
-                      <GraduationCap className="h-8 w-8 text-primary" />
+              <Button 
+                size="lg" 
+                variant="outline" 
+                asChild 
+                className="text-lg px-8 py-6 rounded-full border-2 hover:bg-gray-50"
+              >
+                <Link to="/login">Sign In</Link>
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="relative z-10 px-6 py-16">
+        <div className="max-w-6xl mx-auto">
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {stats.map((stat, index) => (
+              <motion.div key={index} variants={fadeInVariants}>
+                <GlassCard className="p-6 text-center hover:shadow-lg transition-all">
+                  <div className="flex justify-center mb-3 text-blue-500">
+                    {stat.icon}
+                  </div>
+                  <div className="text-3xl font-bold text-gray-800 mb-1">
+                    {stat.number}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              Everything You Need for Your{" "}
+              <GradientText variant="purple">Education Journey</GradientText>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Comprehensive tools and resources to help you make informed decisions about your future
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            className="grid md:grid-cols-2 gap-8"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {features.map((feature, index) => (
+              <motion.div key={index} variants={slideUpVariants}>
+                <GlassCard className={`p-8 h-full bg-gradient-to-br ${feature.gradient} hover:shadow-xl transition-all duration-300 border-0`}>
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-white rounded-xl shadow-sm">
+                      {feature.icon}
                     </div>
-                    <div className="space-y-4">
-                      <h3 className="text-2xl font-semibold">Personalized Guidance</h3>
-                      <p className="text-muted-foreground">
-                        After School Opportunity provides personalized recommendations based on your academic interests.
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {feature.description}
                       </p>
-                      <div className="grid grid-cols-2 gap-3 pt-4">
-                        <div className="bg-white/70 p-3 rounded-lg border border-blue-100">
-                          <p className="font-medium">50+ Courses</p>
-                        </div>
-                        <div className="bg-white/70 p-3 rounded-lg border border-blue-100">
-                          <p className="font-medium">Top Colleges</p>
-                        </div>
-                        <div className="bg-white/70 p-3 rounded-lg border border-blue-100">
-                          <p className="font-medium">Career Paths</p>
-                        </div>
-                        <div className="bg-white/70 p-3 rounded-lg border border-blue-100">
-                          <p className="font-medium">NIRF Rankings</p>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </GlassCard>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        {/* Features Section */}
-        <section className="py-16 px-4 bg-white">
-          <div className="container mx-auto max-w-6xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold">How We Help You Succeed</h2>
-              <p className="mt-2 text-muted-foreground max-w-xl mx-auto">
-                Discover the tools and resources that will guide you toward the right educational path after 12th grade.
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <GlassCard className="p-12 text-center bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-0">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Ready to Shape Your{" "}
+                <GradientText variant="blue">Future?</GradientText>
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of students who have found their perfect career path with our platform
               </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <GlassCard className="p-6 flex flex-col items-center text-center scale-in-animation" style={{animationDelay: '0.1s'}}>
-                <div className="p-3 bg-primary/10 rounded-xl mb-4">
-                  <CompassIcon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Career Discovery</h3>
-                <p className="text-muted-foreground">
-                  Explore career options tailored to your academic stream and personal interests.
-                </p>
-              </GlassCard>
-              
-              <GlassCard className="p-6 flex flex-col items-center text-center scale-in-animation" style={{animationDelay: '0.2s'}}>
-                <div className="p-3 bg-indigo-100 rounded-xl mb-4">
-                  <BookOpen className="h-8 w-8 text-indigo-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Course Guidance</h3>
-                <p className="text-muted-foreground">
-                  Find the right courses and educational paths that align with your career goals.
-                </p>
-              </GlassCard>
-              
-              <GlassCard className="p-6 flex flex-col items-center text-center scale-in-animation" style={{animationDelay: '0.3s'}}>
-                <div className="p-3 bg-blue-100 rounded-xl mb-4">
-                  <Award className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Top Colleges</h3>
-                <p className="text-muted-foreground">
-                  Discover Chennai's top-rated colleges based on NIRF rankings and student feedback.
-                </p>
-              </GlassCard>
-            </div>
-          </div>
-        </section>
-        
-        {/* CTA Section */}
-        <section className="py-20 px-4">
-          <div className="container mx-auto max-w-5xl">
-            <GlassCard className="p-8 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 border-none">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className="space-y-4">
-                  <h2 className="text-3xl font-bold">Ready to Start Your Journey?</h2>
-                  <p className="text-muted-foreground">
-                    Create your account today and get personalized guidance for your educational journey.
-                  </p>
-                </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg" 
-                  onClick={() => navigate('/register')}
-                  className="button-hover"
+                  asChild 
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-lg px-8 py-6 rounded-full"
                 >
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <Link to="/register" className="flex items-center gap-2">
+                    Create Free Account
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
                 </Button>
               </div>
             </GlassCard>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 px-6 py-12 border-t border-gray-200/50">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <GraduationCap className="h-6 w-6 text-blue-500" />
+            <span className="font-semibold text-gray-800">After School</span>
           </div>
-        </section>
-        
-        {/* Footer */}
-        <footer className="bg-white py-12 px-4 border-t">
-          <div className="container mx-auto max-w-6xl">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="h-6 w-6 text-primary" />
-                <h2 className="text-xl font-semibold">After School Opportunity</h2>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                &copy; {new Date().getFullYear()} After School Opportunity. All rights reserved.
-              </div>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </PageTransition>
+          <p className="text-muted-foreground">
+            Empowering students to make informed career decisions
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 };
 
