@@ -1,3 +1,4 @@
+
 import { NIRFRanking } from './types';
 
 export const nirfRankings: NIRFRanking[] = [
@@ -10,6 +11,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 89.9,
     description: 'Premier engineering institution known for excellence in teaching and research',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-2',
@@ -19,6 +21,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 88.1,
     description: 'Top-tier engineering institute with strong industry connections',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-3',
@@ -28,6 +31,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 87.4,
     description: 'Leading research-focused engineering institute in India',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-4',
@@ -37,6 +41,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 85.2,
     description: 'Renowned for cutting-edge research in engineering disciplines',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-5',
@@ -46,6 +51,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 84.9,
     description: 'Oldest IIT with comprehensive engineering programs',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-6',
@@ -55,6 +61,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 84.3,
     description: 'Historic institution with strong civil engineering programs',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-7',
@@ -64,6 +71,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 82.8,
     description: 'Leading engineering institute in North-East India',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-8',
@@ -73,6 +81,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 79.8,
     description: 'Leading state university offering various engineering programs',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-9',
@@ -82,6 +91,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 75.2,
     description: 'Top NIT with excellent teaching and placement record',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-10',
@@ -91,6 +101,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 73.9,
     description: 'New generation IIT with innovative curriculum',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-11',
@@ -100,6 +111,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 71.5,
     description: 'Historic university with strong engineering departments',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-12',
@@ -109,6 +121,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 70.8,
     description: 'Private university known for industry-focused engineering education',
+    type: 'Private',
   },
   {
     id: 'nirf-eng-13',
@@ -118,6 +131,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 69.7,
     description: 'Premier NIT with coastal campus and strong academics',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-14',
@@ -127,6 +141,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 68.9,
     description: 'New IIT with rapid growth and research focus',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-15',
@@ -136,6 +151,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 67.4,
     description: 'Specialized institution for chemical engineering and technology',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-16',
@@ -145,6 +161,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 66.8,
     description: 'Historic engineering institution with heritage campus',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-17',
@@ -154,6 +171,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 65.9,
     description: 'Private institution known for quality engineering education',
+    type: 'Private',
   },
   {
     id: 'nirf-eng-18',
@@ -163,6 +181,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 64.7,
     description: 'NIT with strong metallurgy and materials engineering programs',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-19',
@@ -172,6 +191,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 63.9,
     description: 'Historic engineering college with strong industry connections',
+    type: 'Public',
   },
   {
     id: 'nirf-eng-20',
@@ -181,6 +201,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Engineering',
     score: 63.2,
     description: 'Central university with quality engineering programs',
+    type: 'Central University',
   },
 
   // Arts & Science Rankings - Updated to ensure proper ranking order
@@ -192,6 +213,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 84.6,
     description: 'Top-ranked women\'s college for arts and sciences',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-2',
@@ -201,6 +223,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 82.9,
     description: 'Historic college with excellent academic programs',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-3',
@@ -210,6 +233,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 82.2,
     description: 'Premier arts and science institution in South India',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-4',
@@ -219,6 +243,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 81.7,
     description: 'Prestigious college known for humanities and sciences',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-5',
@@ -228,6 +253,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 79.6,
     description: 'Renowned for quality education in arts and sciences',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-6',
@@ -237,6 +263,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 77.9,
     description: 'Leading arts and science college with rich history',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-7',
@@ -246,6 +273,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 77.2,
     description: 'Premier women\'s college for humanities and social sciences',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-8',
@@ -255,6 +283,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 76.8,
     description: 'Private university known for quality arts and science programs',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-9',
@@ -264,6 +293,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 75.9,
     description: 'Residential college with strong academic focus',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-10',
@@ -273,6 +303,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 75.3,
     description: 'Historic institution with diverse academic programs',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-11',
@@ -282,6 +313,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 74.9,
     description: 'Historic college known for arts and science education',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-12',
@@ -291,6 +323,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 74.5,
     description: 'Renowned college with strong academic traditions',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-13',
@@ -300,6 +333,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 74.1,
     description: 'Leading institution for commerce and economics',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-14',
@@ -309,6 +343,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 73.8,
     description: 'Women\'s college with excellence in arts and sciences',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-15',
@@ -318,6 +353,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 73.2,
     description: 'Established college with diverse academic departments',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-16',
@@ -327,6 +363,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 72.9,
     description: 'Premier women\'s college focusing on home science and related disciplines',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-17',
@@ -336,6 +373,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 72.4,
     description: 'Comprehensive college with strong academic programs',
+    type: 'Public',
   },
   {
     id: 'nirf-arts-18',
@@ -345,6 +383,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 71.8,
     description: 'Prominent women\'s college with diverse courses',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-19',
@@ -354,6 +393,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 71.2,
     description: 'Historic institution with strong emphasis on academics',
+    type: 'Private',
   },
   {
     id: 'nirf-arts-20',
@@ -363,6 +403,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Arts & Science',
     score: 70.6,
     description: 'Women\'s college known for quality education',
+    type: 'Private',
   },
 
   // Medical Rankings - Updated to ensure proper ranking order
@@ -374,6 +415,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 89.5,
     description: 'Premier medical institution with advanced healthcare and research',
+    type: 'Central University',
   },
   {
     id: 'nirf-med-2',
@@ -383,6 +425,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 85.9,
     description: 'Leading institute for medical education and specialized healthcare',
+    type: 'Central University',
   },
   {
     id: 'nirf-med-3',
@@ -392,6 +435,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 83.7,
     description: 'Top-ranked private medical college with comprehensive healthcare',
+    type: 'Private',
   },
   {
     id: 'nirf-med-4',
@@ -401,6 +445,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 80.5,
     description: 'Specialized institute for mental health and neuroscience research',
+    type: 'Central University',
   },
   {
     id: 'nirf-med-5',
@@ -410,6 +455,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 78.6,
     description: 'Premier medical institution with advanced research facilities',
+    type: 'Central University',
   },
   {
     id: 'nirf-med-6',
@@ -419,6 +465,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 77.7,
     description: 'Comprehensive university with strong medical programs',
+    type: 'Central University',
   },
   {
     id: 'nirf-med-7',
@@ -428,6 +475,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 76.9,
     description: 'Private university with quality medical education',
+    type: 'Private',
   },
   {
     id: 'nirf-med-8',
@@ -437,6 +485,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 75.8,
     description: 'Specialized institute for postgraduate medical education',
+    type: 'Public',
   },
   {
     id: 'nirf-med-9',
@@ -446,6 +495,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 75.2,
     description: 'Private medical college with international recognition',
+    type: 'Private',
   },
   {
     id: 'nirf-med-10',
@@ -455,6 +505,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 74.5,
     description: 'Historic medical university with comprehensive medical programs',
+    type: 'Public',
   },
   {
     id: 'nirf-med-11',
@@ -464,6 +515,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 73.9,
     description: 'Private medical university with modern facilities',
+    type: 'Private',
   },
   {
     id: 'nirf-med-12',
@@ -473,6 +525,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 73.4,
     description: 'Private medical college known for quality education',
+    type: 'Private',
   },
   {
     id: 'nirf-med-13',
@@ -482,6 +535,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 72.8,
     description: 'Historic medical institution with quality medical education',
+    type: 'Public',
   },
   {
     id: 'nirf-med-14',
@@ -491,6 +545,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 72.1,
     description: 'Government medical college with strong academic programs',
+    type: 'Public',
   },
   {
     id: 'nirf-med-15',
@@ -500,6 +555,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 71.6,
     description: 'Medical college affiliated with Delhi University',
+    type: 'Public',
   },
   {
     id: 'nirf-med-16',
@@ -509,6 +565,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 71.0,
     description: 'Private medical college with strong community focus',
+    type: 'Private',
   },
   {
     id: 'nirf-med-17',
@@ -518,6 +575,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 70.5,
     description: 'Historic municipal medical college with extensive facilities',
+    type: 'Public',
   },
   {
     id: 'nirf-med-18',
@@ -527,6 +585,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 70.0,
     description: 'Government medical college with comprehensive training',
+    type: 'Public',
   },
   {
     id: 'nirf-med-19',
@@ -536,6 +595,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 69.5,
     description: 'Private medical college with modern infrastructure',
+    type: 'Private',
   },
   {
     id: 'nirf-med-20',
@@ -545,6 +605,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Medical',
     score: 69.0,
     description: 'Government medical institution with quality education',
+    type: 'Public',
   },
 
   // Management Rankings
@@ -556,6 +617,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 88.6,
     description: 'Premier management institute with global recognition',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-2',
@@ -565,6 +627,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 87.5,
     description: 'Leading business school with strong industry connections',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-3',
@@ -574,6 +637,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 84.3,
     description: 'Historic management institute with diverse programs',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-4',
@@ -583,6 +647,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 83.7,
     description: 'Renowned institute for management education',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-5',
@@ -592,6 +657,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 82.9,
     description: 'Department of Management Studies with technical integration',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-6',
@@ -601,6 +667,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 80.4,
     description: 'Leading management institute in South India',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-7',
@@ -610,6 +677,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 79.8,
     description: 'Private business school with strong HR and management focus',
+    type: 'Private',
   },
   {
     id: 'nirf-mgmt-8',
@@ -619,6 +687,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 78.9,
     description: 'Fast-growing management institute with modern curriculum',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-9',
@@ -628,6 +697,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 77.4,
     description: 'Specialized institute for industrial engineering and management',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-10',
@@ -637,6 +707,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 76.8,
     description: 'Vinod Gupta School of Management with technical foundation',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-11',
@@ -646,6 +717,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 75.9,
     description: 'Modern management institute with sustainability focus',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-12',
@@ -655,6 +727,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 75.3,
     description: 'Leading private institute for management education',
+    type: 'Private',
   },
   {
     id: 'nirf-mgmt-13',
@@ -664,6 +737,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 74.6,
     description: 'New generation IIM with innovative programs',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-14',
@@ -673,6 +747,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 73.9,
     description: 'Specialized institute for international business',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-15',
@@ -682,6 +757,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 73.4,
     description: 'Leading private business school with diverse specializations',
+    type: 'Private',
   },
   {
     id: 'nirf-mgmt-16',
@@ -691,6 +767,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 72.8,
     description: 'Modern management institute with industry integration',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-17',
@@ -700,6 +777,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 72.2,
     description: 'Management institute with strong regional focus',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-18',
@@ -709,6 +787,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 71.7,
     description: 'Private university specializing in management education',
+    type: 'Private',
   },
   {
     id: 'nirf-mgmt-19',
@@ -718,6 +797,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 71.3,
     description: 'Department of Management Studies with technical expertise',
+    type: 'Public',
   },
   {
     id: 'nirf-mgmt-20',
@@ -727,6 +807,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Management',
     score: 70.8,
     description: 'Growing management institute in Tamil Nadu',
+    type: 'Public',
   },
 
   // Law Rankings
@@ -738,6 +819,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 86.4,
     description: 'Premier law school with comprehensive legal education',
+    type: 'Public',
   },
   {
     id: 'nirf-law-2',
@@ -747,6 +829,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 85.7,
     description: 'Top-tier institute for legal education in North India',
+    type: 'Public',
   },
   {
     id: 'nirf-law-3',
@@ -756,6 +839,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 84.9,
     description: 'Leading law university with strong research focus',
+    type: 'Public',
   },
   {
     id: 'nirf-law-4',
@@ -765,6 +849,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 82.6,
     description: 'Premier law university in Eastern India',
+    type: 'Public',
   },
   {
     id: 'nirf-law-5',
@@ -774,6 +859,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 79.4,
     description: 'Reputed law university with modern approach to legal education',
+    type: 'Public',
   },
   {
     id: 'nirf-law-6',
@@ -783,6 +869,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 78.8,
     description: 'Leading law university in Western India',
+    type: 'Public',
   },
   {
     id: 'nirf-law-7',
@@ -792,6 +879,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 77.2,
     description: 'Central university with quality legal education',
+    type: 'Central University',
   },
   {
     id: 'nirf-law-8',
@@ -801,6 +889,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 76.9,
     description: 'Private law school with international approach',
+    type: 'Private',
   },
   {
     id: 'nirf-law-9',
@@ -810,6 +899,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 75.7,
     description: 'Historic law faculty with comprehensive legal curriculum',
+    type: 'Central University',
   },
   {
     id: 'nirf-law-10',
@@ -819,6 +909,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 74.5,
     description: 'Leading law university in Central India',
+    type: 'Public',
   },
   {
     id: 'nirf-law-11',
@@ -828,6 +919,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 73.8,
     description: 'State university specializing in legal education',
+    type: 'Public',
   },
   {
     id: 'nirf-law-12',
@@ -837,6 +929,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 73.1,
     description: 'Historic faculty with significant contribution to legal education',
+    type: 'Central University',
   },
   {
     id: 'nirf-law-13',
@@ -846,6 +939,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 72.3,
     description: 'National law university with strong academic program',
+    type: 'Public',
   },
   {
     id: 'nirf-law-14',
@@ -855,6 +949,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 71.8,
     description: 'Private law school with global focus and partnerships',
+    type: 'Private',
   },
   {
     id: 'nirf-law-15',
@@ -864,6 +959,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 71.2,
     description: 'Emerging law university with comprehensive programs',
+    type: 'Public',
   },
   {
     id: 'nirf-law-16',
@@ -873,6 +969,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 70.6,
     description: 'Law school with discipline and quality education',
+    type: 'Public',
   },
   {
     id: 'nirf-law-17',
@@ -882,6 +979,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 70.1,
     description: 'Law university serving the northeastern region',
+    type: 'Public',
   },
   {
     id: 'nirf-law-18',
@@ -891,6 +989,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 69.5,
     description: 'Law faculty with diverse legal education programs',
+    type: 'Central University',
   },
   {
     id: 'nirf-law-19',
@@ -900,6 +999,7 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 69.0,
     description: 'Historic law college with strong alumni network',
+    type: 'Public',
   },
   {
     id: 'nirf-law-20',
@@ -909,5 +1009,6 @@ export const nirfRankings: NIRFRanking[] = [
     category: 'Law',
     score: 68.5,
     description: 'New generation law university in Maharashtra',
+    type: 'Public',
   }
 ];
