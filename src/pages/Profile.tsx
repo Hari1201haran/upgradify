@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,6 +40,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('User data in Profile:', user);
       setProfileData({
         fullName: user.fullName || '',
         email: user.email || '',
@@ -71,6 +71,7 @@ const Profile = () => {
   };
 
   const handleStreamChange = (value: string) => {
+    console.log('Stream changed to:', value);
     setProfileData(prevData => ({
       ...prevData,
       stream: value,
@@ -86,6 +87,8 @@ const Profile = () => {
         throw new Error("User not authenticated.");
       }
 
+      console.log('Submitting profile data:', profileData);
+
       // Always set grade to '12th' before submitting
       const dataToSubmit = {
         ...profileData,
@@ -93,6 +96,9 @@ const Profile = () => {
       };
 
       await updateProfile(dataToSubmit);
+      
+      console.log('Profile updated successfully');
+      
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
@@ -203,6 +209,9 @@ const Profile = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Current stream: {profileData.stream || 'Not selected'}
+                </p>
               </div>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (

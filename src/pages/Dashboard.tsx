@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -18,7 +17,14 @@ const Dashboard = () => {
   const stream = user?.stream || 'Science';
   const interests = user?.interests || [];
   
+  console.log('Dashboard user:', user);
+  console.log('Dashboard stream being used:', stream);
+  
   const { recommendedCareers, recommendedCourses, recommendedExams } = getRecommendations(stream);
+  
+  console.log('Recommended careers for stream', stream, ':', recommendedCareers);
+  console.log('Recommended courses for stream', stream, ':', recommendedCourses);
+  console.log('Recommended exams for stream', stream, ':', recommendedExams);
   
   return (
     <MainLayout>
@@ -30,6 +36,9 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold">Welcome, {user?.fullName}</h1>
               <p className="text-muted-foreground">
                 {stream} Stream • 12th Grade
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Debug: Current stream = {stream}
               </p>
             </div>
             

@@ -8,7 +8,7 @@ import { login, register, logout, updateProfile } from '@/services/authService';
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, setUser, session, isLoading } = useAuthState();
+  const { user, setUser, session, isLoading, refreshUserProfile } = useAuthState();
 
   // Create the auth context value with our hooks and services
   const authContextType: AuthContextType = {
@@ -19,7 +19,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
-    updateProfile: (data) => updateProfile(user, setUser, data)
+    updateProfile: async (data) => {
+      await updateProfile(user, setUser, data);
+      // Refresh the user profile from the database to ensure sync
+      if (refreshUserProfile) {
+        await refreshUserProfile();
+      }
+    }
   };
 
   return (

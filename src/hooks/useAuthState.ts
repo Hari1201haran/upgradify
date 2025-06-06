@@ -11,6 +11,7 @@ export const useAuthState = () => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('Fetching user profile for userId:', userId);
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -22,9 +23,9 @@ export const useAuthState = () => {
         return;
       }
 
-      console.log('User profile data:', profile); // Debug log
+      console.log('User profile data from database:', profile);
 
-      setUser({
+      const userProfile: UserProfile = {
         id: userId,
         fullName: profile.full_name || '',
         email: profile.email || '',
@@ -34,15 +35,27 @@ export const useAuthState = () => {
         interests: profile.interests || [],
         age: profile.age !== null && profile.age !== undefined ? Number(profile.age) : null,
         isAdmin: false
-      });
+      };
+
+      console.log('Setting user profile:', userProfile);
+      setUser(userProfile);
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
+    }
+  };
+
+  // Function to refresh user profile - can be called externally
+  const refreshUserProfile = async () => {
+    if (session?.user) {
+      console.log('Refreshing user profile...');
+      await fetchUserProfile(session.user.id);
     }
   };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
+        console.log('Auth state changed:', event, currentSession?.user?.id);
         setSession(currentSession);
         if (currentSession?.user) {
           fetchUserProfile(currentSession.user.id);
@@ -56,6 +69,7 @@ export const useAuthState = () => {
       setIsLoading(true);
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
+        console.log('Initial session:', currentSession?.user?.id);
         setSession(currentSession);
         
         if (currentSession?.user) {
@@ -75,5 +89,5 @@ export const useAuthState = () => {
     };
   }, []);
 
-  return { user, setUser, session, setSession, isLoading, setIsLoading };
+  return { user, setUser, session, setSession, isLoading, setIsLoading, refreshUserProfile };
 };
