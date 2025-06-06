@@ -41,7 +41,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const AppRoutes = () => {
+const AppContent = () => {
   const { user } = useAuth();
   
   return (
@@ -84,7 +84,7 @@ function App() {
             <DataProvider>
               <Toaster />
               <Sonner />
-              <AppRoutes />
+              <AppContent />
             </DataProvider>
           </AuthProvider>
         </TooltipProvider>
