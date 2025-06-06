@@ -1,10 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { courses as computerScienceCourses } from './data/computerScienceCourses';
-import { courses as biologyCourses } from './data/biologyCourses';
-import { courses as commerceCourses } from './data/commerceCourses';
-import { courses as artsCourses } from './data/artsCourses';
-import { courses as scienceCourses } from './data/scienceCourses';
+import { computerScienceCourses } from './data/computerScienceCourses';
+import { biologyCourses } from './data/biologyCourses';
+import { commerceCourses } from './data/commerceCourses';
+import { artsCourses } from './data/artsCourses';
+import { scienceCourses } from './data/scienceCourses';
 import { colleges } from './data/colleges';
 import { careers } from './data/careers';
 import { governmentExams } from './data/governmentExams';
