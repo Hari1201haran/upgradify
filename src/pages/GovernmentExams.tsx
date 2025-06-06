@@ -1,331 +1,585 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useData } from '@/contexts/DataContext';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useData, GovernmentExam } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
-import PageTransition from '@/components/layout/PageTransition';
-import BackgroundDecorations from '@/components/ui/BackgroundDecorations';
-import GradientText from '@/components/ui/GradientText';
 import GlassCard from '@/components/ui/GlassCard';
+import PageTransition from '@/components/layout/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, GraduationCap, Clock, Users, BookOpenCheck, Award, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import EligibilityFilter from '@/components/exams/EligibilityFilter';
 import ExamDetailsModal from '@/components/exams/ExamDetailsModal';
-import { 
-  Search, 
-  FileText, 
-  Calendar, 
-  Users, 
-  Award,
-  Clock,
-  BookOpen,
-  Target,
-  TrendingUp,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
-import { staggerContainer, slideUpVariants } from '@/utils/animation';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const GovernmentExams = () => {
-  const { governmentExams } = useData();
+  const { user } = useAuth();
+  const { governmentExams, isLoading } = useData();
+  const navigate = useNavigate();
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedEligibility, setSelectedEligibility] = useState<string>('All');
-  const [selectedExam, setSelectedExam] = useState<any>(null);
+  const [selectedStream, setSelectedStream] = useState<string | null>(user?.stream || null);
+  const [selectedEligibility, setSelectedEligibility] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table view
+  const [selectedExam, setSelectedExam] = useState<GovernmentExam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+  
+  // Close modal function
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedExam(null);
+  };
 
-  const filteredExams = governmentExams.filter(exam => {
-    const examName = exam.name || exam.title;
-    const matchesSearch = examName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exam.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const eligibilityArray = Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility];
-    const matchesEligibility = selectedEligibility === 'All' || eligibilityArray.includes(selectedEligibility);
-    return matchesSearch && matchesEligibility;
-  });
-
-  const eligibilityOptions = ['All', 'Graduate', '12th Pass', 'Diploma', 'Post Graduate'];
-
-  const handleExamClick = (exam: any) => {
+  // Open modal function
+  const handleExamClick = (exam: GovernmentExam) => {
     setSelectedExam(exam);
     setIsModalOpen(true);
   };
+  
+  const filteredExams = governmentExams.filter(exam => {
+    const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exam.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStream = selectedStream ? exam.streams.includes(selectedStream) : true;
+    
+    // Filter by eligibility
+    const matchesEligibility = selectedEligibility ? 
+      (typeof exam.eligibility === 'string' ? 
+        exam.eligibility.toLowerCase().includes(selectedEligibility.toLowerCase()) : 
+        exam.eligibility.some(e => e.toLowerCase().includes(selectedEligibility.toLowerCase()))) : 
+      true;
+    
+    return matchesSearch && matchesStream && matchesEligibility;
+  });
+  
+  // Calculate pagination values
+  const totalPages = Math.ceil(filteredExams.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedExams = filteredExams.slice(startIndex, endIndex);
+  
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedStream, selectedEligibility]);
+  
+  const generalExams = paginatedExams.filter(exam => 
+    exam.streams.length >= 3
+  );
+  
+  const streamSpecificExams = paginatedExams.filter(exam => 
+    exam.streams.length < 3 && 
+    (selectedStream ? exam.streams.includes(selectedStream) : true)
+  );
+  
+  // Count exams per stream
+  const examCounts = {
+    'Computer Science': governmentExams.filter(exam => exam.streams.includes('Computer Science')).length,
+    'Biology': governmentExams.filter(exam => exam.streams.includes('Biology')).length,
+    'Commerce': governmentExams.filter(exam => exam.streams.includes('Commerce')).length,
+    'Arts': governmentExams.filter(exam => exam.streams.includes('Arts')).length,
+    'Science': governmentExams.filter(exam => exam.streams.includes('Science')).length,
+    'Law': governmentExams.filter(exam => exam.streams.includes('Law')).length,
+    'Engineering': governmentExams.filter(exam => exam.streams.includes('Engineering')).length,
+    'All': governmentExams.length
+  };
 
-  const stats = [
-    { 
-      icon: <FileText className="h-6 w-6" />, 
-      value: governmentExams.length.toString(), 
-      label: "Total Exams",
-      color: "from-blue-500 to-blue-600" 
-    },
-    { 
-      icon: <Users className="h-6 w-6" />, 
-      value: "50K+", 
-      label: "Registered Students",
-      color: "from-green-500 to-green-600" 
-    },
-    { 
-      icon: <Award className="h-6 w-6" />, 
-      value: "85%", 
-      label: "Success Rate",
-      color: "from-purple-500 to-purple-600" 
-    },
-    { 
-      icon: <TrendingUp className="h-6 w-6" />, 
-      value: "2024", 
-      label: "Active Year",
-      color: "from-orange-500 to-orange-600" 
+  // Count exams by eligibility
+  const class12ExamsCount = governmentExams.filter(exam => {
+    return typeof exam.eligibility === 'string' ? 
+      exam.eligibility.toLowerCase().includes('class 12') : 
+      exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
+  }).length;
+
+  // Define stream options
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law', 'Engineering'];
+  
+  // Generate pagination links
+  const generatePaginationLinks = () => {
+    const links = [];
+    
+    // Always show first page
+    links.push(
+      <PaginationItem key="first">
+        <PaginationLink 
+          onClick={() => setCurrentPage(1)}
+          isActive={currentPage === 1}
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
+    );
+    
+    // Show ellipsis if needed
+    if (currentPage > 3) {
+      links.push(
+        <PaginationItem key="ellipsis-1">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
     }
-  ];
-
-  const upcomingExams = filteredExams.filter(exam => {
-    const examDate = new Date(exam.applicationDeadline || '2024-12-31');
-    const today = new Date();
-    return examDate > today;
-  }).slice(0, 3);
-
-  const examCategories = [
-    { name: "Engineering", count: 8, color: "from-blue-500 to-indigo-500" },
-    { name: "Banking", count: 12, color: "from-green-500 to-teal-500" },
-    { name: "Civil Services", count: 6, color: "from-purple-500 to-pink-500" },
-    { name: "Defense", count: 5, color: "from-red-500 to-orange-500" },
-    { name: "Railways", count: 10, color: "from-yellow-500 to-amber-500" },
-    { name: "Teaching", count: 7, color: "from-indigo-500 to-purple-500" }
-  ];
+    
+    // Show current page and surrounding pages
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      if (i === 1 || i === totalPages) continue; // Skip first and last as they're always shown
+      links.push(
+        <PaginationItem key={i}>
+          <PaginationLink 
+            onClick={() => setCurrentPage(i)}
+            isActive={currentPage === i}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    // Show ellipsis if needed
+    if (currentPage < totalPages - 2) {
+      links.push(
+        <PaginationItem key="ellipsis-2">
+          <PaginationEllipsis />
+        </PaginationItem>
+      );
+    }
+    
+    // Always show last page if there's more than one page
+    if (totalPages > 1) {
+      links.push(
+        <PaginationItem key="last">
+          <PaginationLink 
+            onClick={() => setCurrentPage(totalPages)}
+            isActive={currentPage === totalPages}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+    
+    return links;
+  };
+  
+  // Add console logs to help with debugging
+  useEffect(() => {
+    console.log("Total government exams:", governmentExams.length);
+    console.log("Class 12 eligible exams:", class12ExamsCount);
+    console.log("Filtered exams:", filteredExams.length);
+    console.log("Selected stream:", selectedStream);
+    console.log("Selected eligibility:", selectedEligibility);
+  }, [governmentExams, filteredExams, selectedStream, selectedEligibility]);
 
   return (
     <MainLayout>
       <PageTransition>
-        <div className="space-y-8 relative">
-          <BackgroundDecorations variant="waves" />
-          
-          {/* Header Section */}
-          <motion.section 
-            className="relative z-10 text-center py-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl">
-                <FileText className="h-8 w-8 text-white" />
-              </div>
+        <div className="space-y-8">
+          <section className="space-y-4">
+            <div>
+              <h1 className="text-3xl font-bold">Government Exams</h1>
+              <p className="text-muted-foreground mt-1">
+                Explore {governmentExams.length} government exam opportunities for students
+              </p>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <GradientText variant="green">Government Exams</GradientText> & Opportunities
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Comprehensive information about government exams, eligibility criteria, 
-              and preparation guidelines to help you secure your dream job
-            </p>
-          </motion.section>
-
-          {/* Stats Section */}
-          <motion.section 
-            className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {stats.map((stat, index) => (
-              <GlassCard key={index} className="p-6 text-center bg-white/60 border-0 hover:shadow-lg transition-all">
-                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${stat.color} text-white mb-3`}>
-                  {stat.icon}
-                </div>
-                <div className="text-2xl font-bold text-gray-800 mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </GlassCard>
-            ))}
-          </motion.section>
-
-          {/* Exam Categories */}
-          <motion.section 
-            className="relative z-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Target className="h-6 w-6 text-blue-500" />
-              Exam Categories
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {examCategories.map((category, index) => (
-                <GlassCard key={index} className="p-4 text-center bg-white/70 border-0 hover:shadow-lg transition-all cursor-pointer">
-                  <div className={`w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center`}>
-                    <BookOpen className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">{category.name}</h3>
-                  <p className="text-xs text-muted-foreground">{category.count} exams</p>
-                </GlassCard>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* Upcoming Deadlines */}
-          <motion.section 
-            className="relative z-10"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Clock className="h-6 w-6 text-red-500" />
-              Upcoming Application Deadlines
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {upcomingExams.map((exam, index) => (
-                <GlassCard key={index} className="p-6 bg-gradient-to-br from-red-50/80 to-orange-50/80 border-0 hover:shadow-lg transition-all">
-                  <div className="flex items-start justify-between mb-4">
-                    <Badge variant="destructive" className="text-xs">
-                      Deadline Soon
-                    </Badge>
-                    <AlertCircle className="h-5 w-5 text-red-500" />
-                  </div>
-                  <h3 className="font-bold text-lg mb-2">{exam.name || exam.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                    {exam.description}
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span>Deadline: {exam.applicationDeadline || 'TBA'}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span>Age: {exam.ageLimit || '18-35 years'}</span>
-                    </div>
-                  </div>
-                  <Button 
-                    className="w-full mt-4 bg-gradient-to-r from-red-500 to-orange-500"
-                    onClick={() => handleExamClick(exam)}
-                  >
-                    Apply Now
-                  </Button>
-                </GlassCard>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* Search and Filter */}
-          <motion.section 
-            className="relative z-10 space-y-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-          >
+            
+            {/* Search and Filters */}
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
                 <Input
-                  placeholder="Search government exams..."
-                  className="pl-10 bg-white/80 backdrop-blur-sm border-0 shadow-sm"
+                  placeholder="Search exams..."
+                  className="pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               
-              <EligibilityFilter 
-                eligibilityOptions={eligibilityOptions}
-                selectedEligibility={selectedEligibility}
-                setSelectedEligibility={setSelectedEligibility}
-              />
+              <div className="flex gap-2 items-center">
+                <Button 
+                  size="sm"
+                  variant={viewMode === 'cards' ? "default" : "outline"}
+                  onClick={() => setViewMode('cards')}
+                  className="flex items-center gap-1"
+                >
+                  <Award className="h-4 w-4" />
+                  Cards
+                </Button>
+                <Button 
+                  size="sm"
+                  variant={viewMode === 'table' ? "default" : "outline"}
+                  onClick={() => setViewMode('table')}
+                  className="flex items-center gap-1"
+                >
+                  <FileText className="h-4 w-4" />
+                  Table
+                </Button>
+              </div>
             </div>
-          </motion.section>
-
-          {/* Exams Grid */}
-          <motion.section 
-            className="relative z-10"
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <FileText className="h-6 w-6 text-green-500" />
-              All Government Exams ({filteredExams.length})
-            </h2>
             
-            {filteredExams.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
-                <h3 className="mt-4 text-lg font-medium">No exams found</h3>
-                <p className="text-muted-foreground">
-                  Try adjusting your search or filters
-                </p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredExams.map((exam, index) => (
-                  <motion.div key={exam.id} variants={slideUpVariants}>
-                    <GlassCard 
-                      className="p-6 hover:shadow-xl transition-all cursor-pointer bg-white/70 border-0"
-                      onClick={() => handleExamClick(exam)}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1">
+                <div className="flex gap-2 flex-wrap">
+                  <Button 
+                    variant={selectedStream === null ? "default" : "outline"}
+                    onClick={() => setSelectedStream(null)}
+                  >
+                    All ({examCounts['All']})
+                  </Button>
+                  {streamOptions.map(stream => (
+                    <Button 
+                      key={stream}
+                      variant={selectedStream === stream ? "default" : "outline"}
+                      onClick={() => setSelectedStream(stream)}
                     >
-                      <div className="space-y-4">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                              {exam.name || exam.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
-                              {exam.description}
-                            </p>
-                          </div>
-                          <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 ml-2" />
-                        </div>
-                        
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
-                            <span>Deadline: {exam.applicationDeadline || 'TBA'}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                            <span>Age: {exam.ageLimit || '18-35 years'}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-1">
-                          {(Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility]).slice(0, 2).map((req, idx) => (
-                            <Badge key={idx} variant="outline" className="text-xs">
-                              {req}
-                            </Badge>
-                          ))}
-                          {(Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility]).length > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{(Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility]).length - 2} more
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <Button 
-                          className="w-full bg-gradient-to-r from-green-500 to-teal-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleExamClick(exam);
-                          }}
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    </GlassCard>
-                  </motion.div>
-                ))}
+                      {stream} ({examCounts[stream]})
+                    </Button>
+                  ))}
+                </div>
               </div>
-            )}
-          </motion.section>
-
-          {/* Exam Details Modal */}
-          <ExamDetailsModal
-            exam={selectedExam}
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-          />
+              
+              <div className="w-full md:w-auto">
+                <EligibilityFilter 
+                  selectedEligibility={selectedEligibility}
+                  onEligibilityChange={setSelectedEligibility}
+                />
+              </div>
+            </div>
+          </section>
+          
+          {/* Tabs */}
+          <Tabs defaultValue="all" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="all">All Exams</TabsTrigger>
+              <TabsTrigger value="stream-specific">Stream Specific</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="all" className="space-y-6">
+              {isLoading ? (
+                <div className="flex justify-center p-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredExams.length === 0 ? (
+                <div className="text-center py-12">
+                  <Award className="mx-auto h-12 w-12 text-muted-foreground opacity-30" />
+                  <h3 className="mt-4 text-lg font-medium">No exams found</h3>
+                  <p className="text-muted-foreground">
+                    Try adjusting your search or filters
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">
+                      Found {filteredExams.length} government exams
+                      {selectedStream ? ` for ${selectedStream}` : ''}
+                      {selectedEligibility === 'Class 12' ? ' eligible for 12th pass students' : ''}
+                      {filteredExams.length > itemsPerPage && ` (showing ${startIndex + 1}-${Math.min(endIndex, filteredExams.length)})`}
+                    </h3>
+                  </div>
+                  
+                  {viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {paginatedExams.map((exam) => (
+                        <ExamCard 
+                          key={exam.id} 
+                          exam={exam} 
+                          onExplore={() => handleExamClick(exam)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <ExamsTable 
+                      exams={paginatedExams} 
+                      onExamClick={handleExamClick} 
+                    />
+                  )}
+                  
+                  {/* Pagination controls */}
+                  {filteredExams.length > itemsPerPage && (
+                    <Pagination className="mt-4">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                          />
+                        </PaginationItem>
+                        
+                        {generatePaginationLinks()}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
+                </>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="stream-specific" className="space-y-6">
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">General Exams ({generalExams.length})</h2>
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : generalExams.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No general exams found</p>
+                  </div>
+                ) : (
+                  viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {generalExams.map((exam) => (
+                        <ExamCard 
+                          key={exam.id} 
+                          exam={exam} 
+                          onExplore={() => handleExamClick(exam)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <ExamsTable 
+                      exams={generalExams} 
+                      onExamClick={handleExamClick} 
+                    />
+                  )
+                )}
+              </div>
+              
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold">Stream-Specific Exams ({streamSpecificExams.length})</h2>
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : streamSpecificExams.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No stream-specific exams found</p>
+                  </div>
+                ) : (
+                  viewMode === 'cards' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {streamSpecificExams.map((exam) => (
+                        <ExamCard 
+                          key={exam.id} 
+                          exam={exam} 
+                          onExplore={() => handleExamClick(exam)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <ExamsTable 
+                      exams={streamSpecificExams} 
+                      onExamClick={handleExamClick} 
+                    />
+                  )
+                )}
+              </div>
+              
+              {/* Pagination for tabbed content */}
+              {filteredExams.length > itemsPerPage && (
+                <Pagination className="mt-4">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                    
+                    {generatePaginationLinks()}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
+        
+        {/* Exam Details Modal */}
+        <ExamDetailsModal
+          exam={selectedExam}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
       </PageTransition>
     </MainLayout>
+  );
+};
+
+interface ExamCardProps {
+  exam: GovernmentExam;
+  onExplore: () => void;
+}
+
+const ExamCard: React.FC<ExamCardProps> = ({ exam, onExplore }) => {
+  // Check if the exam is eligible for 12th pass students
+  const isClass12Exam = typeof exam.eligibility === 'string' ? 
+    exam.eligibility.toLowerCase().includes('class 12') : 
+    exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
+  
+  return (
+    <GlassCard 
+      className="p-5 hover:shadow-lg transition-all scale-in-animation"
+      variant="elevated"
+    >
+      <div className="space-y-4">
+        <div className="flex items-start justify-between">
+          <div className="p-2 rounded-lg bg-purple-100">
+            <Award className="h-5 w-5 text-purple-600" />
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {isClass12Exam && (
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">
+                12th Pass
+              </span>
+            )}
+            {exam.streams && exam.streams.length > 0 && exam.streams.map((stream) => (
+              <span 
+                key={stream} 
+                className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full"
+              >
+                {stream}
+              </span>
+            ))}
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">{exam.title}</h3>
+          <p className="text-sm text-muted-foreground">
+            {exam.description}
+          </p>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Eligibility:</span>
+          </div>
+          <ul className="text-sm text-muted-foreground pl-6 space-y-1 list-disc">
+            {typeof exam.eligibility === 'string' ? (
+              <li>{exam.eligibility}</li>
+            ) : (
+              exam.eligibility.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))
+            )}
+          </ul>
+        </div>
+        
+        <div className="pt-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Preparation: {exam.preparationTime}</span>
+          </div>
+          <Button size="sm" variant="outline" className="text-primary" onClick={onExplore}>
+            <BookOpenCheck className="h-4 w-4 mr-1" />
+            Explore
+          </Button>
+        </div>
+      </div>
+    </GlassCard>
+  );
+};
+
+interface ExamsTableProps {
+  exams: GovernmentExam[];
+  onExamClick: (exam: GovernmentExam) => void;
+}
+
+const ExamsTable: React.FC<ExamsTableProps> = ({ exams, onExamClick }) => {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableCaption>Government Exams List</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Exam Name</TableHead>
+            <TableHead>Streams</TableHead>
+            <TableHead>Eligibility</TableHead>
+            <TableHead>Preparation Time</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {exams.map((exam) => {
+            // Check if the exam is eligible for 12th pass students
+            const isClass12Exam = typeof exam.eligibility === 'string' ? 
+              exam.eligibility.toLowerCase().includes('class 12') : 
+              exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
+              
+            return (
+              <TableRow key={exam.id} className="hover:bg-muted/50">
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    {exam.title}
+                    {isClass12Exam && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
+                        12th Pass
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {exam.streams.map(stream => (
+                      <span key={stream} className="text-xs bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full">
+                        {stream}
+                      </span>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-[200px]">
+                  <span className="line-clamp-1">
+                    {typeof exam.eligibility === 'string' ? exam.eligibility : exam.eligibility.join(', ')}
+                  </span>
+                </TableCell>
+                <TableCell>{exam.preparationTime}</TableCell>
+                <TableCell>
+                  <Button size="sm" variant="outline" onClick={() => onExamClick(exam)}>
+                    <BookOpenCheck className="h-4 w-4" />
+                    <span className="sr-only">Explore</span>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

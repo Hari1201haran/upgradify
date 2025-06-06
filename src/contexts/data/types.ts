@@ -34,13 +34,10 @@ export interface Career {
 export interface GovernmentExam {
   id: string;
   title: string;
-  name: string; // Added name property
   description: string;
   eligibility: string[] | string;
   streams: string[];
   preparationTime: string;
-  applicationDeadline: string; // Added applicationDeadline property
-  ageLimit: string; // Added ageLimit property
 }
 
 export interface NIRFRanking {
@@ -51,7 +48,6 @@ export interface NIRFRanking {
   category: string;
   score: number;
   description: string;
-  type: string; // Added type property
 }
 
 export interface DataContextType {

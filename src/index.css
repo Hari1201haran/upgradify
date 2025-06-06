@@ -98,7 +98,7 @@
 /* Custom styles */
 @layer components {
   .glass-panel {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg;
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-lg rounded-xl transition-all duration-300;
   }
   
   .text-gradient {
@@ -119,6 +119,102 @@
   
   .button-hover {
     @apply transition-all duration-300 hover:shadow-md hover:scale-105;
+  }
+  
+  /* Enhanced buttons */
+  .btn-glow {
+    @apply relative overflow-hidden;
+  }
+  
+  .btn-glow::after {
+    @apply content-[''] absolute top-0 left-0 right-0 bottom-0 bg-white/20 opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-glow:hover::after {
+    @apply opacity-100;
+  }
+  
+  /* Enhanced cards */
+  .card-hover {
+    @apply transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  /* Gradient backgrounds */
+  .bg-gradient-blue {
+    @apply bg-gradient-to-br from-blue-500 to-indigo-600;
+  }
+  
+  .bg-gradient-purple {
+    @apply bg-gradient-to-br from-purple-500 to-indigo-600;
+  }
+  
+  .bg-gradient-green {
+    @apply bg-gradient-to-br from-emerald-500 to-teal-600;
+  }
+  
+  /* Glassmorphism cards */
+  .glassmorphism {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl rounded-xl;
+  }
+  
+  /* Beautiful badges */
+  .badge-glow {
+    @apply animate-pulse;
+  }
+}
+
+/* Expanded animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes subtle-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+@layer utilities {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-rotate {
+    animation: subtle-rotate 20s linear infinite;
+  }
+  
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  
+  .text-shadow {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .text-shadow-lg {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 }
 

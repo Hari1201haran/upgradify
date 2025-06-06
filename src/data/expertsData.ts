@@ -1,16 +1,13 @@
+
 import { ExpertDetails } from '@/components/experts/ExpertProfileModal';
 
-export const expertsData: ExpertDetails[] = [
+export const experts: ExpertDetails[] = [
   {
     id: "1",
     name: "Dr. Sarah Johnson",
-    specialization: "Cognitive Learning Specialist",
+    expertise: "Cognitive Learning Specialist",
     experience: "15+ years",
     bio: "Dr. Sarah Johnson is a renowned cognitive learning specialist with over 15 years of experience in educational psychology. Her research focuses on memory formation and retention strategies that help students maximize their learning potential. She has worked with numerous educational institutions to develop effective learning methodologies.",
-    rating: 4.9,
-    reviews: 156,
-    category: "Academic Planning",
-    avatar: "/placeholder.svg",
     education: [
       "Ph.D. in Educational Psychology, Stanford University",
       "M.A. in Cognitive Science, Harvard University",
@@ -31,13 +28,9 @@ export const expertsData: ExpertDetails[] = [
   {
     id: "2",
     name: "Robert Williams",
-    specialization: "Career Counselor",
+    expertise: "Career Counselor",
     experience: "10+ years",
     bio: "Robert Williams is a certified career counselor specializing in helping students and young professionals navigate their career paths. With a background in human resources and talent acquisition, Robert brings insider knowledge from the corporate world to help students prepare for successful careers.",
-    rating: 4.8,
-    reviews: 203,
-    category: "Career Guidance",
-    avatar: "/placeholder.svg",
     education: [
       "MBA, Business Administration, Northwestern University",
       "B.S. in Human Resources, University of Michigan",
@@ -58,13 +51,9 @@ export const expertsData: ExpertDetails[] = [
   {
     id: "3",
     name: "Dr. Emma Thompson",
-    specialization: "Clinical Psychologist",
+    expertise: "Clinical Psychologist",
     experience: "12+ years",
     bio: "Dr. Emma Thompson is a licensed clinical psychologist specializing in young adult mental health and wellness. She has extensive experience in stress management, anxiety reduction, and building resilience in academic settings. Her holistic approach combines evidence-based practices with practical strategies for thriving in high-pressure environments.",
-    rating: 4.9,
-    reviews: 189,
-    category: "Skill Development",
-    avatar: "/placeholder.svg",
     education: [
       "Psy.D. in Clinical Psychology, Columbia University",
       "M.S. in Counseling Psychology, Boston University",
@@ -84,9 +73,6 @@ export const expertsData: ExpertDetails[] = [
   }
 ];
 
-// Keep the existing experts array for backward compatibility
-export const experts: ExpertDetails[] = expertsData;
-
 export const findExpertById = (id: string): ExpertDetails | undefined => {
-  return expertsData.find(expert => expert.id === id);
+  return experts.find(expert => expert.id === id);
 };

@@ -35,13 +35,10 @@ export interface Career {
 export interface GovernmentExam {
   id: string;
   title: string;
-  name: string; // Added name property
   description: string;
   eligibility: string[] | string;
   streams: string[];
   preparationTime: string;
-  applicationDeadline: string; // Added applicationDeadline property
-  ageLimit: string; // Added ageLimit property
 }
 
 export interface NIRFRanking {
@@ -52,7 +49,6 @@ export interface NIRFRanking {
   category: string;
   score: number;
   description: string;
-  type: string; // Added type property
 }
 
 // Sample law courses that will be added to the database
@@ -170,13 +166,10 @@ export function mapDbGovernmentExam(exam: Database['public']['Tables']['governme
   return {
     id: exam.id,
     title: exam.title,
-    name: exam.title, // Map title to name for compatibility
     description: exam.description,
     eligibility: exam.eligibility,
     streams: exam.streams,
     preparationTime: exam.preparation_time,
-    applicationDeadline: 'TBA', // Default value for missing field
-    ageLimit: '18-35 years', // Default value for missing field
   };
 }
 
@@ -189,6 +182,5 @@ export function mapDbNIRFRanking(ranking: Database['public']['Tables']['nirf_ran
     category: ranking.category,
     score: ranking.score,
     description: ranking.description,
-    type: 'Public', // Default value for missing field
   };
 }
