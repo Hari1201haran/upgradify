@@ -159,13 +159,22 @@ const Careers = () => {
   const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law'];
   
   const handleCareerClick = (career: Career) => {
+    console.log('Career clicked:', career);
     setSelectedCareer(career);
     setIsModalOpen(true);
+    console.log('Modal should open, isModalOpen:', true);
   };
 
   const handleCloseModal = () => {
+    console.log('Closing modal');
     setIsModalOpen(false);
+    setSelectedCareer(null);
   };
+  
+  console.log('Careers page rendered');
+  console.log('Available careers:', careers);
+  console.log('Current selectedCareer:', selectedCareer);
+  console.log('Current isModalOpen:', isModalOpen);
   
   return (
     <MainLayout>

@@ -39,17 +39,12 @@ const CareerDetailsModal: React.FC<CareerDetailsModalProps> = ({
     }
   };
 
-  const MotionDialogContent = motion(DialogContent);
+  console.log('CareerDetailsModal rendered with career:', career);
+  console.log('Modal isOpen:', isOpen);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <MotionDialogContent 
-        className="max-w-2xl max-h-[90vh] overflow-y-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.3 }}
-      >
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
             <motion.div 
@@ -240,7 +235,7 @@ const CareerDetailsModal: React.FC<CareerDetailsModalProps> = ({
             </div>
           </motion.div>
         </motion.div>
-      </MotionDialogContent>
+      </DialogContent>
     </Dialog>
   );
 };
