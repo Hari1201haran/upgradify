@@ -47,21 +47,31 @@ export const dataService = {
         console.error('Error inserting courses:', coursesError);
       }
 
-      // Insert careers
+      // Transform careers data to match database schema
       console.log('Inserting careers...');
+      const careersForDb = careers.map(career => ({
+        ...career,
+        job_outlook: career.jobOutlook
+      }));
+      
       const { error: careersError } = await supabase
         .from('careers')
-        .insert(careers);
+        .insert(careersForDb);
       
       if (careersError) {
         console.error('Error inserting careers:', careersError);
       }
 
-      // Insert government exams
+      // Transform government exams data to match database schema
       console.log('Inserting government exams...');
+      const examsForDb = governmentExams.map(exam => ({
+        ...exam,
+        preparation_time: exam.preparationTime
+      }));
+      
       const { error: examsError } = await supabase
         .from('government_exams')
-        .insert(governmentExams);
+        .insert(examsForDb);
       
       if (examsError) {
         console.error('Error inserting government exams:', examsError);
@@ -108,7 +118,6 @@ export const dataService = {
     return data || [];
   },
 
-  // Fetch all careers from database
   async getCareers(): Promise<Career[]> {
     const { data, error } = await supabase
       .from('careers')
@@ -126,7 +135,6 @@ export const dataService = {
     })) || [];
   },
 
-  // Fetch all government exams from database
   async getGovernmentExams(): Promise<GovernmentExam[]> {
     const { data, error } = await supabase
       .from('government_exams')
@@ -144,7 +152,6 @@ export const dataService = {
     })) || [];
   },
 
-  // Fetch all colleges from database
   async getColleges(): Promise<College[]> {
     const { data, error } = await supabase
       .from('colleges')
@@ -159,7 +166,6 @@ export const dataService = {
     return data || [];
   },
 
-  // Fetch all NIRF rankings from database
   async getNIRFRankings(): Promise<NIRFRanking[]> {
     const { data, error } = await supabase
       .from('nirf_rankings')
