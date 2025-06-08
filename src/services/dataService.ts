@@ -50,8 +50,15 @@ export const dataService = {
       // Transform careers data to match database schema
       console.log('Inserting careers...');
       const careersForDb = careers.map(career => ({
-        ...career,
-        job_outlook: career.jobOutlook
+        id: career.id,
+        title: career.title,
+        description: career.description,
+        skills: career.skills,
+        education: career.education,
+        job_outlook: career.jobOutlook,
+        salary: career.salary,
+        streams: career.streams,
+        interests: career.interests
       }));
       
       const { error: careersError } = await supabase
@@ -65,7 +72,11 @@ export const dataService = {
       // Transform government exams data to match database schema
       console.log('Inserting government exams...');
       const examsForDb = governmentExams.map(exam => ({
-        ...exam,
+        id: exam.id,
+        title: exam.title,
+        description: exam.description,
+        eligibility: Array.isArray(exam.eligibility) ? exam.eligibility : [exam.eligibility],
+        streams: exam.streams,
         preparation_time: exam.preparationTime
       }));
       
