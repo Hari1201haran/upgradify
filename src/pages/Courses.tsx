@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData } from '@/contexts/DataContext';
@@ -33,7 +34,7 @@ const Courses = () => {
   });
 
   // Group courses by stream for easier navigation
-  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law'];
+  const streamOptions = ['Computer Science', 'Biology', 'Commerce', 'Arts', 'Science', 'Law', 'Management'];
   
   // Count courses per stream
   const courseCounts = {
@@ -43,6 +44,7 @@ const Courses = () => {
     'Arts': courses.filter(course => course.streams.includes('Arts')).length,
     'Science': courses.filter(course => course.streams.includes('Science')).length,
     'Law': courses.filter(course => course.streams.includes('Law')).length,
+    'Management': courses.filter(course => course.streams.includes('Management')).length,
     'All': courses.length
   };
 
@@ -51,6 +53,7 @@ const Courses = () => {
     console.log("Total courses:", courses.length);
     console.log("Computer Science courses:", courses.filter(course => course.streams.includes('Computer Science')).length);
     console.log("Law courses:", courses.filter(course => course.streams.includes('Law')).length);
+    console.log("Management courses:", courses.filter(course => course.streams.includes('Management')).length);
     console.log("Filtered courses:", filteredCourses.length);
     console.log("Selected stream:", selectedStream);
   }, [courses, filteredCourses, selectedStream]);

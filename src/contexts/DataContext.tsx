@@ -5,6 +5,8 @@ import { biologyCourses } from './data/biologyCourses';
 import { commerceCourses } from './data/commerceCourses';
 import { artsCourses } from './data/artsCourses';
 import { scienceCourses } from './data/scienceCourses';
+import { lawCourses } from './data/lawCourses';
+import { managementCourses } from './data/managementCourses';
 import { colleges } from './data/colleges';
 import { careers } from './data/careers';
 import { governmentExams } from './data/governmentExams';
@@ -25,6 +27,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     ...commerceCourses,
     ...artsCourses,
     ...scienceCourses,
+    ...lawCourses,
+    ...managementCourses,
   ];
 
   useEffect(() => {
