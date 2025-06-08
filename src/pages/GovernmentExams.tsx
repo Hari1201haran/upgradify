@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, GovernmentExam } from '@/contexts/DataContext';
@@ -58,7 +59,20 @@ const GovernmentExams = () => {
     setIsModalOpen(true);
   };
   
-  const filteredExams = governmentExams.filter(exam => {
+  // Age-based filtering - show exams only for ages 16-23
+  const ageFilteredExams = governmentExams.filter(exam => {
+    const userAge = user?.age;
+    
+    // If no age is specified, don't show any exams
+    if (userAge === null || userAge === undefined) {
+      return false;
+    }
+    
+    // Show exams only for ages between 16 and 23 (inclusive)
+    return userAge >= 16 && userAge <= 23;
+  });
+  
+  const filteredExams = ageFilteredExams.filter(exam => {
     const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       exam.description.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -94,20 +108,20 @@ const GovernmentExams = () => {
     (selectedStream ? exam.streams.includes(selectedStream) : true)
   );
   
-  // Count exams per stream
+  // Count exams per stream (only for age-eligible exams)
   const examCounts = {
-    'Computer Science': governmentExams.filter(exam => exam.streams.includes('Computer Science')).length,
-    'Biology': governmentExams.filter(exam => exam.streams.includes('Biology')).length,
-    'Commerce': governmentExams.filter(exam => exam.streams.includes('Commerce')).length,
-    'Arts': governmentExams.filter(exam => exam.streams.includes('Arts')).length,
-    'Science': governmentExams.filter(exam => exam.streams.includes('Science')).length,
-    'Law': governmentExams.filter(exam => exam.streams.includes('Law')).length,
-    'Engineering': governmentExams.filter(exam => exam.streams.includes('Engineering')).length,
-    'All': governmentExams.length
+    'Computer Science': ageFilteredExams.filter(exam => exam.streams.includes('Computer Science')).length,
+    'Biology': ageFilteredExams.filter(exam => exam.streams.includes('Biology')).length,
+    'Commerce': ageFilteredExams.filter(exam => exam.streams.includes('Commerce')).length,
+    'Arts': ageFilteredExams.filter(exam => exam.streams.includes('Arts')).length,
+    'Science': ageFilteredExams.filter(exam => exam.streams.includes('Science')).length,
+    'Law': ageFilteredExams.filter(exam => exam.streams.includes('Law')).length,
+    'Engineering': ageFilteredExams.filter(exam => exam.streams.includes('Engineering')).length,
+    'All': ageFilteredExams.length
   };
 
-  // Count exams by eligibility
-  const class12ExamsCount = governmentExams.filter(exam => {
+  // Count exams by eligibility (only for age-eligible exams)
+  const class12ExamsCount = ageFilteredExams.filter(exam => {
     return typeof exam.eligibility === 'string' ? 
       exam.eligibility.toLowerCase().includes('class 12') : 
       exam.eligibility.some(e => e.toLowerCase().includes('class 12'));
@@ -184,12 +198,83 @@ const GovernmentExams = () => {
   
   // Add console logs to help with debugging
   useEffect(() => {
+    console.log("User age:", user?.age);
     console.log("Total government exams:", governmentExams.length);
+    console.log("Age-filtered exams (16-23):", ageFilteredExams.length);
     console.log("Class 12 eligible exams:", class12ExamsCount);
-    console.log("Filtered exams:", filteredExams.length);
+    console.log("Final filtered exams:", filteredExams.length);
     console.log("Selected stream:", selectedStream);
     console.log("Selected eligibility:", selectedEligibility);
-  }, [governmentExams, filteredExams, selectedStream, selectedEligibility]);
+  }, [governmentExams, ageFilteredExams, filteredExams, selectedStream, selectedEligibility, user?.age]);
+
+  // Show age requirement message if user is outside the age range
+  if (user && (user.age === null || user.age === undefined)) {
+    return (
+      <MainLayout>
+        <PageTransition>
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <div>
+                <h1 className="text-3xl font-bold">Government Exams</h1>
+                <p className="text-muted-foreground mt-1">
+                  Explore government exam opportunities for students
+                </p>
+              </div>
+              
+              <div className="text-center py-12">
+                <GraduationCap className="mx-auto h-16 w-16 text-muted-foreground opacity-30" />
+                <h3 className="mt-4 text-xl font-medium">Age Required</h3>
+                <p className="text-muted-foreground mt-2 max-w-md mx-auto">
+                  Please set your age in your profile to view eligible government exams. 
+                  Government exams are available for students aged 16-23 years.
+                </p>
+                <Button 
+                  className="mt-4" 
+                  onClick={() => navigate('/profile')}
+                >
+                  Update Profile
+                </Button>
+              </div>
+            </section>
+          </div>
+        </PageTransition>
+      </MainLayout>
+    );
+  }
+
+  if (user && (user.age < 16 || user.age > 23)) {
+    return (
+      <MainLayout>
+        <PageTransition>
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <div>
+                <h1 className="text-3xl font-bold">Government Exams</h1>
+                <p className="text-muted-foreground mt-1">
+                  Explore government exam opportunities for students
+                </p>
+              </div>
+              
+              <div className="text-center py-12">
+                <GraduationCap className="mx-auto h-16 w-16 text-muted-foreground opacity-30" />
+                <h3 className="mt-4 text-xl font-medium">Age Requirement Not Met</h3>
+                <p className="text-muted-foreground mt-2 max-w-md mx-auto">
+                  Government exams are available for students aged 16-23 years. 
+                  Your current age is {user.age} years. Please update your age if this is incorrect.
+                </p>
+                <Button 
+                  className="mt-4" 
+                  onClick={() => navigate('/profile')}
+                >
+                  Update Profile
+                </Button>
+              </div>
+            </section>
+          </div>
+        </PageTransition>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -199,7 +284,7 @@ const GovernmentExams = () => {
             <div>
               <h1 className="text-3xl font-bold">Government Exams</h1>
               <p className="text-muted-foreground mt-1">
-                Explore {governmentExams.length} government exam opportunities for students
+                Explore {ageFilteredExams.length} government exam opportunities for students aged 16-23
               </p>
             </div>
             

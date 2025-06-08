@@ -30,27 +30,27 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   console.log('Current user age:', user?.age); // Debug log
   console.log('Related exams before filtering:', relatedExams); // Debug log
 
-  // Filter exams based on age eligibility
+  // Filter exams based on age eligibility (16-23 range)
   const filteredExams = relatedExams.filter(exam => {
     const userAge = user?.age;
     
-    // Apply strict age filtering criteria
+    // If no age is specified, don't show any exams
     if (userAge === null || userAge === undefined) {
-      console.log('No age specified, showing all exams');
-      return true; // If no age is specified, show all exams
+      console.log('No age specified, hiding all exams');
+      return false;
     }
     
     // Log the filtering decision for debugging
     console.log(`Filtering exam ${exam.title} for user age ${userAge}`);
     
-    // Hide exams for ages above 24 or below 16
-    if (userAge > 24 || userAge < 16) {
-      console.log(`User age ${userAge} is outside 16-24 range, hiding exam ${exam.title}`);
+    // Show exams only for ages between 16 and 23 (inclusive)
+    if (userAge >= 16 && userAge <= 23) {
+      console.log(`User age ${userAge} is within 16-23 range, showing exam ${exam.title}`);
+      return true;
+    } else {
+      console.log(`User age ${userAge} is outside 16-23 range, hiding exam ${exam.title}`);
       return false;
     }
-    
-    // Show exams for users within age range 16-24
-    return true;
   });
 
   console.log('Filtered exams after age criteria:', filteredExams); // Debug log
@@ -116,11 +116,15 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
             
             <TabsContent value="exams" className="space-y-4 pt-4">
               {filteredExams.length === 0 ? (
-                <p className="text-muted-foreground">
-                  {user?.age && (user.age > 24 || user.age < 16) ? 
-                    "No eligible government exams found for your age. Most exams are available for students between 16-24 years." : 
-                    "No related government exams found for this course."}
-                </p>
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">
+                    {!user?.age ? 
+                      "Please set your age in your profile to view eligible government exams." :
+                      (user.age < 16 || user.age > 23) ? 
+                        "Government exams are available for students aged 16-23 years. Please update your age if this is incorrect." : 
+                        "No related government exams found for this course."}
+                  </p>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {filteredExams.map((exam) => (
