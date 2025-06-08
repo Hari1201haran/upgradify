@@ -27,8 +27,8 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   
   if (!course) return null;
 
-  console.log('Current user age:', user?.age); // Debug log
-  console.log('Related exams before filtering:', relatedExams); // Debug log
+  console.log('Current user age:', user?.age);
+  console.log('Related exams before filtering:', relatedExams);
 
   // Filter exams based on age eligibility (16-23 range)
   const filteredExams = relatedExams.filter(exam => {
@@ -40,7 +40,6 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
       return false;
     }
     
-    // Log the filtering decision for debugging
     console.log(`Filtering exam ${exam.title} for user age ${userAge}`);
     
     // Show exams only for ages between 16 and 23 (inclusive)
@@ -53,7 +52,7 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
     }
   });
 
-  console.log('Filtered exams after age criteria:', filteredExams); // Debug log
+  console.log('Filtered exams after age criteria:', filteredExams);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

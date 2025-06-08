@@ -1,52 +1,71 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { computerScienceCourses } from './data/computerScienceCourses';
-import { biologyCourses } from './data/biologyCourses';
-import { commerceCourses } from './data/commerceCourses';
-import { artsCourses } from './data/artsCourses';
-import { scienceCourses } from './data/scienceCourses';
-import { lawCourses } from './data/lawCourses';
-import { managementCourses } from './data/managementCourses';
-import { colleges } from './data/colleges';
-import { careers } from './data/careers';
-import { governmentExams } from './data/governmentExams';
-import { nirfRankings } from './data/nirfRankings';
 import { getRecommendations } from './data/recommendations';
 import { DataContextType, Course, College, Career, GovernmentExam, NIRFRanking } from './data/types';
+import { dataService } from '@/services/dataService';
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Combine all courses
-  const allCourses: Course[] = [
-    ...computerScienceCourses,
-    ...biologyCourses,
-    ...commerceCourses,
-    ...artsCourses,
-    ...scienceCourses,
-    ...lawCourses,
-    ...managementCourses,
-  ];
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [careers, setCareers] = useState<Career[]>([]);
+  const [governmentExams, setGovernmentExams] = useState<GovernmentExam[]>([]);
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [nirfRankings, setNirfRankings] = useState<NIRFRanking[]>([]);
 
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        console.log('Loading data from database...');
+        
+        // Initialize database with local data if needed
+        await dataService.initializeDatabase();
+        
+        // Fetch all data from database
+        const [
+          coursesData,
+          careersData,
+          examsData,
+          collegesData,
+          rankingsData
+        ] = await Promise.all([
+          dataService.getCourses(),
+          dataService.getCareers(),
+          dataService.getGovernmentExams(),
+          dataService.getColleges(),
+          dataService.getNIRFRankings()
+        ]);
 
-    return () => clearTimeout(timer);
+        setCourses(coursesData);
+        setCareers(careersData);
+        setGovernmentExams(examsData);
+        setColleges(collegesData);
+        setNirfRankings(rankingsData);
+        
+        console.log('Data loaded successfully from database');
+      } catch (err) {
+        console.error('Error loading data:', err);
+        setError('Failed to load data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   const value: DataContextType = {
-    courses: allCourses,
+    courses,
     colleges,
     careers,
     governmentExams,
     nirfRankings,
-    getRecommendations: (stream: string) => getRecommendations(stream, allCourses, careers, governmentExams),
+    getRecommendations: (stream: string) => getRecommendations(stream, courses, careers, governmentExams),
     isLoading,
     error,
   };
