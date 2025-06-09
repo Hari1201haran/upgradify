@@ -35,6 +35,13 @@ export const dataService = {
       console.log(`Total local colleges: ${colleges.length}`);
       console.log(`Total local NIRF rankings: ${nirfRankings.length}`);
       
+      // Check if data already exists
+      const { data: existingCourses } = await supabase.from('courses').select('id').limit(1);
+      if (existingCourses && existingCourses.length > 0) {
+        console.log('Data already exists in database, skipping initialization');
+        return;
+      }
+
       // Insert courses
       if (allLocalCourses.length > 0) {
         console.log('Inserting courses...');
@@ -124,16 +131,6 @@ export const dataService = {
         } else {
           console.log(`Successfully inserted ${nirfRankings.length} NIRF rankings`);
         }
-      }
-
-      // Re-enable RLS after data insertion
-      console.log('Re-enabling Row Level Security...');
-      const { error: rlsError } = await supabase.rpc('enable_rls_for_all_tables');
-      
-      if (rlsError) {
-        console.warn('Could not re-enable RLS via RPC, you may need to do this manually:', rlsError);
-      } else {
-        console.log('Successfully re-enabled RLS for all tables');
       }
 
       // Final count verification
