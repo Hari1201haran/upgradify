@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Clock, Briefcase, GraduationCap } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CourseDetailsModalProps {
   course: Course | null;
@@ -27,32 +27,33 @@ const CourseDetailsModal: React.FC<CourseDetailsModalProps> = ({
   
   if (!course) return null;
 
-  console.log('Current user age:', user?.age);
-  console.log('Related exams before filtering:', relatedExams);
+  console.log('CourseDetailsModal - Current user:', user);
+  console.log('CourseDetailsModal - User age:', user?.age);
+  console.log('CourseDetailsModal - Related exams before filtering:', relatedExams);
 
   // Filter exams based on age eligibility (16-23 range)
   const filteredExams = relatedExams.filter(exam => {
     const userAge = user?.age;
     
+    console.log(`CourseDetailsModal - Filtering exam ${exam.title} for user age ${userAge}`);
+    
     // If no age is specified, don't show any exams
     if (userAge === null || userAge === undefined) {
-      console.log('No age specified, hiding all exams');
+      console.log('CourseDetailsModal - No age specified, hiding all exams');
       return false;
     }
     
-    console.log(`Filtering exam ${exam.title} for user age ${userAge}`);
-    
     // Show exams only for ages between 16 and 23 (inclusive)
     if (userAge >= 16 && userAge <= 23) {
-      console.log(`User age ${userAge} is within 16-23 range, showing exam ${exam.title}`);
+      console.log(`CourseDetailsModal - User age ${userAge} is within 16-23 range, showing exam ${exam.title}`);
       return true;
     } else {
-      console.log(`User age ${userAge} is outside 16-23 range, hiding exam ${exam.title}`);
+      console.log(`CourseDetailsModal - User age ${userAge} is outside 16-23 range, hiding exam ${exam.title}`);
       return false;
     }
   });
 
-  console.log('Filtered exams after age criteria:', filteredExams);
+  console.log('CourseDetailsModal - Filtered exams after age criteria:', filteredExams);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

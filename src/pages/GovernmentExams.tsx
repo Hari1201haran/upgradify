@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useData, GovernmentExam } from '@/contexts/DataContext';
@@ -59,18 +58,36 @@ const GovernmentExams = () => {
     setIsModalOpen(true);
   };
   
+  // Add console logs to help with debugging
+  useEffect(() => {
+    console.log("GovernmentExams - User object:", user);
+    console.log("GovernmentExams - User age:", user?.age);
+    console.log("GovernmentExams - Total government exams:", governmentExams.length);
+  }, [user, governmentExams]);
+  
   // Age-based filtering - show exams only for ages 16-23
   const ageFilteredExams = governmentExams.filter(exam => {
     const userAge = user?.age;
     
+    console.log(`GovernmentExams - Filtering exam ${exam.title} for user age ${userAge}`);
+    
     // If no age is specified, don't show any exams
     if (userAge === null || userAge === undefined) {
+      console.log('GovernmentExams - No age specified, hiding all exams');
       return false;
     }
     
     // Show exams only for ages between 16 and 23 (inclusive)
-    return userAge >= 16 && userAge <= 23;
+    if (userAge >= 16 && userAge <= 23) {
+      console.log(`GovernmentExams - User age ${userAge} is within 16-23 range, showing exam ${exam.title}`);
+      return true;
+    } else {
+      console.log(`GovernmentExams - User age ${userAge} is outside 16-23 range, hiding exam ${exam.title}`);
+      return false;
+    }
   });
+  
+  console.log("GovernmentExams - Age-filtered exams (16-23):", ageFilteredExams.length);
   
   const filteredExams = ageFilteredExams.filter(exam => {
     const matchesSearch = exam.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -196,19 +213,9 @@ const GovernmentExams = () => {
     return links;
   };
   
-  // Add console logs to help with debugging
-  useEffect(() => {
-    console.log("User age:", user?.age);
-    console.log("Total government exams:", governmentExams.length);
-    console.log("Age-filtered exams (16-23):", ageFilteredExams.length);
-    console.log("Class 12 eligible exams:", class12ExamsCount);
-    console.log("Final filtered exams:", filteredExams.length);
-    console.log("Selected stream:", selectedStream);
-    console.log("Selected eligibility:", selectedEligibility);
-  }, [governmentExams, ageFilteredExams, filteredExams, selectedStream, selectedEligibility, user?.age]);
-
   // Show age requirement message if user is outside the age range
   if (user && (user.age === null || user.age === undefined)) {
+    console.log("GovernmentExams - Showing age required message");
     return (
       <MainLayout>
         <PageTransition>
@@ -243,6 +250,7 @@ const GovernmentExams = () => {
   }
 
   if (user && (user.age < 16 || user.age > 23)) {
+    console.log(`GovernmentExams - Showing age requirement not met message for age ${user.age}`);
     return (
       <MainLayout>
         <PageTransition>
@@ -275,6 +283,8 @@ const GovernmentExams = () => {
       </MainLayout>
     );
   }
+
+  console.log(`GovernmentExams - Showing exams for user age ${user?.age}, found ${ageFilteredExams.length} eligible exams`);
 
   return (
     <MainLayout>
