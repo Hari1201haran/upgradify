@@ -32,58 +32,27 @@ export const dataService = {
       console.log(`Total local courses: ${allLocalCourses.length}`);
       console.log(`Total local careers: ${careers.length}`);
       console.log(`Total local government exams: ${governmentExams.length}`);
+      console.log(`Total local colleges: ${colleges.length}`);
+      console.log(`Total local NIRF rankings: ${nirfRankings.length}`);
       
-      // Check existing data counts
-      const { data: existingCourses } = await supabase.from('courses').select('id');
-      const { data: existingCareers } = await supabase.from('careers').select('id');
-      const { data: existingExams } = await supabase.from('government_exams').select('id');
-      const { data: existingColleges } = await supabase.from('colleges').select('id');
-      const { data: existingRankings } = await supabase.from('nirf_rankings').select('id');
-
-      console.log(`Existing courses in DB: ${existingCourses?.length || 0}`);
-      console.log(`Existing careers in DB: ${existingCareers?.length || 0}`);
-      console.log(`Existing exams in DB: ${existingExams?.length || 0}`);
-      console.log(`Existing colleges in DB: ${existingColleges?.length || 0}`);
-      console.log(`Existing rankings in DB: ${existingRankings?.length || 0}`);
-
-      // Get existing IDs to avoid duplicates
-      const existingCourseIds = new Set(existingCourses?.map(c => c.id) || []);
-      const existingCareerIds = new Set(existingCareers?.map(c => c.id) || []);
-      const existingExamIds = new Set(existingExams?.map(e => e.id) || []);
-      const existingCollegeIds = new Set(existingColleges?.map(c => c.id) || []);
-      const existingRankingIds = new Set(existingRankings?.map(r => r.id) || []);
-
-      // Filter out existing data to insert only new records
-      const newCourses = allLocalCourses.filter(course => !existingCourseIds.has(course.id));
-      const newCareers = careers.filter(career => !existingCareerIds.has(career.id));
-      const newExams = governmentExams.filter(exam => !existingExamIds.has(exam.id));
-      const newColleges = colleges.filter(college => !existingCollegeIds.has(college.id));
-      const newRankings = nirfRankings.filter(ranking => !existingRankingIds.has(ranking.id));
-
-      console.log(`New courses to insert: ${newCourses.length}`);
-      console.log(`New careers to insert: ${newCareers.length}`);
-      console.log(`New exams to insert: ${newExams.length}`);
-      console.log(`New colleges to insert: ${newColleges.length}`);
-      console.log(`New rankings to insert: ${newRankings.length}`);
-
-      // Insert new courses if any
-      if (newCourses.length > 0) {
-        console.log('Inserting new courses...');
+      // Insert courses
+      if (allLocalCourses.length > 0) {
+        console.log('Inserting courses...');
         const { error: coursesError } = await supabase
           .from('courses')
-          .insert(newCourses);
+          .insert(allLocalCourses);
         
         if (coursesError) {
           console.error('Error inserting courses:', coursesError);
         } else {
-          console.log(`Successfully inserted ${newCourses.length} new courses`);
+          console.log(`Successfully inserted ${allLocalCourses.length} courses`);
         }
       }
 
-      // Insert new careers if any
-      if (newCareers.length > 0) {
-        console.log('Inserting new careers...');
-        const careersForDb = newCareers.map(career => ({
+      // Insert careers
+      if (careers.length > 0) {
+        console.log('Inserting careers...');
+        const careersForDb = careers.map(career => ({
           id: career.id,
           title: career.title,
           description: career.description,
@@ -102,14 +71,14 @@ export const dataService = {
         if (careersError) {
           console.error('Error inserting careers:', careersError);
         } else {
-          console.log(`Successfully inserted ${newCareers.length} new careers`);
+          console.log(`Successfully inserted ${careers.length} careers`);
         }
       }
 
-      // Insert new government exams if any
-      if (newExams.length > 0) {
-        console.log('Inserting new government exams...');
-        const examsForDb = newExams.map(exam => ({
+      // Insert government exams
+      if (governmentExams.length > 0) {
+        console.log('Inserting government exams...');
+        const examsForDb = governmentExams.map(exam => ({
           id: exam.id,
           title: exam.title,
           description: exam.description,
@@ -125,47 +94,61 @@ export const dataService = {
         if (examsError) {
           console.error('Error inserting government exams:', examsError);
         } else {
-          console.log(`Successfully inserted ${newExams.length} new government exams`);
+          console.log(`Successfully inserted ${governmentExams.length} government exams`);
         }
       }
 
-      // Insert new colleges if any
-      if (newColleges.length > 0) {
-        console.log('Inserting new colleges...');
+      // Insert colleges
+      if (colleges.length > 0) {
+        console.log('Inserting colleges...');
         const { error: collegesError } = await supabase
           .from('colleges')
-          .insert(newColleges);
+          .insert(colleges);
         
         if (collegesError) {
           console.error('Error inserting colleges:', collegesError);
         } else {
-          console.log(`Successfully inserted ${newColleges.length} new colleges`);
+          console.log(`Successfully inserted ${colleges.length} colleges`);
         }
       }
 
-      // Insert new NIRF rankings if any
-      if (newRankings.length > 0) {
-        console.log('Inserting new NIRF rankings...');
+      // Insert NIRF rankings
+      if (nirfRankings.length > 0) {
+        console.log('Inserting NIRF rankings...');
         const { error: rankingsError } = await supabase
           .from('nirf_rankings')
-          .insert(newRankings);
+          .insert(nirfRankings);
         
         if (rankingsError) {
           console.error('Error inserting NIRF rankings:', rankingsError);
         } else {
-          console.log(`Successfully inserted ${newRankings.length} new NIRF rankings`);
+          console.log(`Successfully inserted ${nirfRankings.length} NIRF rankings`);
         }
+      }
+
+      // Re-enable RLS after data insertion
+      console.log('Re-enabling Row Level Security...');
+      const { error: rlsError } = await supabase.rpc('enable_rls_for_all_tables');
+      
+      if (rlsError) {
+        console.warn('Could not re-enable RLS via RPC, you may need to do this manually:', rlsError);
+      } else {
+        console.log('Successfully re-enabled RLS for all tables');
       }
 
       // Final count verification
       const { data: finalCourses } = await supabase.from('courses').select('id');
       const { data: finalCareers } = await supabase.from('careers').select('id');
       const { data: finalExams } = await supabase.from('government_exams').select('id');
+      const { data: finalColleges } = await supabase.from('colleges').select('id');
+      const { data: finalRankings } = await supabase.from('nirf_rankings').select('id');
       
       console.log(`Final database counts:`);
       console.log(`Courses: ${finalCourses?.length || 0} (expected: ${allLocalCourses.length})`);
       console.log(`Careers: ${finalCareers?.length || 0} (expected: ${careers.length})`);
       console.log(`Government Exams: ${finalExams?.length || 0} (expected: ${governmentExams.length})`);
+      console.log(`Colleges: ${finalColleges?.length || 0} (expected: ${colleges.length})`);
+      console.log(`NIRF Rankings: ${finalRankings?.length || 0} (expected: ${nirfRankings.length})`);
 
       console.log('Database initialization completed successfully');
     } catch (error) {
