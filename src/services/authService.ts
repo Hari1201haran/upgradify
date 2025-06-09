@@ -93,6 +93,8 @@ export const updateProfile = async (user: UserProfile | null, setUser: (user: Us
   }
 
   try {
+    console.log('Updating profile with data:', data);
+    
     const { error } = await supabase
       .from('profiles')
       .update({
@@ -101,13 +103,17 @@ export const updateProfile = async (user: UserProfile | null, setUser: (user: Us
         grade: data.grade,
         stream: data.stream,
         interests: data.interests,
+        age: data.age, // This was missing!
         updated_at: new Date().toISOString()
       })
       .eq('id', user.id);
 
     if (error) {
+      console.error('Database update error:', error);
       throw error;
     }
+
+    console.log('Profile updated successfully in database');
 
     setUser({
       ...user,
@@ -116,7 +122,7 @@ export const updateProfile = async (user: UserProfile | null, setUser: (user: Us
     
     toast.success('Profile updated successfully');
   } catch (error: any) {
-    toast.error(error.message || 'Failed to update profile');
     console.error('Update profile error:', error);
+    toast.error(error.message || 'Failed to update profile');
   }
 };
