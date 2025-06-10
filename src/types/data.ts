@@ -1,4 +1,3 @@
-
 import { Database } from "@/integrations/supabase/types";
 
 // These types use the generated Supabase types but are defined separately
@@ -18,6 +17,21 @@ export interface College {
   ranking: number;
   courses: string[];
   category?: string; // Add the category field
+  // Adding new detailed fields with proper types
+  established_year?: number;
+  type?: string;
+  accreditation?: string[];
+  facilities?: string[];
+  notable_alumni?: string[];
+  admission_process?: string;
+  fee_structure?: string;
+  campus_size?: string;
+  student_strength?: number;
+  faculty_count?: number;
+  website_url?: string;
+  contact_info?: string | Record<string, any>; // Updated to support both string and JSON
+  unique_features?: string[];
+  placement_stats?: string | Record<string, any>; // Updated to support both string and JSON
 }
 
 export interface Career {
@@ -145,6 +159,21 @@ export function mapDbCollege(college: Database['public']['Tables']['colleges']['
     ranking: college.ranking,
     courses: college.courses,
     category: college.category || 'General', // Apply null coalescing to provide a default value
+    // Add the new fields
+    established_year: college.established_year,
+    type: college.type,
+    accreditation: college.accreditation,
+    facilities: college.facilities,
+    notable_alumni: college.notable_alumni,
+    admission_process: college.admission_process,
+    fee_structure: college.fee_structure,
+    campus_size: college.campus_size,
+    student_strength: college.student_strength,
+    faculty_count: college.faculty_count,
+    website_url: college.website_url,
+    contact_info: college.contact_info,
+    unique_features: college.unique_features,
+    placement_stats: college.placement_stats
   };
 }
 

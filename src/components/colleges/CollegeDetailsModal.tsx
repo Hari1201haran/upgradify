@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -33,8 +32,14 @@ const CollegeDetailsModal: React.FC<CollegeDetailsModalProps> = ({
 }) => {
   if (!college) return null;
 
-  const contactInfo = college.contact_info ? JSON.parse(college.contact_info) : null;
-  const placementStats = college.placement_stats ? JSON.parse(college.placement_stats) : null;
+  // Parse contact_info and placement_stats from string if they're not already objects
+  const contactInfo = typeof college.contact_info === 'string' 
+    ? JSON.parse(college.contact_info) 
+    : college.contact_info;
+    
+  const placementStats = typeof college.placement_stats === 'string' 
+    ? JSON.parse(college.placement_stats) 
+    : college.placement_stats;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
