@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useData, NIRFRanking, College } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
@@ -69,16 +70,45 @@ const NIRFRankings = () => {
 
   // Function to handle college click and show details
   const handleCollegeClick = (ranking: NIRFRanking) => {
-    // Find the corresponding college in the colleges table by name
-    const college = colleges.find(c => 
-      c.name.toLowerCase().includes(ranking.name.toLowerCase()) || 
-      ranking.name.toLowerCase().includes(c.name.toLowerCase())
+    console.log('College clicked:', ranking.name);
+    console.log('Available colleges:', colleges.map(c => c.name));
+    
+    // Try multiple matching strategies to find the college
+    let college = colleges.find(c => 
+      c.name.toLowerCase() === ranking.name.toLowerCase()
     );
     
+    if (!college) {
+      // Try partial matching
+      college = colleges.find(c => 
+        c.name.toLowerCase().includes(ranking.name.toLowerCase()) || 
+        ranking.name.toLowerCase().includes(c.name.toLowerCase())
+      );
+    }
+    
+    if (!college) {
+      // Try removing common words and matching
+      const cleanRankingName = ranking.name.toLowerCase()
+        .replace(/university|college|institute|iit|nit|iiit/g, '')
+        .trim();
+      
+      college = colleges.find(c => {
+        const cleanCollegeName = c.name.toLowerCase()
+          .replace(/university|college|institute|iit|nit|iiit/g, '')
+          .trim();
+        return cleanCollegeName.includes(cleanRankingName) || 
+               cleanRankingName.includes(cleanCollegeName);
+      });
+    }
+    
+    console.log('Found college:', college);
+    
     if (college) {
+      console.log('Opening modal for college:', college.name);
       setSelectedCollege(college);
       setIsCollegeModalOpen(true);
     } else {
+      console.log('No college found for:', ranking.name);
       toast.info(`Detailed information for ${ranking.name} is not available yet.`);
     }
   };
@@ -292,8 +322,13 @@ const NIRFRankings = () => {
                     .map((ranking) => (
                       <TableRow 
                         key={ranking.id} 
-                        className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => handleCollegeClick(ranking)}
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log('Table row clicked for:', ranking.name);
+                          handleCollegeClick(ranking);
+                        }}
                       >
                         <TableCell className="font-medium">
                           <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary">
@@ -355,7 +390,11 @@ const NIRFRankings = () => {
         <CollegeDetailsModal 
           college={selectedCollege}
           isOpen={isCollegeModalOpen}
-          onClose={() => setIsCollegeModalOpen(false)}
+          onClose={() => {
+            console.log('Closing modal');
+            setIsCollegeModalOpen(false);
+            setSelectedCollege(null);
+          }}
         />
       </PageTransition>
     </MainLayout>
