@@ -1,3 +1,4 @@
+
 import { Database } from "@/integrations/supabase/types";
 
 // These types use the generated Supabase types but are defined separately
@@ -29,9 +30,9 @@ export interface College {
   student_strength?: number;
   faculty_count?: number;
   website_url?: string;
-  contact_info?: string | Record<string, any>; // Updated to support both string and JSON
+  contact_info?: any; // Updated to accept any JSON value from Supabase
   unique_features?: string[];
-  placement_stats?: string | Record<string, any>; // Updated to support both string and JSON
+  placement_stats?: any; // Updated to accept any JSON value from Supabase
 }
 
 export interface Career {

@@ -29,9 +29,9 @@ export interface College {
   student_strength?: number;
   faculty_count?: number;
   website_url?: string;
-  contact_info?: string | Record<string, any>; // Updated to support both string and JSON object
+  contact_info?: any; // Updated to accept any JSON value from Supabase
   unique_features?: string[];
-  placement_stats?: string | Record<string, any>; // Updated to support both string and JSON object
+  placement_stats?: any; // Updated to accept any JSON value from Supabase
 }
 
 export interface Career {
