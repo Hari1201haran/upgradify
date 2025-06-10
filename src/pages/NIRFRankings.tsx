@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
-import { useData, NIRFRanking } from '@/contexts/DataContext';
+import { useData, NIRFRanking, College } from '@/contexts/DataContext';
 import MainLayout from '@/components/layout/MainLayout';
 import GlassCard from '@/components/ui/GlassCard';
 import PageTransition from '@/components/layout/PageTransition';
+import CollegeDetailsModal from '@/components/colleges/CollegeDetailsModal';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Trophy, MapPin, School, ListOrdered, Filter } from 'lucide-react';
+import { Search, Trophy, MapPin, School, ListOrdered, Filter, ExternalLink } from 'lucide-react';
 import { 
   Table, 
   TableBody, 
@@ -20,11 +20,13 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 const NIRFRankings = () => {
-  const { nirfRankings, isLoading } = useData();
+  const { nirfRankings, colleges, isLoading } = useData();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [categoryStats, setCategoryStats] = useState<{category: string, count: number}[]>([]);
+  const [selectedCollege, setSelectedCollege] = useState<College | null>(null);
+  const [isCollegeModalOpen, setIsCollegeModalOpen] = useState(false);
   
   // Get all unique categories
   const categories = Array.from(new Set(nirfRankings.map(ranking => ranking.category))).sort();
@@ -64,6 +66,22 @@ const NIRFRankings = () => {
     
     return matchesSearch && matchesCategory;
   });
+
+  // Function to handle college click and show details
+  const handleCollegeClick = (ranking: NIRFRanking) => {
+    // Find the corresponding college in the colleges table by name
+    const college = colleges.find(c => 
+      c.name.toLowerCase().includes(ranking.name.toLowerCase()) || 
+      ranking.name.toLowerCase().includes(c.name.toLowerCase())
+    );
+    
+    if (college) {
+      setSelectedCollege(college);
+      setIsCollegeModalOpen(true);
+    } else {
+      toast.info(`Detailed information for ${ranking.name} is not available yet.`);
+    }
+  };
   
   if (isLoading) {
     return (
@@ -226,7 +244,7 @@ const NIRFRankings = () => {
                   {categoryFilter ? `${categoryFilter} Rankings` : 'All Categories Rankings'}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {filteredRankings.length} institutions found
+                  {filteredRankings.length} institutions found - Click on any institution to view detailed information
                 </p>
               </div>
               
@@ -252,12 +270,13 @@ const NIRFRankings = () => {
                   <TableHead>Category</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead className="text-right">NIRF Score</TableHead>
+                  <TableHead className="w-12">Details</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredRankings.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center">
                         <School className="h-12 w-12 text-muted-foreground opacity-30" />
                         <h3 className="mt-4 text-lg font-medium">No institutions found</h3>
@@ -271,7 +290,11 @@ const NIRFRankings = () => {
                   filteredRankings
                     .sort((a, b) => a.rank - b.rank)
                     .map((ranking) => (
-                      <TableRow key={ranking.id} className="cursor-pointer hover:bg-muted/50">
+                      <TableRow 
+                        key={ranking.id} 
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => handleCollegeClick(ranking)}
+                      >
                         <TableCell className="font-medium">
                           <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary">
                             {ranking.rank}
@@ -279,7 +302,7 @@ const NIRFRankings = () => {
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="font-medium">{ranking.name}</div>
+                            <div className="font-medium hover:text-primary transition-colors">{ranking.name}</div>
                             <div className="text-sm text-muted-foreground line-clamp-1">
                               {ranking.description}
                             </div>
@@ -298,6 +321,9 @@ const NIRFRankings = () => {
                         </TableCell>
                         <TableCell className="text-right font-medium">
                           {ranking.score.toFixed(1)}
+                        </TableCell>
+                        <TableCell>
+                          <ExternalLink className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
                         </TableCell>
                       </TableRow>
                     ))
@@ -324,6 +350,13 @@ const NIRFRankings = () => {
             </div>
           </div>
         </div>
+
+        {/* College Details Modal */}
+        <CollegeDetailsModal 
+          college={selectedCollege}
+          isOpen={isCollegeModalOpen}
+          onClose={() => setIsCollegeModalOpen(false)}
+        />
       </PageTransition>
     </MainLayout>
   );
