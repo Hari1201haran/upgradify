@@ -16,22 +16,7 @@ export interface College {
   location: string;
   ranking: number;
   courses: string[];
-  category?: string;
-  // New detailed fields
-  established_year?: number;
-  type?: string;
-  accreditation?: string[];
-  facilities?: string[];
-  notable_alumni?: string[];
-  admission_process?: string;
-  fee_structure?: string;
-  campus_size?: string;
-  student_strength?: number;
-  faculty_count?: number;
-  website_url?: string;
-  contact_info?: any; // Updated to accept any JSON value from Supabase
-  unique_features?: string[];
-  placement_stats?: any; // Updated to accept any JSON value from Supabase
+  category?: string; // Add category field here too
 }
 
 export interface Career {
@@ -43,7 +28,7 @@ export interface Career {
   jobOutlook: string;
   salary: string;
   streams: string[];
-  interests: string[];
+  interests: string[]; // Added interests field
 }
 
 export interface GovernmentExam {

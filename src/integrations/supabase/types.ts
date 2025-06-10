@@ -47,73 +47,31 @@ export type Database = {
       }
       colleges: {
         Row: {
-          accreditation: string[] | null
-          admission_process: string | null
-          campus_size: string | null
           category: string | null
-          contact_info: Json | null
           courses: string[]
           description: string
-          established_year: number | null
-          facilities: string[] | null
-          faculty_count: number | null
-          fee_structure: string | null
           id: string
           location: string
           name: string
-          notable_alumni: string[] | null
-          placement_stats: Json | null
           ranking: number
-          student_strength: number | null
-          type: string | null
-          unique_features: string[] | null
-          website_url: string | null
         }
         Insert: {
-          accreditation?: string[] | null
-          admission_process?: string | null
-          campus_size?: string | null
           category?: string | null
-          contact_info?: Json | null
           courses: string[]
           description: string
-          established_year?: number | null
-          facilities?: string[] | null
-          faculty_count?: number | null
-          fee_structure?: string | null
           id: string
           location: string
           name: string
-          notable_alumni?: string[] | null
-          placement_stats?: Json | null
           ranking: number
-          student_strength?: number | null
-          type?: string | null
-          unique_features?: string[] | null
-          website_url?: string | null
         }
         Update: {
-          accreditation?: string[] | null
-          admission_process?: string | null
-          campus_size?: string | null
           category?: string | null
-          contact_info?: Json | null
           courses?: string[]
           description?: string
-          established_year?: number | null
-          facilities?: string[] | null
-          faculty_count?: number | null
-          fee_structure?: string | null
           id?: string
           location?: string
           name?: string
-          notable_alumni?: string[] | null
-          placement_stats?: Json | null
           ranking?: number
-          student_strength?: number | null
-          type?: string | null
-          unique_features?: string[] | null
-          website_url?: string | null
         }
         Relationships: []
       }
