@@ -20,7 +20,7 @@ const Register = () => {
             </div>
             <h1 className="text-3xl font-bold">Create Account</h1>
             <p className="text-muted-foreground mt-2">
-              Join us to explore career opportunities
+              Join NEXT STEP to explore career opportunities
             </p>
           </div>
           

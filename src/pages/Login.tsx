@@ -66,7 +66,7 @@ const Login = () => {
             </div>
             <h1 className="text-3xl font-bold">Welcome Back</h1>
             <p className="text-muted-foreground mt-2">
-              Sign in to continue your education journey
+              Sign in to continue your NEXT STEP journey
             </p>
           </div>
           

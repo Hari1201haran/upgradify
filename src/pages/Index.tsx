@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ const Index = () => {
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <GraduationCap className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-semibold">After School Opportunity</h1>
+              <h1 className="text-xl font-semibold">NEXT STEP</h1>
             </div>
             <div className="flex gap-2">
               <Button 
@@ -182,10 +181,10 @@ const Index = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-2">
                 <GraduationCap className="h-6 w-6 text-primary" />
-                <h2 className="text-xl font-semibold">After School Opportunity</h2>
+                <h2 className="text-xl font-semibold">NEXT STEP</h2>
               </div>
               <div className="text-sm text-muted-foreground">
-                &copy; {new Date().getFullYear()} After School Opportunity. All rights reserved.
+                &copy; {new Date().getFullYear()} NEXT STEP. All rights reserved.
               </div>
             </div>
           </div>

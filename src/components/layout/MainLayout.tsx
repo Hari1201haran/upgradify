@@ -100,7 +100,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <header className="sticky top-0 z-50 flex items-center justify-between p-4 bg-white/80 backdrop-blur-md border-b">
           <div className="flex items-center gap-2">
             <GraduationCap className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-semibold">After School</h1>
+            <h1 className="text-xl font-semibold">NEXT STEP</h1>
           </div>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -122,7 +122,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {/* App Logo */}
           <div className="flex items-center gap-2 py-6">
             <GraduationCap className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-semibold">After School</h1>
+            <h1 className="text-2xl font-semibold">NEXT STEP</h1>
           </div>
 
           {/* Navigation */}
@@ -176,7 +176,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {!isMobile && (
           <header className="sticky top-0 z-30 flex items-center justify-between p-4 bg-white/80 backdrop-blur-md border-b">
             <h1 className="text-xl font-semibold">
-              {navItems.find(item => item.href === location.pathname)?.label || "After School"}
+              {navItems.find(item => item.href === location.pathname)?.label || "NEXT STEP"}
             </h1>
             <div className="flex items-center gap-4">
               <button
